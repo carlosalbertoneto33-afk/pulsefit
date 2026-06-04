@@ -1,0 +1,1827 @@
+ <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PulseFit — Vida Saudável na Juventude</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#f7fbff 0%,#eef5ff 42%,#f4fff8 100%);color:#1a2340;min-height:100vh}
+:root{
+  --primary:#1a5fd4;--card:#fff;--border:#dce6f5;
+  --muted:#e8eef8;--muted-fg:#6b7fa3;--secondary:#eaf0fb;
+  --orange:#f97316;--green:#22c55e;--blue:#3b82f6;
+}
+#app{display:flex;flex-direction:column;min-height:100vh;background:radial-gradient(circle at 12% 18%,rgba(34,197,94,.09),transparent 28%),radial-gradient(circle at 86% 12%,rgba(59,130,246,.1),transparent 30%),linear-gradient(135deg,#f8fbff,#edf5ff 48%,#f7fff9)}
+header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;padding:0 1.5rem;justify-content:space-between;box-shadow:0 1px 4px #0001}
+.logo-box{display:flex;align-items:center;gap:10px}
+.logo-icon{width:32px;height:32px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem}
+.logo-text{font-weight:700;color:var(--primary);font-size:.9rem}
+.logo-sub{font-size:.65rem;color:var(--muted-fg)}
+.header-right{display:flex;align-items:center;gap:8px}
+.xp-badge{display:flex;align-items:center;gap:6px;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:4px 10px;font-size:.75rem;font-weight:700;color:#a16207}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#3b82f6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem;cursor:pointer;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 8px #0002}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+nav.sidebar{position:fixed;top:56px;left:0;bottom:0;width:64px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;z-index:50}
+.nav-btn{width:42px;height:42px;border-radius:12px;border:none;background:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;position:relative;transition:.2s}
+.nav-btn:hover{background:var(--secondary)}
+.nav-btn.active{background:rgba(26,95,212,.12);color:var(--primary)}
+.nav-tooltip{position:absolute;left:54px;background:#1a2340;color:#fff;font-size:.7rem;padding:3px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s}
+.nav-btn:hover .nav-tooltip{opacity:1}
+nav.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);z-index:50;padding:6px 4px;grid-template-columns:repeat(5,1fr);gap:2px}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;cursor:pointer;padding:4px 2px;border-radius:10px;font-size:.5rem;color:var(--muted-fg);transition:.2s;height:42px}
+.bnav-btn span.icon{font-size:1.1rem;line-height:1}
+.bnav-btn.active{background:rgba(26,95,212,.1);color:var(--primary)}
+main{margin-top:56px;margin-left:64px;min-height:100vh;padding:24px}
+.page-inner{max-width:1100px;margin:0 auto}
+.card{background:rgba(255,255,255,.9);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 6px 24px rgba(26,95,212,.06)}
+.card-title{font-size:.7rem;font-weight:700;color:var(--muted-fg);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;border-radius:12px;cursor:pointer;font-weight:600;font-size:.85rem;padding:10px 18px;transition:.15s;font-family:inherit}
+.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{opacity:.88}
+.btn-outline{background:none;border:1px solid var(--border);color:#1a2340}.btn-outline:hover{background:var(--secondary)}
+.btn-ai{background:none;border:1px solid rgba(26,95,212,.3);color:var(--primary)}.btn-ai:hover{background:rgba(26,95,212,.06)}
+.btn-danger{background:#fef2f2;border:1px solid #fecaca;color:#dc2626}
+.btn-sm{padding:6px 12px;font-size:.78rem;border-radius:10px}
+.w-full{width:100%}
+.mt-2{margin-top:8px}.mt-3{margin-top:12px}.mt-4{margin-top:16px}.mt-5{margin-top:20px}
+.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}
+.space-y-2>*+*{margin-top:8px}.space-y-3>*+*{margin-top:12px}
+.input{width:100%;padding:10px 16px;border-radius:12px;border:1px solid var(--border);background:var(--secondary);font-family:inherit;font-size:.85rem;color:#1a2340;outline:none;transition:.15s}
+.input:focus{border-color:var(--primary)}
+label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--muted-fg);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.select{width:100%;padding:10px 16px;border-radius:12px;border:1px solid var(--border);background:var(--secondary);font-family:inherit;font-size:.85rem;color:#1a2340;outline:none}
+.badge-ai{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:linear-gradient(90deg,rgba(26,95,212,.1),rgba(168,85,247,.1));border:1px solid rgba(26,95,212,.2);color:var(--primary);font-size:.65rem;font-weight:700}
+.badge-green{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px}
+.badge-yellow{background:#fefce8;border:1px solid #fde68a;color:#a16207;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px}
+.badge-blue{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.badge-red{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px}
+.badge-orange{background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px}
+.xp-bar-wrap{background:var(--secondary);border-radius:12px;padding:12px;border:1px solid var(--border)}
+.xp-bar-track{height:8px;background:var(--muted);border-radius:99px;overflow:hidden;margin-top:6px}
+.xp-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#facc15,#f97316);transition:width .8s ease}
+.progress-track{height:6px;background:var(--muted);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;transition:width .6s ease}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;box-shadow:0 1px 3px #0001}
+.stat-card-bar{position:absolute;top:0;left:0;right:0;height:3px}
+.stat-value{font-weight:700;font-size:1.6rem;color:#1a2340}
+.stat-label{font-size:.7rem;color:var(--muted-fg);margin-top:2px}
+.stat-sub{font-size:.7rem;font-weight:600;margin-top:4px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:200;overflow-y:auto;padding:16px}
+.modal-overlay.open{display:block}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:440px;box-shadow:0 8px 32px #0003;margin:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted-fg)}
+#toast{position:fixed;bottom:72px;right:16px;z-index:999;background:var(--primary);color:#fff;padding:12px 20px;border-radius:12px;font-weight:600;font-size:.85rem;box-shadow:0 4px 16px #0003;display:none;max-width:300px}
+@media(min-width:769px){#toast{bottom:24px;right:24px}}
+/* ONBOARDING — scroll livre em qualquer dispositivo */
+.onboarding-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#dbeafe,#f0f4ff,#dcfce7);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 40px}
+.onboarding-card{background:var(--card);border-radius:24px;box-shadow:0 8px 40px #0003;width:100%;max-width:460px;overflow:hidden;margin:0 auto}
+.onboarding-header{background:linear-gradient(135deg,var(--primary),#3b82f6);padding:24px;color:#fff}
+.onboarding-body{padding:24px}
+.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.tipo-btn{border:2px solid var(--border);border-radius:16px;padding:14px;text-align:center;cursor:pointer;background:var(--secondary);transition:.2s}
+.tipo-btn:hover{border-color:rgba(26,95,212,.4)}
+.tipo-btn.selected{border-color:var(--primary);background:rgba(26,95,212,.06)}
+.tipo-btn span.ti{font-size:1.6rem;display:block;margin-bottom:4px}
+.tipo-btn strong{font-size:.82rem;display:block}
+.tipo-btn small{font-size:.68rem;color:var(--muted-fg)}
+.tipo-card-img{width:70px;height:70px;margin:0 auto 8px;border-radius:18px;background:#edf5ff;border:1px solid #bfdbfe;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(26,95,212,.1)}
+.tipo-card-img svg{width:54px;height:54px;stroke:var(--primary);stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.school-picker{display:grid;grid-template-columns:1fr;gap:10px}
+.profile-photo-box{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid var(--border);border-radius:14px;background:linear-gradient(135deg,#eff6ff,#f8fbff)}
+.profile-photo-preview{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#22c55e);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.5rem;overflow:hidden;border:3px solid #fff;box-shadow:0 4px 16px #0002;flex-shrink:0}
+.profile-photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.level-pill{display:inline-flex;flex-direction:column;gap:1px;border:1px solid rgba(26,95,212,.2);background:linear-gradient(135deg,#eff6ff,#f0fdf4);border-radius:14px;padding:8px 12px;min-width:180px}
+.level-pill strong{font-size:.82rem;color:var(--primary)}
+.level-pill small{font-size:.68rem;color:var(--muted-fg);line-height:1.2}
+.food-game-card{background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1px solid #bfdbfe;border-radius:16px;padding:16px}
+.mini-chart{display:flex;align-items:end;gap:8px;height:92px;padding:10px 8px;border-radius:14px;background:rgba(255,255,255,.65);border:1px solid var(--border)}
+.mini-bar{flex:1;border-radius:10px 10px 4px 4px;min-height:12px;background:linear-gradient(180deg,#22c55e,#3b82f6);position:relative}
+.mini-bar span{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.62rem;color:var(--muted-fg);font-weight:700}
+.xp-chip{display:inline-flex;align-items:center;gap:4px;background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;border-radius:99px;padding:3px 8px;font-size:.68rem;font-weight:800}
+.activity-card{display:flex;align-items:center;gap:12px;border:1px solid var(--border);background:linear-gradient(135deg,#fff,#f8fbff);border-radius:16px;padding:12px}
+.activity-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;background:#eff6ff;border:1px solid #bfdbfe;flex-shrink:0}
+.meal-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--secondary)}
+.meal-item.done{opacity:.55;background:#f0fdf4;border-color:#bbf7d0}
+.meal-item-icon{font-size:1.3rem}
+.meal-item-info{flex:1;min-width:0}
+.meal-item-info strong{font-size:.85rem;display:block}
+.meal-item-info small{font-size:.72rem;color:var(--muted-fg)}
+.meal-item .check-btn{background:none;border:none;font-size:1.1rem;cursor:pointer}
+.meal-item .del-btn{background:none;border:none;cursor:pointer;color:var(--muted-fg);font-size:.85rem}
+.meal-item .del-btn:hover{color:#dc2626}
+.ex-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--secondary)}
+.ex-icon-box{width:40px;height:40px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.water-glass-wrap{position:relative;margin:0 auto 20px;width:100px;height:140px}
+.water-level-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:2rem;color:var(--primary)}
+.water-level-text small{font-size:.7rem;font-weight:400;color:var(--muted-fg)}
+.drop-btn{background:none;border:none;cursor:pointer;font-size:1.4rem;transition:.2s;filter:grayscale(1);opacity:.25}
+.drop-btn.filled{filter:none;opacity:1}
+.imc-gradient{height:16px;border-radius:99px;background:linear-gradient(to right,#60a5fa,#34d399,#fbbf24,#f97316,#ef4444);position:relative;margin-bottom:4px}
+.imc-pointer{position:absolute;top:0;height:16px;width:3px;background:#fff;border-radius:99px;box-shadow:0 0 4px #0004;transform:translateX(-50%);transition:left .6s ease}
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px;border-radius:16px;border:1px solid var(--border);text-align:center}
+.badge-item.earned{background:#fefce8;border-color:#fde68a}
+.badge-item span.bi{font-size:1.8rem}
+.badge-item small{font-size:.65rem;font-weight:600;line-height:1.2}
+.rank-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--secondary)}
+.rank-item.me{background:rgba(26,95,212,.06);border-color:rgba(26,95,212,.25)}
+.rank-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#3b82f6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.8rem;flex-shrink:0}
+.levels-row{display:flex;align-items:center;gap:4px;overflow-x:auto;padding-bottom:8px}
+.level-node{flex-shrink:0;min-width:80px;padding:10px 8px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.4);text-align:center;opacity:.5}
+.level-node.reached{background:rgba(26,95,212,.06);border-color:rgba(26,95,212,.3);opacity:1}
+.level-connector{flex-shrink:0;height:2px;width:20px;background:var(--muted)}
+.level-connector.reached{background:var(--primary)}
+.streak-day{flex:1;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;background:var(--muted);color:var(--muted-fg)}
+.streak-day.today{background:var(--primary);color:#fff}
+.streak-day.done{background:#dcfce7;color:#15803d}
+.tip-card{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid var(--border);border-radius:12px;padding:14px}
+.ai-tip-box{background:linear-gradient(90deg,rgba(26,95,212,.06),#eff6ff);border:1px solid rgba(26,95,212,.2);border-radius:16px;padding:14px;display:flex;align-items:flex-start;gap:12px}
+.ai-tip-icon{width:32px;height:32px;background:rgba(26,95,212,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem}
+.mission-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--secondary);cursor:pointer;text-align:left;width:100%}
+.mission-item.done{background:#f0fdf4;border-color:#bbf7d0;cursor:default}
+.page-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.page-title h1{font-weight:700;font-size:1.5rem}
+.history-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.history-item:last-child{border-bottom:none}
+.analysis-item{padding:12px;border-radius:12px;border:1px solid;text-align:center}
+.analysis-item.ok{background:#f0fdf4;border-color:#bbf7d0;color:#15803d}
+.analysis-item.warn{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+.reminder-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--secondary)}
+.benefit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.benefit-card{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:12px}
+.food-tag-green{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;font-size:.65rem;font-weight:700;padding:2px 8px}
+.food-tag-yellow{background:#fefce8;color:#a16207;border:1px solid #fde68a;border-radius:20px;font-size:.65rem;font-weight:700;padding:2px 8px}
+.food-tag-red{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:20px;font-size:.65rem;font-weight:700;padding:2px 8px}
+.border-top-green{border-top:4px solid #4ade80}
+.border-top-blue{border-top:4px solid #60a5fa}
+.border-top-orange{border-top:4px solid #fb923c}
+/* ESCOLA PAINEL */
+.aluno-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--secondary);cursor:pointer;transition:.2s}
+.aluno-row:hover{border-color:rgba(26,95,212,.3);background:#eff6ff}
+.aluno-row.selected{border-color:var(--primary);background:rgba(26,95,212,.06)}
+.aluno-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#3b82f6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0}
+@media(max-width:768px){
+  nav.sidebar{display:none}
+  nav.bottom-nav{display:grid}
+  main{margin-left:0;padding:12px;margin-bottom:104px}
+  .grid4{grid-template-columns:1fr 1fr}
+  .grid3{grid-template-columns:1fr 1fr}
+  .grid2{grid-template-columns:1fr}
+}
+@media(max-width:480px){.grid3{grid-template-columns:1fr 1fr}.grid4{grid-template-columns:1fr 1fr}}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}
+.gap-2{gap:8px}.gap-3{gap:12px}.text-xs{font-size:.75rem}.text-sm{font-size:.85rem}
+.font-bold{font-weight:700}.font-semibold{font-weight:600}
+.text-primary{color:var(--primary)}.text-muted{color:var(--muted-fg)}.text-orange{color:var(--orange)}
+.text-green{color:#15803d}.text-red{color:#dc2626}
+.hidden{display:none}.relative{position:relative}.text-center{text-align:center}
+.overflow-y-auto{overflow-y:auto;max-height:360px}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div class="onboarding-overlay" id="login-screen" style="display:none">
+  <div class="onboarding-card">
+    <div class="onboarding-header">
+      <div class="flex items-center gap-3" style="margin-bottom:10px">
+        <div style="width:40px;height:40px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem">🌱</div>
+        <div><div style="font-weight:700;font-size:1.1rem">PulseFit</div><div style="font-size:.8rem;color:rgba(255,255,255,.8)">Vida Saudável na Juventude</div></div>
+      </div>
+      <p style="font-size:.85rem;color:rgba(255,255,255,.8)">Entre ou crie sua conta</p>
+    </div>
+    <div class="onboarding-body" id="login-body"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <header>
+    <div class="logo-box">
+      <div class="logo-icon">P</div>
+      <div><div class="logo-text">PulseFit</div><div class="logo-sub">Vida Saudável na Juventude</div></div>
+    </div>
+    <div class="header-right">
+      <div class="xp-badge" id="header-xp">🌱 Iniciante · 0 XP</div>
+      <div class="avatar" id="header-avatar" onclick="navigate('perfil')" title="Perfil">A</div>
+    </div>
+  </header>
+  <nav class="sidebar" id="sidebar"></nav>
+  <nav class="bottom-nav" id="bottom-nav"></nav>
+  <main><div class="page-inner" id="page-content"></div></main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-meal">
+  <div class="modal-box">
+    <div class="modal-header"><h3>🍽️ Nova Refeição</h3><button class="modal-close" onclick="closeModal('modal-meal')">×</button></div>
+    <div class="space-y-3">
+      <div><label class="field-label">Nome</label><input class="input" id="m-nome" placeholder="Ex: Café da manhã"></div>
+      <div class="grid2">
+        <div><label class="field-label">Horário</label><input class="input" type="time" id="m-hora" value="07:00"></div>
+        <div><label class="field-label">Kcal</label><input class="input" type="number" id="m-kcal" placeholder="400"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div><label class="field-label">Proteínas (g)</label><input class="input" type="number" id="m-prot" placeholder="0"></div>
+        <div><label class="field-label">Carbs (g)</label><input class="input" type="number" id="m-carb" placeholder="0"></div>
+        <div><label class="field-label">Gorduras (g)</label><input class="input" type="number" id="m-gord" placeholder="0"></div>
+      </div>
+      <div><label class="field-label">Ícone</label>
+        <select class="select" id="m-icon"><option>🌅</option><option>🍎</option><option>☀️</option><option>🥤</option><option>🌙</option><option>🥗</option><option>🍗</option><option>🥚</option><option>🍌</option><option>🥩</option></select>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-5"><button class="btn btn-primary" style="flex:1" onclick="addMeal()">Adicionar</button><button class="btn btn-outline" onclick="closeModal('modal-meal')">Cancelar</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-ex">
+  <div class="modal-box">
+    <div class="modal-header"><h3>🏃 Novo Exercício</h3><button class="modal-close" onclick="closeModal('modal-ex')">×</button></div>
+    <div class="space-y-3">
+      <div><label class="field-label">Nome</label><input class="input" id="e-nome" placeholder="Ex: Corrida"></div>
+      <div class="grid2">
+        <div><label class="field-label">Duração (min)</label><input class="input" type="number" id="e-min" placeholder="30"></div>
+        <div><label class="field-label">Kcal queimadas</label><input class="input" type="number" id="e-kcal" placeholder="300"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="field-label">Categoria</label>
+          <select class="select" id="e-cat"><option value="Deslocamento Ativo">🏃 Deslocamento Ativo</option><option value="Exercício Físico">💪 Exercício Físico</option><option value="Flexibilidade">🧘 Flexibilidade</option><option value="Atividades Recreativas">🧒 Atividades Recreativas</option><option value="Atividades Energéticas">🔥 Atividades Energéticas</option></select>
+        </div>
+        <div><label class="field-label">Séries × Reps</label><input class="input" id="e-series" placeholder="3 × 12"></div>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-5"><button class="btn btn-primary" style="flex:1" onclick="addExercicio()">Adicionar</button><button class="btn btn-outline" onclick="closeModal('modal-ex')">Cancelar</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-peso">
+  <div class="modal-box">
+    <div class="modal-header"><h3>⚖️ Registrar Peso</h3><button class="modal-close" onclick="closeModal('modal-peso')">×</button></div>
+    <div class="space-y-3">
+      <div><label class="field-label">Peso (kg)</label><input class="input" type="number" step="0.1" id="p-peso" placeholder="70.5"></div>
+      <div><label class="field-label">Data</label><input class="input" type="date" id="p-data"></div>
+      <div><label class="field-label">Observação (opcional)</label><input class="input" id="p-obs" placeholder="Ex: Após treino"></div>
+    </div>
+    <div class="flex gap-3 mt-5"><button class="btn btn-primary" style="flex:1" onclick="addPeso()">Registrar</button><button class="btn btn-outline" onclick="closeModal('modal-peso')">Cancelar</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="modal-howto">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-header"><h3>📖 Como fazer</h3><button class="modal-close" onclick="closeModal('modal-howto')">×</button></div>
+    <div style="text-align:center;font-size:2.5rem;margin-bottom:12px">🏋️</div>
+    <h4 id="howto-title" style="font-size:1rem;font-weight:700;margin-bottom:8px"></h4>
+    <p id="howto-text" style="font-size:.85rem;color:var(--muted-fg);line-height:1.6;margin-bottom:14px"></p>
+    <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:10px;font-size:.78rem;color:#a16207">⚠️ Sempre aqueça antes e descanse adequadamente!</div>
+    <button class="btn btn-primary w-full mt-4" onclick="closeModal('modal-howto')">Entendido! 💪</button>
+  </div>
+</div>
+<!-- MODAL VER ALUNO (escola/responsável) -->
+<div class="modal-overlay" id="modal-ver-aluno">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-header"><h3 id="modal-aluno-title">👤 Dados do Aluno</h3><button class="modal-close" onclick="closeModal('modal-ver-aluno')">×</button></div>
+    <div id="modal-aluno-body"></div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ============================================================
+// AUTH — contas persistidas, state separado por userId
+// ============================================================
+const AUTH_KEY = 'pf_auth_v3';
+let AUTH = { contas:[], logado:null };
+let authMode = 'login';
+let authTipo = 'aluno';
+
+function userKey(uid){ return 'pf_state_' + uid; }
+
+function loadAuth(){
+  try{ AUTH = JSON.parse(localStorage.getItem(AUTH_KEY)) || {contas:[],logado:null}; }
+  catch(e){ AUTH = {contas:[],logado:null}; }
+}
+function saveAuth(){ localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); }
+function me(){ return AUTH.contas.find(c => c.id === AUTH.logado) || null; }
+
+// ============================================================
+// STATE — por usuário logado
+// ============================================================
+let S = {};
+function defaultState(){
+  return { refeicoes:[], exercicios:[], pesos:[], agua:0, streak:0,
+    streakDays:[false,false,false,false,false,false,false],
+    xp:0, badges:[], missoesConcluidas:[], perfil:{} };
+}
+function loadState(){
+  const c = me();
+  if(!c){ S = defaultState(); return; }
+  try{
+    const raw = localStorage.getItem(userKey(c.id));
+    const s = raw ? JSON.parse(raw) : {};
+    S = {
+      refeicoes: s.refeicoes||[], exercicios: s.exercicios||[],
+      pesos: s.pesos||[], agua: s.agua||0,
+      streak: s.streak||0, streakDays: s.streakDays||[false,false,false,false,false,false,false],
+      xp: s.xp||0, badges: s.badges||[], missoesConcluidas: s.missoesConcluidas||[],
+      perfil: s.perfil || buildPerfilFromConta(c)
+    };
+  } catch(e){ S = defaultState(); }
+}
+function saveState(){
+  const c = me();
+  if(!c) return;
+  localStorage.setItem(userKey(c.id), JSON.stringify(S));
+}
+
+// Escolas cadastradas
+const ESCOLAS_CADASTRADAS = {
+  'CE': {
+    'Fortaleza': ['E.E. Joao XXIII','EMEF Paulo Freire','Colegio Dom Bosco','E.E. Santos Dumont'],
+    'Caucaia': ['EMEF Cecília Meireles','E.E. Rui Barbosa'],
+    'Maracanau': ['Instituto Estadual de Educacao','E.E. Monteiro Lobato']
+  },
+  'PB': {
+    'Joao Pessoa': ['ESCOLA SESC DOM ULRICO','E.E.E.F.M. Lyceu Paraibano','Escola Municipal Indio Piragibe'],
+    'Campina Grande': ['E.E.E.F.M. Dr. Elpidio de Almeida','Escola Municipal Padre Antonino']
+  },
+  'SP': {
+    'Sao Paulo': ['Colegio Estadual Tiradentes','EMEF Anisio Teixeira','Colegio Sao Paulo'],
+    'Campinas': ['E.E. Machado de Assis','Colegio Nossa Senhora das Gracas']
+  },
+  'RJ': {
+    'Rio de Janeiro': ['E.E. Presidente Vargas','EMEF Zumbi dos Palmares'],
+    'Niteroi': ['Escola Municipal Olavo Bilac','Colegio Estadual Santos Dumont']
+  }
+};
+
+function escolaSelectHTML(prefix, valores){
+  valores = valores || {};
+  const estado = valores.estado || '';
+  const cidade = valores.cidade || '';
+  const escola = valores.escola || '';
+  const estados = Object.keys(ESCOLAS_CADASTRADAS);
+  const cidades = estado ? Object.keys(ESCOLAS_CADASTRADAS[estado] || {}) : [];
+  const escolas = estado && cidade ? (ESCOLAS_CADASTRADAS[estado][cidade] || []) : [];
+  return `<div class="school-picker">
+    <div><label class="field-label">Estado</label><select class="select" id="${prefix}-estado" onchange="atualizarEscolaSelect('${prefix}')">
+      <option value="">Selecione o estado</option>
+      ${estados.map(e=>`<option value="${e}" ${estado===e?'selected':''}>${e}</option>`).join('')}
+    </select></div>
+    <div><label class="field-label">Cidade</label><select class="select" id="${prefix}-cidade" onchange="atualizarEscolaSelect('${prefix}')" ${!estado?'disabled':''}>
+      <option value="">Selecione a cidade</option>
+      ${cidades.map(c=>`<option value="${c}" ${cidade===c?'selected':''}>${c}</option>`).join('')}
+    </select></div>
+    <div><label class="field-label">Escola cadastrada</label><select class="select" id="${prefix}-escola" ${!cidade?'disabled':''}>
+      <option value="">Selecione a escola</option>
+      ${escolas.map(s=>`<option value="${s}" ${escola===s?'selected':''}>${s}</option>`).join('')}
+    </select></div>
+  </div>`;
+}
+
+function atualizarEscolaSelect(prefix){
+  const estadoEl = document.getElementById(prefix+'-estado');
+  const cidadeEl = document.getElementById(prefix+'-cidade');
+  const escolaEl = document.getElementById(prefix+'-escola');
+  if(!estadoEl || !cidadeEl || !escolaEl) return;
+  const estado = estadoEl.value;
+  const cidadeAtual = cidadeEl.value;
+  const cidades = estado ? Object.keys(ESCOLAS_CADASTRADAS[estado] || {}) : [];
+  cidadeEl.disabled = !estado;
+  cidadeEl.innerHTML = '<option value="">Selecione a cidade</option>' + cidades.map(c=>`<option value="${c}" ${cidadeAtual===c?'selected':''}>${c}</option>`).join('');
+  const cidade = cidades.includes(cidadeAtual) ? cidadeAtual : '';
+  cidadeEl.value = cidade;
+  const escolas = estado && cidade ? (ESCOLAS_CADASTRADAS[estado][cidade] || []) : [];
+  escolaEl.disabled = !cidade;
+  escolaEl.innerHTML = '<option value="">Selecione a escola</option>' + escolas.map(s=>`<option value="${s}">${s}</option>`).join('');
+}
+
+function getEscolaSelecionada(prefix){
+  return {
+    estado: document.getElementById(prefix+'-estado')?.value || '',
+    cidade: document.getElementById(prefix+'-cidade')?.value || '',
+    escola: document.getElementById(prefix+'-escola')?.value || ''
+  };
+}
+
+function tipoIconSVG(tipo){
+  const icons = {
+    aluno:`<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24"/><path d="M20 52c2-10 8-15 12-15s10 5 12 15"/><path d="M22 26c2-8 8-12 16-9 3 1 5 3 8 3-1 4-3 7-7 8"/><path d="M22 29c0 9 5 16 10 16s10-7 10-16"/></svg>`,
+    responsavel:`<svg viewBox="0 0 64 64"><circle cx="27" cy="26" r="10"/><circle cx="43" cy="32" r="7"/><path d="M10 52c2-11 9-17 17-17s15 6 17 17"/><path d="M34 52c2-7 6-11 12-11 4 0 8 3 10 11"/><path d="M28 45l4 4 7-9"/></svg>`,
+    colaborador:`<svg viewBox="0 0 64 64"><circle cx="31" cy="23" r="10"/><path d="M14 53c2-12 9-19 17-19s15 7 17 19"/><rect x="25" y="37" width="14" height="17" rx="2"/><path d="M29 46h6M29 50h6"/><circle cx="49" cy="41" r="8"/><path d="M45 41l3 3 6-7"/></svg>`,
+    escola:`<svg viewBox="0 0 64 64"><path d="M12 52h40"/><path d="M17 52V28h30v24"/><path d="M23 28v-8l9-8 9 8v8"/><path d="M32 17v-7h9l-3 4 3 4h-9"/><circle cx="32" cy="31" r="5"/><path d="M25 52V40h14v12"/><path d="M20 35h5M39 35h5M20 43h5M39 43h5"/></svg>`
+  };
+  return icons[tipo] || icons.aluno;
+}
+
+function buildPerfilFromConta(c){
+  if(!c) return {};
+  const d = c.dados || {};
+  if(c.tipo === 'aluno'){
+    const metas = calcMacros(d.peso||55, d.altura||160, d.birthdate||'', 'M', d.objetivo||'saude', 1.375);
+    return {
+      nome:c.nome, tipo:'aluno',
+      birthdate: d.birthdate||'', altura: d.altura||160, peso: d.peso||55,
+      sexo:'M', estado:d.estado||'', cidade:d.cidade||'', escola: d.escola||'', serie: d.serie||'', objetivo: d.objetivo||'saude',
+      atividade:1.375, meta:metas.tdee, metaProt:metas.prot, metaCarb:metas.carb,
+      metaGord:metas.gord, waterGoal: calcWaterGoal(d.peso||55, d.birthdate||''),
+      pesoMeta: Math.max(40,(d.peso||55)-5)
+    };
+  }
+  return { nome:c.nome, tipo:c.tipo };
+}
+
+// ============================================================
+// LOGIN / CADASTRO RENDER
+// ============================================================
+function renderLogin(){
+  const box = document.getElementById('login-body');
+  if(!box) return;
+  if(authMode === 'login'){
+    box.innerHTML = `
+      <h2 style="font-weight:700;font-size:1.2rem;margin-bottom:4px">Entrar</h2>
+      <p class="text-sm text-muted mb-4">Use seu usuario e senha cadastrados.</p>
+      <div class="space-y-3">
+        <div><label class="field-label">Usuario ou email</label><input class="input" id="li-user" placeholder="seu_usuario"></div>
+        <div><label class="field-label">Senha</label><input class="input" type="password" id="li-pass" placeholder="******" onkeydown="if(event.key==='Enter')entrar()"></div>
+        <button class="btn btn-primary w-full" onclick="entrar()">Entrar</button>
+        <div style="text-align:center;font-size:.8rem;color:var(--muted-fg)">ou</div>
+        <button class="btn btn-outline w-full" onclick="authMode='cad';authTipo='aluno';renderLogin()">Criar nova conta</button>
+      </div>`;
+    return;
+  }
+  box.innerHTML=`
+    <h2 style="font-weight:700;font-size:1.2rem;margin-bottom:4px">Criar conta</h2>
+    <p class="text-sm text-muted mb-4">Escolha seu tipo de acesso.</p>
+    <div class="tipo-grid">
+      ${[
+        {id:'aluno',label:'Aluno',desc:'Minha rotina'},
+        {id:'responsavel',label:'Responsavel',desc:'Ver filhos'},
+        {id:'colaborador',label:'Colaborador',desc:'Equipe escolar'},
+        {id:'escola',label:'Escola',desc:'Gestao escolar'}
+      ].map(t=>`<div class="tipo-btn ${authTipo===t.id?'selected':''}" onclick="authTipo='${t.id}';renderLogin()">
+        <div class="tipo-card-img">${tipoIconSVG(t.id)}</div><strong>${t.label}</strong><small>${t.desc}</small>
+      </div>`).join('')}
+    </div>
+    ${camposCadastro()}
+    <button class="btn btn-primary w-full mt-4" onclick="cadastrar()">Cadastrar</button>
+    <button class="btn btn-outline w-full mt-2" onclick="authMode='login';renderLogin()">Ja tenho conta</button>`;
+}
+
+function camposCadastro(){
+  let h=`<div class="space-y-3">
+    <div><label class="field-label">Nome completo</label><input class="input" id="c-nome"></div>
+    <div><label class="field-label">Usuario (para login)</label><input class="input" id="c-user" placeholder="sem espacos"></div>
+    <div><label class="field-label">Senha</label><input class="input" type="password" id="c-pass" placeholder="minimo 4 caracteres"></div>`;
+  if(authTipo==='aluno'){
+    h+=`<div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="c-bd"></div>
+    <div class="grid2">
+      <div><label class="field-label">Altura (cm)</label><input class="input" type="number" id="c-alt" placeholder="160"></div>
+      <div><label class="field-label">Peso (kg)</label><input class="input" type="number" id="c-peso" placeholder="55"></div>
+    </div>
+    <div>${escolaSelectHTML('c')}</div>
+    <div><label class="field-label">Serie</label><select class="select" id="c-serie">
+      <option value="">Selecione</option>
+      ${['1º','2º','3º','4º','5º'].map(s=>`<option>${s} ano EF I</option>`).join('')}
+      ${['6º','7º','8º','9º'].map(s=>`<option>${s} ano EF II</option>`).join('')}
+      ${['1º','2º','3º'].map(s=>`<option>${s} ano EM</option>`).join('')}
+    </select></div>
+    <div><label class="field-label">Objetivo</label><select class="select" id="c-obj">
+      <option value="saude">Saude geral</option>
+      <option value="Crescimento Saudavel">Crescimento Saudavel</option>
+      <option value="Equilibrio">Equilibrio</option>
+      <option value="Deslocamento Ativo">Deslocamento Ativo</option>
+      <option value="Exercicio Fisico">Exercicio Fisico</option>
+    </select></div>`;
+  }
+  if(authTipo==='responsavel'){
+    h+=`<div><label class="field-label">Email</label><input class="input" id="c-email"></div>
+    <div><label class="field-label">Usuarios dos filhos (separados por virgula)</label><input class="input" id="c-filhos" placeholder="Ex: joao123, maria456"></div>`;
+  }
+  if(authTipo==='colaborador'){
+    h+=`<div><label class="field-label">Funcao</label><input class="input" id="c-funcao" placeholder="Professor, coordenador..."></div>
+    <div><label class="field-label">Escola (usuario da escola)</label><input class="input" id="c-escola-user" placeholder="usuario_da_escola"></div>`;
+  }
+  if(authTipo==='escola'){
+    h+=`<div><label class="field-label">Nome da escola</label><input class="input" id="c-escola-nome"></div>
+    <div><label class="field-label">CNPJ</label><input class="input" id="c-cnpj"></div>
+    <div><label class="field-label">Email institucional</label><input class="input" id="c-email"></div>`;
+  }
+  return h+'</div>';
+}
+
+function cadastrar(){
+  const user=(document.getElementById('c-user')||{}).value?.trim().toLowerCase();
+  const pass=(document.getElementById('c-pass')||{}).value?.trim();
+
+  // Para escola, o nome vem do campo "Nome da escola", não de "c-nome"
+  let nome;
+  if(authTipo==='escola'){
+    nome=(document.getElementById('c-escola-nome')||{}).value?.trim();
+    if(!nome){showToast('Preencha o nome da escola.');return;}
+  } else {
+    nome=(document.getElementById('c-nome')||{}).value?.trim();
+    if(!nome){showToast('Preencha nome, usuario e senha.');return;}
+  }
+
+  if(!user||!pass){showToast('Preencha usuario e senha.');return;}
+  if(pass.length<4){showToast('Senha precisa ter pelo menos 4 caracteres.');return;}
+  if(AUTH.contas.some(c=>c.login===user)){showToast('Esse usuario ja existe. Escolha outro.');return;}
+  const conta={id:Date.now().toString(),tipo:authTipo,nome,login:user,senha:pass,dados:{}};
+  if(authTipo==='aluno'){
+    const esc=getEscolaSelecionada('c');
+    if(!esc.estado||!esc.cidade||!esc.escola){showToast('Selecione estado, cidade e escola cadastrada.');return;}
+    conta.dados={birthdate:document.getElementById('c-bd').value,altura:+(document.getElementById('c-alt').value)||160,peso:+(document.getElementById('c-peso').value)||55,estado:esc.estado,cidade:esc.cidade,escola:esc.escola,serie:document.getElementById('c-serie').value,objetivo:document.getElementById('c-obj').value};
+  }
+  if(authTipo==='responsavel'){
+    conta.dados.email=document.getElementById('c-email').value.trim();
+    conta.dados.filhosLogins=document.getElementById('c-filhos').value.split(',').map(f=>f.trim().toLowerCase()).filter(Boolean);
+  }
+  if(authTipo==='colaborador'){
+    conta.dados.funcao=document.getElementById('c-funcao').value.trim();
+    conta.dados.escolaUser=document.getElementById('c-escola-user').value.trim().toLowerCase();
+  }
+  if(authTipo==='escola'){
+    conta.dados.escolaNome=nome;
+    conta.dados.cnpj=document.getElementById('c-cnpj').value.trim();
+    conta.dados.email=document.getElementById('c-email').value.trim();
+  }
+  AUTH.contas.push(conta);
+  AUTH.logado=conta.id;
+  saveAuth();
+  loadState();
+  if(authTipo==='aluno'){
+    S.perfil=buildPerfilFromConta(conta);
+    S.pesos=[{peso:conta.dados.peso,data:new Date().toISOString().split('T')[0],obs:'Peso do cadastro'}];
+  }
+  saveState();
+  showToast('Conta criada e salva! Agora voce entra so com login e senha.');
+  iniciarApp();
+}
+
+function entrar(){
+  const user = (document.getElementById('li-user')||{}).value?.trim().toLowerCase();
+  const pass = (document.getElementById('li-pass')||{}).value?.trim();
+  if(!user||!pass){ showToast('Preencha usuário e senha.'); return; }
+  const conta = AUTH.contas.find(c=>c.login===user && c.senha===pass);
+  if(!conta){ showToast('Usuário ou senha incorretos.'); return; }
+  AUTH.logado = conta.id;
+  saveAuth();
+  loadState();
+  showToast('Bem-vindo de volta, '+conta.nome+'!');
+  iniciarApp();
+}
+
+function sair(){
+  AUTH.logado = null;
+  saveAuth();
+  S = defaultState();
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='block';
+  authMode='login';
+  renderLogin();
+}
+
+function iniciarApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  selectedObj = (S.perfil&&S.perfil.objetivo)||'saude';
+  updateHeader();
+  buildNav();
+  renderPage();
+}
+
+// ============================================================
+// CALCULATIONS
+// ============================================================
+function calcAge(bd){
+  if(!bd) return 12;
+  const t=new Date(),b=new Date(bd);
+  let a=t.getFullYear()-b.getFullYear();
+  const m=t.getMonth()-b.getMonth();
+  if(m<0||(m===0&&t.getDate()<b.getDate())) a--;
+  return Math.max(1,a);
+}
+function calcTDEE(peso,altura,bd,sexo,atv){
+  const age=calcAge(bd), a=atv||1.375;
+  const bmr = sexo==='F'
+    ? 10*peso+6.25*altura-5*age-161
+    : 10*peso+6.25*altura-5*age+5;
+  return Math.round(bmr*a);
+}
+function calcMacros(peso,altura,bd,sexo,obj,atv){
+  const tdee=calcTDEE(peso,altura,bd,sexo,atv);
+  const pf={Crescimento:1.6,saúde:1.4,Equilíbrio:1.6,Deslocamento:1.4,Exercício:1.8};
+  const prot=Math.round((pf[obj]||1.4)*peso);
+  const gord=Math.round(tdee*0.27/9);
+  const carb=Math.round(Math.max(100,(tdee-prot*4-gord*9)/4));
+  return {tdee,prot,carb,gord};
+}
+function calcWaterGoal(peso,bd){
+  const age=calcAge(bd), f=age<10?40:age<14?38:35;
+  return Math.round(Math.max(6,Math.min(12,peso*f/250)));
+}
+function getLevel(xp){
+  const levels=[
+    {min:0,name:'Iniciante',icon:'🌱',phrase:'Vamos iniciar uma rotina saudavel.'},
+    {min:101,name:'Explorador',icon:'🧭',phrase:'Estamos criando habitos.'},
+    {min:301,name:'Saudavel',icon:'💚',phrase:'Sua rotina esta ficando consistente.'},
+    {min:701,name:'Elite',icon:'⚡',phrase:'Voce esta mantendo constancia.'},
+    {min:1501,name:'Master Fit',icon:'🏆',phrase:'Referencia em rotina saudavel.'}
+  ];
+  let lv=levels[0],nx=levels[1];
+  for(let i=levels.length-1;i>=0;i--){ if(xp>=levels[i].min){lv=levels[i];nx=levels[i+1]||null;break;} }
+  const pct=nx?Math.min(100,(xp-lv.min)/(nx.min-lv.min)*100):100;
+  return {level:{...lv,name:lv.icon+' '+lv.name},next:nx?{...nx,name:nx.icon+' '+nx.name}:null,pct,levels:levels.map(l=>({...l,name:l.icon+' '+l.name}))};
+}
+
+// ============================================================
+// BADGES & MISSIONS
+// ============================================================
+const ALL_BADGES=[
+  {id:'first_meal',icon:'🍽️',name:'Primeira refeição',cond:s=>s.refeicoes.length>=1},
+  {id:'hydrated',icon:'💧',name:'Bem hidratado',cond:s=>s.agua>=8},
+  {id:'first_ex',icon:'🏃',name:'Primeiro treino',cond:s=>s.exercicios.length>=1},
+  {id:'peso_ok',icon:'📊',name:'Evolução registrada',cond:s=>s.pesos.length>=1},
+  {id:'streak3',icon:'🔥',name:'3 dias seguidos',cond:s=>s.streak>=3},
+  {id:'xp100',icon:'⭐',name:'100 XP',cond:s=>s.xp>=100},
+  {id:'xp500',icon:'🏆',name:'500 XP',cond:s=>s.xp>=500},
+  {id:'meals5',icon:'🥗',name:'5 refeições',cond:s=>s.refeicoes.length>=5},
+  {id:'missao3',icon:'🎯',name:'3 missões',cond:s=>s.missoesConcluidas.length>=3},
+];
+const DAILY_MISSIONS=[
+  {id:'agua',icon:'💧',label:'Beba pelo menos 6 copos de água',xp:15,check:s=>s.agua>=6},
+  {id:'caminhada',icon:'🚶',label:'Caminhe por pelo menos 20 minutos',xp:20,check:()=>false},
+  {id:'refeicao',icon:'🥗',label:'Registre 3 refeições hoje',xp:15,check:s=>s.refeicoes.length>=3},
+  {id:'sem_refri',icon:'🚫',label:'Evite refrigerantes hoje',xp:10,check:()=>false},
+  {id:'frutas',icon:'🍎',label:'Consuma uma fruta ou verdura',xp:10,check:()=>false},
+];
+function checkBadges(){
+  ALL_BADGES.forEach(b=>{
+    if(!S.badges.includes(b.id)&&b.cond(S)){
+      S.badges.push(b.id); saveState();
+      showToast('🏅 Conquista: '+b.name+'!');
+    }
+  });
+}
+function addXP(pts,reason){
+  S.xp=(S.xp||0)+pts; saveState();
+  if(reason) showToast('+'+pts+' XP — '+reason+'! ✨');
+  updateHeader(); checkBadges();
+}
+
+// ============================================================
+// TOAST / MODAL
+// ============================================================
+let toastTimer;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.style.display='block';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{el.style.display='none';},2800);
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ============================================================
+// NAV — dinâmico por tipo de usuário
+// ============================================================
+function getNavItems(){
+  const c = me();
+  const tipo = c ? c.tipo : 'aluno';
+  if(tipo==='escola'){
+    return [
+      {id:'dashboard',icon:'🏠',label:'Início'},
+      {id:'painel-escola',icon:'🏢',label:'Painel'},
+      {id:'perfil',icon:'👤',label:'Perfil'},
+    ];
+  }
+  if(tipo==='responsavel'){
+    return [
+      {id:'dashboard',icon:'🏠',label:'Início'},
+      {id:'painel-responsavel',icon:'👨‍👩‍👧',label:'Meus Filhos'},
+      {id:'perfil',icon:'👤',label:'Perfil'},
+    ];
+  }
+  if(tipo==='colaborador'){
+    return [
+      {id:'dashboard',icon:'🏠',label:'Início'},
+      {id:'alimentacao',icon:'🥗',label:'Alimentação'},
+      {id:'exercicios',icon:'🏃',label:'Exercícios'},
+      {id:'evolucao',icon:'📊',label:'Evolução'},
+      {id:'agua',icon:'💧',label:'Hidratação'},
+      {id:'rotinas',icon:'📋',label:'Rotinas'},
+      {id:'conquistas',icon:'🏆',label:'Conquistas'},
+      {id:'perfil',icon:'👤',label:'Perfil'},
+    ];
+  }
+  return [
+    {id:'dashboard',icon:'🏠',label:'Início'},
+    {id:'alimentacao',icon:'🥗',label:'Alimentação'},
+    {id:'exercicios',icon:'🏃',label:'Exercícios'},
+    {id:'evolucao',icon:'📊',label:'Evolução'},
+    {id:'agua',icon:'💧',label:'Hidratação'},
+    {id:'rotinas',icon:'📋',label:'Rotinas'},
+    {id:'cronograma',icon:'📅',label:'Cronograma'},
+    {id:'conquistas',icon:'🏆',label:'Conquistas'},
+    {id:'perfil',icon:'👤',label:'Perfil'},
+  ];
+}
+
+let currentPage='dashboard';
+function buildNav(){
+  const NAV=getNavItems();
+  const sb=document.getElementById('sidebar');
+  const bn=document.getElementById('bottom-nav');
+  sb.innerHTML=''; bn.innerHTML='';
+  NAV.forEach(n=>{
+    const b=document.createElement('button');
+    b.className='nav-btn'+(currentPage===n.id?' active':'');
+    b.innerHTML=n.icon+'<span class="nav-tooltip">'+n.label+'</span>';
+    b.onclick=()=>navigate(n.id);
+    sb.appendChild(b);
+    const bb=document.createElement('button');
+    bb.className='bnav-btn'+(currentPage===n.id?' active':'');
+    bb.innerHTML='<span class="icon">'+n.icon+'</span>'+n.label;
+    bb.onclick=()=>navigate(n.id);
+    bn.appendChild(bb);
+  });
+}
+function navigate(id){currentPage=id;buildNav();renderPage();}
+
+function updateHeader(){
+  const p=S.perfil||{};
+  const c=me();
+  const {level}=getLevel(S.xp||0);
+  const avatar=document.getElementById('header-avatar');
+  document.getElementById('header-xp').innerHTML=`<div class="level-pill"><strong>${level.name} · ${S.xp||0} XP</strong><small>${level.phrase}</small></div>`;
+  if(avatar){
+    avatar.innerHTML=p.foto?`<img src="${p.foto}" alt="Foto de perfil">`:(p.nome||c?.nome||'A')[0].toUpperCase();
+  }
+}
+
+// ============================================================
+// RENDER PAGE
+// ============================================================
+let selectedObj='saude';
+function renderPage(){
+  const el=document.getElementById('page-content');
+  el.innerHTML='';
+  const pages={
+    dashboard:renderDashboard,
+    alimentacao:renderAlimentacao,
+    exercicios:renderExercicios,
+    evolucao:renderEvolucao,
+    agua:renderHidratacao,
+    rotinas:renderRotinas,
+    cronograma:renderCronograma,
+    conquistas:renderConquistas,
+    perfil:renderPerfil,
+    'painel-escola':renderPainelEscola,
+    'painel-responsavel':renderPainelResponsavel,
+  };
+  (pages[currentPage]||renderDashboard)(el);
+}
+
+function aiBadge(label){
+  return '<span class="badge-ai"><span>✦</span>'+(label||'Sugestão por IA')+'</span>';
+}
+function xpBarHTML(compact){
+  const {level,next,pct}=getLevel(S.xp||0);
+  const pts=next?(S.xp+' / '+next.min+' XP'):(S.xp+' XP');
+  if(compact) return '<div class="xp-bar-wrap"><div class="flex justify-between items-center" style="margin-bottom:6px"><span style="font-weight:700;font-size:.85rem;color:var(--primary)">'+level.name+'</span><span style="font-size:.75rem;font-weight:700;color:var(--orange)">'+pts+'</span></div><div class="xp-bar-track"><div class="xp-bar-fill" style="width:'+pct+'%"></div></div></div>';
+  return '<div class="xp-bar-wrap"><div class="flex justify-between items-center" style="margin-bottom:8px"><span style="font-weight:700;color:var(--primary)">'+level.name+'</span><span style="font-size:.85rem;font-weight:700;color:var(--orange)">'+pts+'</span></div><div class="xp-bar-track" style="height:10px"><div class="xp-bar-fill" style="width:'+pct+'%"></div></div>'+(next?'<p style="font-size:.72rem;color:var(--muted-fg);margin-top:6px">Faltam '+(next.min-S.xp)+' XP para '+next.name+'</p>':'<p style="font-size:.72rem;color:var(--muted-fg);margin-top:6px">Nível máximo! 🏆</p>')+'</div>';
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+const TIPS=[
+  {title:'💧 Hidratação inteligente',text:'Beber água antes das refeições reduz o consumo de calorias em até 13%.'},
+  {title:'🥩 Proteína no café',text:'Incluir proteína no café da manhã reduz a fome em até 60% ao longo do dia.'},
+  {title:'😴 Sono e saúde',text:'8-10h de sono é o ideal para jovens em desenvolvimento!'},
+  {title:'🏃 Movimente-se',text:'Mesmo 20 minutos de caminhada por dia fazem grande diferença!'},
+  {title:'🥗 Coma devagar',text:'Mastigar devagar aumenta a saciedade em até 20%.'},
+];
+let tipIdx=0;
+function renderDashboard(el){
+  const p=S.perfil||{};
+  const c=me();
+  const today=new Date();
+  const DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const MONTHS=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const {level}=getLevel(S.xp||0);
+  const kcalConsumed=S.refeicoes.filter(m=>m.feita).reduce((a,m)=>a+m.kcal,0);
+  const kcalBurned=S.exercicios.reduce((a,e)=>a+e.kcal,0);
+  const meta=p.meta||2000;
+  const pct=Math.min(100,Math.round(kcalConsumed/meta*100));
+  const r=44,circ=2*Math.PI*r,offset=circ-(circ*pct/100);
+  const pesoAtual=S.pesos.length?S.pesos[0].peso:(p.peso||null);
+  const nextMeals=S.refeicoes.filter(m=>!m.feita).slice(0,3);
+  const todayStr=today.toISOString().split('T')[0];
+  let aiTip='✅ Você está no caminho certo hoje!';
+  if(S.agua<3) aiTip='💧 Você ficou muito tempo sem registrar hidratação. Beba um copo agora!';
+  else if(S.refeicoes.length===0) aiTip='🥗 Que tal registrar sua primeira refeição de hoje?';
+  let missionsHTML='';
+  DAILY_MISSIONS.forEach(m=>{
+    const key=m.id+'_'+todayStr;
+    const done=S.missoesConcluidas.includes(key)||m.check(S);
+    missionsHTML+=`<button class="mission-item${done?' done':''}" onclick="completeMission('${m.id}',${m.xp})" ${done?'disabled':''}><span style="font-size:1.3rem">${m.icon}</span><div style="flex:1"><div style="font-size:.8rem;font-weight:600">${m.label}</div><div style="font-size:.7rem;font-weight:700;color:${done?'var(--green)':'var(--orange)'}">${done?'✅ Concluída!':'+'+m.xp+' XP'}</div></div></button>`;
+  });
+  let nextMealsHTML=nextMeals.length>0
+    ?nextMeals.map(m=>`<div class="meal-item"><span class="meal-item-icon">${m.icon}</span><div class="meal-item-info"><strong>${m.nome}</strong><small>${m.hora} · ${m.kcal} kcal</small></div></div>`).join('')
+    :'<p class="text-sm text-muted">Seu diário alimentar começa aqui. 🥗</p>';
+  let streakHTML='';
+  DAYS.forEach((d,i)=>{
+    const isToday=i===today.getDay();
+    const isDone=S.streakDays[i];
+    streakHTML+=`<div class="streak-day${isToday?' today':isDone?' done':''}">${d[0]}</div>`;
+  });
+  el.innerHTML=`
+    <div class="page-title">
+      <div>
+        <h1>Olá, <span class="text-primary">${p.nome||c?.nome||'Atleta'}</span>! 👋</h1>
+        <p class="text-sm text-muted" style="margin-top:2px">${DAYS[today.getDay()]}, ${today.getDate()} de ${MONTHS[today.getMonth()]}</p>
+      </div>
+      <div class="flex gap-2 items-center">
+        <span class="badge-yellow">🔥 ${S.streak||0} dias</span>
+        <span class="badge-blue">${level.name}</span>
+        <button class="btn btn-sm btn-danger" onclick="confirmarSair()">Sair</button>
+      </div>
+    </div>
+    ${xpBarHTML(true)}
+    <div class="ai-tip-box mt-4">
+      <div class="ai-tip-icon">✦</div>
+      <div>${aiBadge('Sugestão inteligente')}<p class="text-sm" style="margin-top:4px">${aiTip}</p></div>
+    </div>
+    <div class="grid4 mt-4">
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--green)"></div><div style="font-size:1.5rem">🔥</div><div class="stat-value">${kcalConsumed}</div><div class="stat-label">kcal consumidas</div><div class="stat-sub text-primary">Meta: ${meta} kcal</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--blue)"></div><div style="font-size:1.5rem">💧</div><div class="stat-value">${S.agua}</div><div class="stat-label">copos de água</div><div class="stat-sub" style="color:var(--blue)">Meta: ${p.waterGoal||8}</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--orange)"></div><div style="font-size:1.5rem">📊</div><div class="stat-value">${pesoAtual?pesoAtual+'kg':'--'}</div><div class="stat-label">peso atual</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div style="font-size:1.5rem">⭐</div><div class="stat-value">${S.xp||0}</div><div class="stat-label">XP</div></div>
+    </div>
+    <div class="grid2 mt-4">
+      <div class="card">
+        <div class="card-title">Balanço calórico</div>
+        <div class="flex items-center gap-3">
+          <svg width="100" height="100" viewBox="0 0 100 100" style="transform:rotate(-90deg);flex-shrink:0">
+            <circle cx="50" cy="50" r="${r}" fill="none" stroke="#e8eef8" stroke-width="10"/>
+            <circle cx="50" cy="50" r="${r}" fill="none" stroke="var(--primary)" stroke-width="10" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}" stroke-linecap="round"/>
+          </svg>
+          <div>
+            <div style="font-weight:700;font-size:2rem">${pct}%</div>
+            <div class="text-xs text-muted">da meta diária</div>
+            <div class="text-xs mt-2"><span class="text-muted">Consumido:</span> <strong>${kcalConsumed} kcal</strong></div>
+            <div class="text-xs"><span class="text-muted">Queimado:</span> <strong style="color:var(--orange)">${kcalBurned} kcal</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Próximas refeições</div>
+        <div class="space-y-2">${nextMealsHTML}</div>
+        <button class="btn btn-outline w-full mt-3" style="font-size:.8rem" onclick="navigate('alimentacao')">Ver todas →</button>
+      </div>
+    </div>
+    <div class="grid2 mt-4">
+      <div class="card">
+        <div class="card-title">Sequência semanal 🔥</div>
+        <div style="display:flex;gap:6px">${streakHTML}</div>
+      </div>
+      <div class="card">
+        <div class="flex justify-between items-center mb-3">
+          <div class="card-title" style="margin:0">Dica do dia</div>
+          <button class="btn btn-outline btn-sm" onclick="nextTip()">Nova dica</button>
+        </div>
+        <div class="tip-card">
+          <div style="font-weight:700;font-size:.9rem;margin-bottom:4px" id="tip-title">${TIPS[tipIdx].title}</div>
+          <div class="text-xs text-muted" id="tip-text">${TIPS[tipIdx].text}</div>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="flex items-center gap-2 mb-4"><div class="card-title" style="margin:0">Missões do dia</div>${aiBadge()}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">${missionsHTML}</div>
+    </div>`;
+}
+function nextTip(){tipIdx=(tipIdx+1)%TIPS.length;const tt=document.getElementById('tip-title');const tx=document.getElementById('tip-text');if(tt)tt.textContent=TIPS[tipIdx].title;if(tx)tx.textContent=TIPS[tipIdx].text;}
+function completeMission(id,xp){
+  const todayStr=new Date().toISOString().split('T')[0];
+  const key=id+'_'+todayStr;
+  if(S.missoesConcluidas.includes(key)) return;
+  S.missoesConcluidas.push(key);
+  S.xp=(S.xp||0)+xp;
+  saveState(); updateHeader(); checkBadges();
+  showToast('✅ Missão concluída! +'+xp+' XP');
+  renderPage();
+}
+function confirmarSair(){if(confirm('Deseja sair da sua conta?')) sair();}
+
+// ============================================================
+// ALIMENTACAO
+// ============================================================
+const FOOD_BY_OBJ={
+  saúde:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🥑',n:'Abacate',c:'160 kcal/100g',tag:'gordura boa',color:'green'},{e:'🐟',n:'Salmão',c:'208 kcal/100g',tag:'ômega-3',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'moderação',color:'red'}],
+  Crescimento:[{e:'🥦',n:'Brócolis',c:'34 kcal/100g',tag:'frequente',color:'green'},{e:'🍗',n:'Frango',c:'165 kcal/100g',tag:'proteína',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🍎',n:'Maçã',c:'52 kcal/100g',tag:'diário',color:'green'},{e:'🍟',n:'Batata frita',c:'312 kcal/100g',tag:'evitar',color:'red'}],
+  esporte:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🥩',n:'Carne magra',c:'143 kcal/100g',tag:'proteína',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🧃',n:'Suco natural',c:'45 kcal/100ml',tag:'equilíbrio',color:'yellow'},{e:'🥤',n:'Refrigerante',c:'41 kcal/100ml',tag:'evitar',color:'red'}],
+  massa:[{e:'🥛',n:'Leite integral',c:'61 kcal/100ml',tag:'crescimento',color:'green'},{e:'🥚',n:'Ovos',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🧀',n:'Queijo',c:'402 kcal/100g',tag:'cálcio',color:'yellow'},{e:'🫐',n:'Blueberry',c:'57 kcal/100g',tag:'antioxidante',color:'green'},{e:'🍕',n:'Pizza',c:'266 kcal/fatia',tag:'moderação',color:'red'}],
+  Deslocamento:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🥜',n:'Amendoim',c:'567 kcal/100g',tag:'moderado',color:'yellow'},{e:'🍫',n:'Chocolate 70%',c:'598 kcal/100g',tag:'moderação',color:'red'}],
+};
+let foodFilter='saude';
+
+function renderAlimentacao(el){
+  const p=S.perfil||{};
+  const done=S.refeicoes.filter(m=>m.feita);
+  const totalKcal=done.reduce((a,m)=>a+m.kcal,0);
+  const totalProt=done.reduce((a,m)=>a+m.prot,0);
+  const totalCarb=done.reduce((a,m)=>a+m.carb,0);
+  const totalGord=done.reduce((a,m)=>a+m.gord,0);
+  const mealMission=Math.min(100,(S.refeicoes.length/3)*100);
+  el.innerHTML=`
+    <div class="page-title"><h1>Alimentacao <span class="text-primary">Gamificada</span></h1><div class="flex gap-2"><button class="btn btn-ai" onclick="sugerirAlimentacao()">Sugestao IA</button><button class="btn btn-primary" onclick="openModal('modal-meal')">+ Refeicao</button></div></div>
+    <div class="food-game-card mb-4">
+      <div class="flex justify-between items-center mb-3"><div><div class="card-title" style="margin:0">Missao alimentar do dia</div><strong>Registre 3 refeicoes para hoje</strong></div><span class="xp-chip">+30 XP</span></div>
+      <div class="progress-track" style="height:12px"><div class="progress-fill" style="width:${mealMission}%;background:linear-gradient(90deg,#22c55e,#3b82f6,#f97316)"></div></div>
+      <p class="text-xs text-muted mt-2">${Math.min(3,S.refeicoes.length)} de 3 refeicoes registradas.</p>
+    </div>
+    <div class="grid3">
+      ${[{label:'Proteinas',val:totalProt,meta:p.metaProt||120,color:'#3b82f6'},{label:'Carboidratos',val:totalCarb,meta:p.metaCarb||250,color:'#fb923c'},{label:'Gorduras',val:totalGord,meta:p.metaGord||60,color:'#a855f7'}].map(m=>`<div class="card"><div class="card-title">${m.label}</div><div style="font-weight:800;font-size:1.5rem">${m.val}g</div><div class="progress-track mt-2" style="height:10px"><div class="progress-fill" style="width:${Math.min(100,m.val/m.meta*100)}%;background:linear-gradient(90deg,${m.color},#22c55e)"></div></div><div class="text-xs text-muted mt-1">Meta: ${m.meta}g</div></div>`).join('')}
+    </div>
+    <div class="grid2 mt-4">
+      <div class="card"><div class="flex justify-between items-center mb-3"><div class="card-title" style="margin:0">Minhas refeicoes</div><span class="xp-chip">+10 XP por refeicao</span></div>
+        ${S.refeicoes.length===0?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🥗</div><p class="text-sm font-semibold mt-2">Registre sua primeira refeicao!</p><button class="btn btn-primary btn-sm mt-3" onclick="openModal(\'modal-meal\')">+ Adicionar</button></div>':'<div class="space-y-2 overflow-y-auto">'+S.refeicoes.map((m,i)=>`<div class="meal-item${m.feita?' done':''}"><span class="meal-item-icon">${m.icon}</span><div class="meal-item-info"><strong ${m.feita?'style="text-decoration:line-through"':''}>${m.nome}</strong><small>${m.hora} · ${m.kcal} kcal · P:${m.prot}g C:${m.carb}g · +10 XP</small></div><button class="check-btn" onclick="toggleMeal(${i})">${m.feita?'✅':'⬜'}</button><button class="del-btn" onclick="removeMeal(${i})">🗑</button></div>`).join('')+'</div>'}
+      </div>
+      <div class="card"><div class="card-title">Grafico rapido</div><div class="mini-chart">${[{l:'Kcal',v:Math.min(100,totalKcal/(p.meta||2000)*100)},{l:'Prot',v:Math.min(100,totalProt/(p.metaProt||120)*100)},{l:'Carb',v:Math.min(100,totalCarb/(p.metaCarb||250)*100)},{l:'Gord',v:Math.min(100,totalGord/(p.metaGord||60)*100)}].map(b=>`<div class="mini-bar" style="height:${Math.max(12,b.v)}%"><span>${b.l}</span></div>`).join('')}</div><div class="ai-tip-box mt-4"><div class="ai-tip-icon">✦</div><div><strong class="text-sm">Sugestao</strong><p class="text-xs text-muted mt-1">Priorize variedade no prato: cores, proteinas e agua.</p></div></div></div>
+    </div>`;
+}
+function sugerirAlimentacao(){
+  const plano=[
+    {nome:'Cafe da manha equilibrado',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false},
+    {nome:'Almoco colorido',hora:'12:00',kcal:580,prot:35,carb:65,gord:14,icon:'🥗',feita:false},
+    {nome:'Jantar leve',hora:'19:00',kcal:420,prot:28,carb:48,gord:12,icon:'🌙',feita:false}
+  ];
+  S.refeicoes=[...S.refeicoes,...plano].sort((a,b)=>a.hora.localeCompare(b.hora));
+  addXP(10,'Plano alimentar sugerido');
+  saveState();renderPage();
+}
+function addMeal(){
+  const nome=document.getElementById('m-nome').value.trim();
+  if(!nome){showToast('Informe o nome!');return;}
+  S.refeicoes.push({nome,hora:document.getElementById('m-hora').value,kcal:+document.getElementById('m-kcal').value||0,prot:+document.getElementById('m-prot').value||0,carb:+document.getElementById('m-carb').value||0,gord:+document.getElementById('m-gord').value||0,icon:document.getElementById('m-icon').value,feita:false});
+  S.refeicoes.sort((a,b)=>a.hora.localeCompare(b.hora));
+  addXP(10,'Refeicao registrada');
+  if(S.refeicoes.length===3) addXP(30,'Missao alimentar: 3 refeicoes');
+  saveState();closeModal('modal-meal');renderPage();
+  ['m-nome','m-kcal','m-prot','m-carb','m-gord'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+function toggleMeal(i){S.refeicoes[i].feita=!S.refeicoes[i].feita;saveState();renderPage();}
+function removeMeal(i){S.refeicoes.splice(i,1);saveState();renderPage();}
+
+// ============================================================
+// EXERCICIOS
+// ============================================================
+const EX_SUGS={
+  kids:[{n:'Pega-pega',d:'20 min',k:150,how:'Corra para fugir ou pegar os amigos.'},{n:'Amarelinha',d:'15 min',k:80,how:'Pule casa por casa com equilíbrio.'},{n:'Pular corda',d:'15 min',k:120,how:'Comece devagar e aumente o ritmo.'},{n:'Dança livre',d:'30 min',k:160,how:'Escolha uma música animada e dance!'},{n:'Futebol recreativo',d:'40 min',k:200,how:'Jogue com amigos e se divirta.'}],
+  perda:[{n:'Caminhada rápida',d:'30 min',k:180,how:'Caminhe em ritmo firme.'},{n:'Corrida',d:'30 min',k:300,how:'Alterne caminhada e corrida.'},{n:'Agachamento',d:'3×15',k:120,how:'Pés na largura dos ombros, desça com controle.'},{n:'Jumping Jacks',d:'15 min',k:180,how:'Abra pernas e braços ao saltar.'},{n:'Bicicleta',d:'35 min',k:250,how:'Pedale em ritmo confortável.'}],
+  cardio:[{n:'Ciclismo',d:'45 min',k:350,how:'Mantenha cadência constante.'},{n:'Natação',d:'30 min',k:280,how:'Aqueça antes e alterne estilos.'},{n:'Pular corda',d:'20 min',k:240,how:'Séries curtas com intervalos.'},{n:'Corrida intervalada',d:'25 min',k:300,how:'1 min correndo, 2 caminhando.'},{n:'Futebol',d:'45 min',k:380,how:'Aqueça antes e jogue com segurança.'}],
+  massa:[{n:'Agachamento',d:'4×8',k:120,how:'Desça com controle, costas retas.'},{n:'Flexão',d:'3×10',k:90,how:'Corpo alinhado durante o movimento.'},{n:'Prancha',d:'3×30s',k:60,how:'Abdômen firme e coluna alinhada.'},{n:'Rosca bíceps',d:'3×12',k:60,how:'Suba sem balançar o corpo.'},{n:'Avanço',d:'3×12',k:110,how:'Passo à frente, equilíbrio.'}],
+  flexib:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
+};
+let exCat='kids';
+
+function exerciseIcon(nome,cat){
+  const n=(nome||'').toLowerCase();
+  if(n.includes('caminh')) return '🚶';
+  if(n.includes('corr')) return '🏃';
+  if(n.includes('bicic')||n.includes('cicl')) return '🚴';
+  if(n.includes('fut')) return '⚽';
+  if(n.includes('danc')||n.includes('danç')) return '🎵';
+  if(n.includes('corda')) return '🪢';
+  if(n.includes('along')||cat==='flexib') return '🧘';
+  if(n.includes('nata')) return '🏊';
+  return cat==='Exercicio Fisico'||cat==='massa'?'💪':'⭐';
+}
+
+function renderExercicios(el){
+  const totalKcal=S.exercicios.reduce((a,e)=>a+e.kcal,0);
+  const totalMin=S.exercicios.reduce((a,e)=>a+e.min,0);
+  const days=['S','T','Q','Q','S','S','D'];
+  const categorias=[
+    {id:'kids',label:'Atividades Recreativas'},
+    {id:'perda',label:'Atividades Energeticas'},
+    {id:'cardio',label:'Deslocamento Ativo'},
+    {id:'massa',label:'Exercicio Fisico'},
+    {id:'flexib',label:'Flexibilidade'}
+  ];
+  const categoriaAtual=categorias.find(c=>c.id===exCat)||categorias[0];
+  const sugestoes=EX_SUGS[exCat]||EX_SUGS.kids||[];
+  el.innerHTML=`
+    <div class="page-title"><h1>Exercicios <span class="text-primary">e Historico</span></h1><button class="btn btn-primary" onclick="openModal('modal-ex')">+ Exercicio</button></div>
+    <div class="grid4">
+      <div class="stat-card"><div class="stat-card-bar" style="background:#fb923c"></div><div class="stat-value">${totalKcal}</div><div class="stat-label">kcal queimadas</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#3b82f6"></div><div class="stat-value">${totalMin}</div><div class="stat-label">minutos ativos</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#22c55e"></div><div class="stat-value">${S.exercicios.length}</div><div class="stat-label">atividades hoje</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div class="stat-value">${S.streak||0}</div><div class="stat-label">streak saudavel</div></div>
+    </div>
+    <div class="card mt-4"><div class="flex justify-between items-center mb-3"><div class="card-title" style="margin:0">Calendario ativo</div><span class="xp-chip">caminhada +40 XP</span></div><div style="display:flex;gap:6px">${days.map((d,i)=>`<div class="streak-day ${i===new Date().getDay()?'today':(S.streakDays[i]?'done':'')}">${d}</div>`).join('')}</div></div>
+    <div class="grid2 mt-4">
+      <div class="card">
+        <div class="card-title">Historico de atividades</div>
+        ${S.exercicios.length===0?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🏃</div><p class="text-sm font-semibold mt-2">Vamos se movimentar hoje?</p></div>':'<div class="space-y-2">'+S.exercicios.map((e,i)=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.nome,e.cat)}</div><div style="flex:1"><strong style="font-size:.9rem">${e.nome}</strong><div class="text-xs text-muted">${e.cat||'Atividade'} · ${e.min} min · ${e.series} · ${e.kcal} kcal</div></div><span class="xp-chip">+${e.xp||15} XP</span><button class="del-btn" onclick="removeEx(${i})">🗑</button></div>`).join('')+'</div>'}
+      </div>
+      <div class="card">
+        <div class="flex items-center gap-2 mb-3"><div class="card-title" style="margin:0">Atividades sugeridas</div>${aiBadge(categoriaAtual.label)}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+          ${categorias.map(c=>`<button class="btn btn-sm ${exCat===c.id?'btn-primary':'btn-outline'}" onclick="setExCat('${c.id}')">${c.label}</button>`).join('')}
+        </div>
+        <div class="space-y-2 overflow-y-auto">
+          ${sugestoes.map(e=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.n,exCat)}</div><div style="flex:1"><strong style="font-size:.85rem">${e.n}</strong><div class="text-xs text-muted">${categoriaAtual.label} · ${e.d}</div><button style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--primary);font-weight:600;padding:0" onclick="showHowTo('${e.n.replace(/'/g,"\\'")}','${e.how.replace(/'/g,"\\'")}')">Como fazer</button></div><span class="xp-chip">+${e.n.toLowerCase().includes('caminh')?40:20} XP</span></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+function setExCat(c){exCat=c;renderPage();}
+function showHowTo(title,text){document.getElementById('howto-title').textContent=title;document.getElementById('howto-text').textContent=text;openModal('modal-howto');}
+function addExercicio(){
+  const nome=document.getElementById('e-nome').value.trim();
+  if(!nome){showToast('Informe o nome!');return;}
+  const xp=nome.toLowerCase().includes('caminh')?40:20;
+  S.exercicios.push({nome,min:+document.getElementById('e-min').value||0,kcal:+document.getElementById('e-kcal').value||0,cat:document.getElementById('e-cat').value,series:document.getElementById('e-series').value||'—',xp});
+  addXP(xp,'Atividade fisica registrada');saveState();closeModal('modal-ex');renderPage();
+  ['e-nome','e-min','e-kcal','e-series'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+}
+function removeEx(i){S.exercicios.splice(i,1);saveState();renderPage();}
+
+// ============================================================
+// HIDRATAÇÃO
+// ============================================================
+function renderHidratacao(el){
+  const p=S.perfil||{};
+  const waterGoal=p.waterGoal||8;
+  const pct=Math.min(100,(S.agua/waterGoal)*100);
+  const fillY=160-(pct/100*140);
+  const hour=new Date().getHours();
+  let aiTip='✨ Faltam '+(waterGoal-S.agua)+' copos para a meta.';
+  if(S.agua===0&&hour>9) aiTip='⚠️ Você ainda não bebeu água hoje!';
+  else if(S.agua>=waterGoal) aiTip='🎉 Parabéns! Meta de hidratação atingida!';
+  const dropsHTML=Array.from({length:waterGoal},(_,i)=>`<button class="drop-btn ${i<S.agua?'filled':''}" onclick="setAgua(${i+1})">💧</button>`).join('');
+  const BENEFITS=[{icon:'🧠',title:'Mais concentração',desc:'Desidratação prejudica o foco.'},{icon:'⚡',title:'Mais energia',desc:'Água é o combustível das células.'},{icon:'🏃',title:'Melhor desempenho',desc:'Atletas hidratados rendem mais.'},{icon:'🌟',title:'Corpo saudável',desc:'Ajuda na digestão e temperatura.'}];
+  el.innerHTML=`
+    <div class="page-title"><h1>💧 <span class="text-primary">Hidratação</span></h1>
+      <span class="badge-blue">${S.agua} / ${waterGoal} copos</span>
+    </div>
+    <div class="ai-tip-box"><div class="ai-tip-icon">✦</div><div>${aiBadge()}<p class="text-sm" style="margin-top:4px">${aiTip}</p></div></div>
+    <div class="grid2 mt-4">
+      <div class="card text-center">
+        <div class="card-title">Copos hoje</div>
+        <div class="water-glass-wrap">
+          <svg width="100" height="140" viewBox="0 0 120 160" style="position:absolute;inset:0;width:100%;height:100%">
+            <path d="M20 10 L10 150 L110 150 L100 10 Z" fill="none" stroke="#dce6f5" stroke-width="2.5" stroke-linejoin="round"/>
+          </svg>
+          <svg width="100" height="140" viewBox="0 0 120 160" style="position:absolute;inset:0;width:100%;height:100%;overflow:hidden">
+            <clipPath id="gc"><path d="M21 12 L11 148 L109 148 L99 12 Z"/></clipPath>
+            <rect x="0" y="${fillY}" width="120" height="160" fill="rgba(59,130,246,0.3)" clip-path="url(#gc)"/>
+          </svg>
+          <div class="water-level-text"><span>${S.agua}</span><small>copos</small></div>
+        </div>
+        <p class="text-xs text-muted mb-2">${S.agua*250} ml de ${waterGoal*250} ml</p>
+        <div class="progress-track" style="margin:0 32px 16px"><div class="progress-fill" style="width:${pct}%;background:linear-gradient(90deg,#60a5fa,#2563eb)"></div></div>
+        <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:16px">${dropsHTML}</div>
+        <div class="flex gap-2 justify-center">
+          <button class="btn btn-primary" onclick="addAgua()">+ 1 copo</button>
+          <button class="btn btn-outline" onclick="removeAgua()">−</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-title">Por que se hidratar?</div>
+        <div class="benefit-grid">
+          ${BENEFITS.map(b=>`<div class="benefit-card"><div style="font-size:1.3rem;margin-bottom:4px">${b.icon}</div><div style="font-weight:700;font-size:.78rem;margin-bottom:2px">${b.title}</div><div style="font-size:.68rem;color:var(--muted-fg);line-height:1.4">${b.desc}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+function addAgua(){const wg=(S.perfil&&S.perfil.waterGoal)||8;if(S.agua>=wg+4){showToast('👏 Já passou muito da meta!');return;}S.agua++;addXP(5,'Hidratação');if(S.agua===wg)showToast('🎉 Meta de água atingida!');saveState();checkBadges();renderPage();}
+function removeAgua(){if(S.agua<=0)return;S.agua--;saveState();renderPage();}
+function setAgua(n){S.agua=n;saveState();checkBadges();renderPage();}
+
+// ============================================================
+// EVOLUÇÃO
+// ============================================================
+function renderEvolucao(el){
+  const p=S.perfil||{};
+  const altura=(p.altura||160)/100;
+  const pesoAtual=S.pesos.length?S.pesos[0].peso:(p.peso||null);
+  const imc=pesoAtual?(pesoAtual/(altura*altura)).toFixed(1):null;
+  const IMC_ZONES=[
+    {max:18.5,label:'Atencao ao peso',color:'#1d4ed8',bg:'#eff6ff',border:'#bfdbfe',icon:'💙',desc:'Seu corpo pode precisar de mais nutricao.'},
+    {max:25,label:'Equilibrio saudavel',color:'#15803d',bg:'#f0fdf4',border:'#bbf7d0',icon:'💚',desc:'Continue fortalecendo sua rotina.'},
+    {max:30,label:'Atencao a saude',color:'#a16207',bg:'#fefce8',border:'#fde68a',icon:'💛',desc:'Pequenos ajustes de habito ajudam muito.'},
+    {max:35,label:'Vamos melhorar juntos',color:'#c2410c',bg:'#fff7ed',border:'#fed7aa',icon:'🧡',desc:'Rotina, apoio e acompanhamento fazem diferenca.'},
+    {max:Infinity,label:'Atencao a saude',color:'#dc2626',bg:'#fef2f2',border:'#fecaca',icon:'❤️',desc:'Procure orientacao profissional.'}
+  ];
+  const zone=imc?IMC_ZONES.find(z=>parseFloat(imc)<z.max):null;
+  const imcPct=imc?Math.min(100,Math.max(0,((parseFloat(imc)-13)/(40-13))*100)):0;
+  const histHTML=S.pesos.length===0?'<p class="text-sm text-muted text-center" style="padding:20px">Nenhum peso registrado ainda.</p>':S.pesos.map((pw,i)=>`<div class="history-item"><div><span style="font-weight:700">${pw.peso} kg</span><span class="text-xs text-muted" style="margin-left:8px">${pw.data}</span></div><button class="del-btn" onclick="removePeso(${i})">🗑</button></div>`).join('');
+  el.innerHTML=`
+    <div class="page-title"><div><h1>Minha <span class="text-primary">Evolucao</span></h1><p class="text-xs text-muted">Saude, habitos e bem-estar</p></div><button class="btn btn-primary" onclick="openModal('modal-peso');document.getElementById('p-data').value=new Date().toISOString().split('T')[0]">+ Peso</button></div>
+    <div class="grid3"><div class="card"><div style="font-size:1.3rem">⚖️</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${pesoAtual?pesoAtual+'kg':'--'}</div><div class="text-xs text-muted">peso atual</div></div><div class="card"><div style="font-size:1.3rem">🎯</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${p.pesoMeta?p.pesoMeta+'kg':'--'}</div><div class="text-xs text-muted">peso meta</div></div><div class="card" ${zone?'style="background:'+zone.bg+';border-color:'+zone.border+'"':''}><div style="font-size:1.3rem">${zone?zone.icon:'📐'}</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px;color:${zone?zone.color:'#1a2340'}">${imc||'--'}</div><div class="text-xs text-muted">IMC</div>${zone?'<div style="font-size:.68rem;font-weight:700;color:'+zone.color+'">'+zone.label+'</div>':''}</div></div>
+    <div class="grid2 mt-4"><div class="card"><div class="card-title">Indicador IMC</div><div class="imc-gradient">${imc?'<div class="imc-pointer" style="left:'+imcPct+'%"></div>':''}</div><div class="flex justify-between" style="font-size:.65rem;color:var(--muted-fg);margin-bottom:12px"><span>Baixo</span><span>Saudavel</span><span>Atencao</span><span>Melhorar juntos</span></div>${zone?'<div style="background:'+zone.bg+';border:1px solid '+zone.border+';border-radius:12px;padding:10px;margin-bottom:12px"><div style="font-weight:700;font-size:.85rem;color:'+zone.color+'">'+zone.icon+' '+zone.label+'</div><p class="text-xs text-muted mt-1">'+zone.desc+'</p></div>':''}<div class="card-title">Historico de peso</div><div class="overflow-y-auto">${histHTML}</div></div><div class="card"><div class="card-title">Evolucao holistica</div>${[{label:'Refeicoes',val:S.refeicoes.length,max:10,color:'#4ade80',icon:'🥗'},{label:'Agua',val:S.agua,max:p.waterGoal||8,color:'#60a5fa',icon:'💧'},{label:'Exercicios',val:S.exercicios.length,max:5,color:'#fb923c',icon:'🏃'},{label:'XP de rotina',val:S.xp||0,max:1500,color:'#c084fc',icon:'⭐'}].map(item=>`<div class="mb-3"><div class="flex justify-between items-center mb-1"><span style="font-size:.8rem;font-weight:600">${item.icon} ${item.label}</span><span class="text-xs text-muted">${item.val} / ${item.max}</span></div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,item.val/item.max*100)}%;background:${item.color}"></div></div></div>`).join('')}</div></div>`;
+}
+function addPeso(){
+  const peso=document.getElementById('p-peso').value;
+  if(!peso){showToast('Informe o peso!');return;}
+  S.pesos.unshift({peso:+peso,data:document.getElementById('p-data').value,obs:document.getElementById('p-obs').value});
+  S.pesos=S.pesos.slice(0,30);
+  addXP(10,'Peso registrado'); saveState(); checkBadges(); closeModal('modal-peso'); renderPage();
+  document.getElementById('p-peso').value='';
+  document.getElementById('p-obs').value='';
+}
+function removePeso(i){S.pesos.splice(i,1);saveState();renderPage();}
+
+// ============================================================
+// ROTINAS
+// ============================================================
+function renderRotinas(el){
+  const p=S.perfil||{};
+  const kcal=S.refeicoes.reduce((a,m)=>a+m.kcal,0);
+  const prot=S.refeicoes.reduce((a,m)=>a+m.prot,0);
+  const calOk=Math.abs(kcal-(p.meta||2000))<300;
+  el.innerHTML=`
+    <div class="page-title"><h1>📋 <span class="text-primary">Rotinas</span></h1></div>
+    <div class="grid3">
+      <div class="card border-top-green"><div class="card-title">🥗 Alimentação</div>
+        <div class="space-y-2">
+          <button class="btn btn-primary w-full" onclick="openModal('modal-meal')">➕ Adicionar</button>
+          <button class="btn btn-ai w-full" onclick="sugerirAlimentacao()"><span>✦</span> Sugestão IA</button>
+        </div>
+        <p class="text-xs text-muted mt-3">${S.refeicoes.length} refeição(ões)</p>
+      </div>
+      <div class="card border-top-blue"><div class="card-title">💧 Hidratação</div>
+        <div class="space-y-2">
+          <button class="btn btn-primary w-full" onclick="addAgua();showToast('💧 +1 copo!')">➕ Registrar agora</button>
+        </div>
+        <p class="text-xs text-muted mt-3">Meta: ${p.waterGoal||8} copos/dia</p>
+      </div>
+      <div class="card border-top-orange"><div class="card-title">🏃 Atividade</div>
+        <div class="space-y-2">
+          <button class="btn btn-primary w-full" onclick="openModal('modal-ex')">➕ Adicionar</button>
+          <button class="btn btn-ai w-full" onclick="sugerirExercicio()"><span>✦</span> Sugestão IA</button>
+        </div>
+        <p class="text-xs text-muted mt-3">${S.exercicios.length} atividade(s)</p>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="flex items-center gap-2 mb-4"><div class="card-title" style="margin:0">Análise nutricional</div>${aiBadge()}</div>
+      ${S.refeicoes.length===0
+        ?'<p class="text-sm text-muted">Registre refeições para ver a análise. 🤖</p>'
+        :`<div class="grid3 mb-4">
+          ${[{label:'Calorias',val:kcal+' kcal',ok:calOk,icon:'🔥',meta:'Meta: '+(p.meta||2000)},{label:'Proteínas',val:prot+'g',ok:prot>=60,icon:'🥩',meta:'Mínimo: 60g'},{label:'Refeições',val:S.refeicoes.length,ok:S.refeicoes.length>=3,icon:'🍽️',meta:'Meta: 3+ por dia'}].map(item=>`<div class="analysis-item ${item.ok?'ok':'warn'}"><div style="font-size:1.3rem">${item.icon}</div><div style="font-weight:700;font-size:.9rem;margin-top:4px">${item.val}</div><div style="font-size:.68rem;margin-top:2px">${item.meta}</div></div>`).join('')}
+        </div>`
+      }
+    </div>`;
+}
+function sugerirExercicio(){S.exercicios.push({nome:'Caminhada',min:30,kcal:150,cat:'cardio',series:'—'},{nome:'Alongamento',min:15,kcal:50,cat:'flexib',series:'—'});addXP(10,'Sugestão IA');saveState();renderPage();}
+
+// ============================================================
+// CRONOGRAMA
+// ============================================================
+function renderCronograma(el){
+  const p=S.perfil||{};
+  const peso=S.pesos.length?S.pesos[0].peso:(p.peso||60);
+  const alturaM=(p.altura||160)/100;
+  const imc=(peso/(alturaM*alturaM)).toFixed(1);
+  const tdee=calcTDEE(peso,p.altura||160,p.birthdate,p.sexo,p.atividade);
+  const pesoIdeal=p.sexo==='F'?Math.max(38,45.5+2.3*((p.altura||160)-152.4)/2.54):Math.max(40,50+2.3*((p.altura||160)-152.4)/2.54);
+  const diff=(peso-pesoIdeal).toFixed(1);
+  const status=parseFloat(diff)>1?'acima':parseFloat(diff)<-1?'abaixo':'normal';
+  const kgDiff=Math.abs(parseFloat(diff));
+  const dist=[0.15,0.20,0.22,0.22,0.21];
+  const age=p.birthdate?calcAge(p.birthdate):12;
+  const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const hoje=new Date();
+
+  const recsNutri = status==='acima'
+    ? ['Reduza alimentos ultraprocessados e aumente vegetais e proteínas magras.','Inclua fibras nas refeições para aumentar saciedade.','Mantenha as refeições regulares, evitando pular o café da manhã.','Prefira água a sucos e refrigerantes. Meta: '+(p.waterGoal||8)+' copos/dia.','Continue firme! Os resultados acumulam com consistência.']
+    : status==='abaixo'
+    ? ['Aumente a frequência das refeições com alimentos nutritivos.','Inclua proteínas em todas as refeições.','Consuma lanches saudáveis entre as refeições.','Invista em alimentos ricos em nutrientes: abacate, banana, batata-doce.','Mantenha o acompanhamento nutricional.']
+    : ['Mantenha a rotina de alimentação equilibrada.','Continue priorizando alimentos naturais e variados.','Hidrate-se bem e mantenha a atividade física.','Monitore seu peso semanalmente.','Parabéns! Continue com os hábitos saudáveis.'];
+
+  const recsTreino = status==='acima'
+    ? ['Inicie com 20-30 min de caminhada rápida diária.','Adicione exercícios de resistência 2x por semana.','Inclua atividades que você goste.','Aumente a intensidade gradualmente.','Mantenha ao menos 150 min de atividade por semana.']
+    : ['Pratique exercícios leves para fortalecer a musculatura.','Inclua exercícios de força supervisionados.','Priorize atividades de baixo impacto.','Aumente o volume de treino gradualmente.','Descanse bem: o crescimento muscular ocorre no repouso.'];
+
+  el.innerHTML=`
+    <div class="page-title">
+      <div><h1>📅 <span class="text-primary">Cronograma</span></h1><p class="text-xs text-muted" style="margin-top:2px">Plano de 5 meses personalizado</p></div>
+      <div class="flex gap-2 items-center">
+        ${aiBadge('Plano por IA')}
+        <button class="btn btn-sm" style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-weight:700" onclick="gerarPDFProjecao()">📄 Baixar PDF</button>
+      </div>
+    </div>
+    <div class="grid4 mb-4">
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--blue)"></div><div style="font-size:1.3rem">⚖️</div><div class="stat-value" style="font-size:1.3rem">${peso} kg</div><div class="stat-label">peso atual</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--green)"></div><div style="font-size:1.3rem">🎯</div><div class="stat-value" style="font-size:1.3rem">${pesoIdeal.toFixed(1)} kg</div><div class="stat-label">peso ideal</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:${status==='normal'?'#4ade80':status==='acima'?'#fb923c':'#60a5fa'}"></div><div style="font-size:1.3rem">📐</div><div class="stat-value" style="font-size:1.3rem">${imc}</div><div class="stat-label">IMC</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div style="font-size:1.3rem">🔥</div><div class="stat-value" style="font-size:1.3rem">${tdee}</div><div class="stat-label">kcal/dia estimadas</div></div>
+    </div>
+    <div class="ai-tip-box mb-4">
+      <div class="ai-tip-icon">✦</div>
+      <div>
+        ${aiBadge('Análise personalizada')}
+        <p class="text-sm" style="margin-top:4px">
+          ${status==='normal'
+            ? '✅ Você está no intervalo de peso saudável!'
+            : status==='acima'
+            ? `⚠️ Você está <strong>${diff} kg acima</strong> do peso ideal estimado.`
+            : `📉 Você está <strong>${Math.abs(parseFloat(diff)).toFixed(1)} kg abaixo</strong> do ideal.`}
+          ${age<18?' <strong>Lembre-se:</strong> consulte sempre um profissional de saúde!':''}
+        </p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">📊 Projeção mês a mês</div>
+        ${status==='normal'
+          ?`<div style="text-align:center;padding:24px 0"><div style="font-size:2.5rem">✅</div><p class="font-semibold mt-2">Você está no peso ideal!</p></div>`
+          :`<div class="space-y-3">
+              ${dist.map((pct,i)=>{
+                const kg=(kgDiff*pct).toFixed(1);
+                const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);
+                const color=status==='acima'?'#fb923c':'#3b82f6';
+                const mesIdx=(hoje.getMonth()+i+1)%12;
+                const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
+                return `<div style="background:var(--secondary);border-radius:12px;padding:12px;border:1px solid var(--border)">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold">Mês ${i+1} — ${meses[mesIdx]} · Peso: <strong>${pesoMes} kg</strong></span>
+                    <span style="font-size:.78rem;font-weight:700;color:${color}">${status==='acima'?'−':'+'} ${kg} kg</span>
+                  </div>
+                  <div class="progress-track"><div class="progress-fill" style="width:${Math.round((i+1)/dist.length*100)}%;background:${color}"></div></div>
+                </div>`;
+              }).join('')}
+            </div>`
+        }
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-title">🥗 Nutrição — dicas por mês</div>
+          <div class="space-y-2">
+            ${recsNutri.map((r,i)=>`
+              <div style="display:flex;gap:10px;padding:8px 10px;background:var(--secondary);border-radius:10px;border:1px solid var(--border)">
+                <div style="min-width:24px;height:24px;background:var(--primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${i+1}</div>
+                <span style="font-size:.8rem">${r}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🏃 Treino — dicas por mês</div>
+          <div class="space-y-2">
+            ${recsTreino.map((r,i)=>`
+              <div style="display:flex;gap:10px;padding:8px 10px;background:var(--secondary);border-radius:10px;border:1px solid var(--border)">
+                <div style="min-width:24px;height:24px;background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${i+1}</div>
+                <span style="font-size:.8rem">${r}</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:700;font-size:.95rem">📄 Relatório completo em PDF</div>
+        <div style="font-size:.78rem;color:var(--muted-fg);margin-top:2px">Inclui projeção mensal, recomendações e dados físicos.</div>
+      </div>
+      <button class="btn btn-primary" onclick="gerarPDFProjecao()" style="flex-shrink:0">📥 Baixar meu plano</button>
+    </div>`;
+}
+
+function gerarPDFProjecao(){
+  const p=S.perfil||{};
+  const c=me();
+  const peso=S.pesos.length?S.pesos[0].peso:(p.peso||60);
+  const alturaM=(p.altura||160)/100;
+  const imc=(peso/(alturaM*alturaM)).toFixed(1);
+  const tdee=calcTDEE(peso,p.altura||160,p.birthdate,p.sexo,p.atividade);
+  const pesoIdeal=p.sexo==='F'?Math.max(38,45.5+2.3*((p.altura||160)-152.4)/2.54):Math.max(40,50+2.3*((p.altura||160)-152.4)/2.54);
+  const diff=(peso-pesoIdeal).toFixed(1);
+  const status=parseFloat(diff)>1?'acima':parseFloat(diff)<-1?'abaixo':'normal';
+  const kgDiff=Math.abs(parseFloat(diff));
+  const dist=[0.15,0.20,0.22,0.22,0.21];
+  const age=p.birthdate?calcAge(p.birthdate):12;
+  const {level}=getLevel(S.xp||0);
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const hoje=new Date();
+  if(!window.jspdf){showToast('Biblioteca PDF não carregada.');return;}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(26,95,212);
+  doc.rect(0,0,W,38,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text('PulseFit',14,16);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text('Vida Saudável na Juventude',14,23);
+  doc.setFontSize(10);doc.setFont('helvetica','bold');
+  doc.text('PLANO DE PROJECAO PERSONALIZADO — 5 MESES',14,31);
+  doc.setTextColor(40,40,40);
+  let y=46;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  doc.text('Nome: '+(p.nome||c?.nome||'--'),14,y);
+  doc.text('Escola: '+(p.escola||'--'),W/2,y);y+=7;
+  doc.text('Idade: '+age+' anos',14,y);
+  doc.text('Nivel: '+level.name,W/2,y);y+=7;
+  doc.text('Peso atual: '+peso+' kg | Peso ideal: '+pesoIdeal.toFixed(1)+' kg | IMC: '+imc,14,y);y+=7;
+  doc.text('TDEE: '+tdee+' kcal/dia | Status: '+(status==='normal'?'Saudavel':status==='acima'?diff+' kg acima':Math.abs(parseFloat(diff)).toFixed(1)+' kg abaixo'),14,y);y+=12;
+  doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(26,95,212);
+  doc.text('PROJECAO MENSAL',14,y);doc.setTextColor(40,40,40);y+=5;
+  doc.setLineWidth(0.5);doc.setDrawColor(26,95,212);doc.line(14,y,W-14,y);y+=6;
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
+  if(status==='normal'){
+    doc.text('Voce ja esta no intervalo saudavel! Continue monitorando.',14,y);y+=10;
+  } else {
+    dist.forEach((pct,i)=>{
+      const kg=(kgDiff*pct).toFixed(1);
+      const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);
+      const mesIdx=(hoje.getMonth()+i+1)%12;
+      const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
+      doc.text(`Mes ${i+1} — ${meses[mesIdx]}: ${status==='acima'?'Perder':'Ganhar'} ${kg}kg | Acumulado: ${acum}kg | Peso estimado: ${pesoMes}kg`,14,y);
+      y+=8;
+    });
+  }
+  doc.save('plano_'+(p.nome||'usuario').replace(/\s/g,'_')+'.pdf');
+  showToast('📄 Plano baixado com sucesso!');
+}
+
+// ============================================================
+// CONQUISTAS
+// ============================================================
+function renderConquistas(el){
+  const {level,next,pct,levels}=getLevel(S.xp||0);
+  const p=S.perfil||{};
+  const myName=p.nome||me()?.nome||'Você';
+  const escola=p.escola||'Escola';
+  const fakes=[{nome:'Ana Silva',xp:(S.xp||0)+320,escola},{nome:'Pedro Lima',xp:(S.xp||0)+150,escola},{nome:myName,xp:S.xp||0,escola,eu:true},{nome:'Maria Santos',xp:Math.max(0,(S.xp||0)-80),escola},{nome:'João Costa',xp:Math.max(0,(S.xp||0)-200),escola}].sort((a,b)=>b.xp-a.xp);
+  const medals=['🥇','🥈','🥉'];
+  const rankHTML=fakes.map((r,i)=>`<div class="rank-item ${r.eu?'me':''}">
+    <div style="font-weight:700;font-size:1.1rem;min-width:28px;text-align:center">${i<3?medals[i]:(i+1)+'º'}</div>
+    <div class="rank-avatar">${r.nome[0]}</div>
+    <div style="flex:1"><div class="font-semibold text-sm">${r.nome}${r.eu?' (você)':''}</div><div class="text-xs text-muted">${r.escola}</div></div>
+    <div style="font-weight:700;color:#a16207;font-size:.85rem">${r.xp} XP</div>
+  </div>`).join('');
+  const badgesHTML=ALL_BADGES.map(b=>{const earned=S.badges.includes(b.id);return `<div class="badge-item ${earned?'earned':''}"><span class="bi" ${earned?'':'style="filter:grayscale(1);opacity:.5"'}>${earned?b.icon:'🔒'}</span><small style="color:${earned?'#a16207':'var(--muted-fg)'}">${b.name}</small>${earned?'<small style="color:var(--green);font-weight:700">✅</small>':''}</div>`;}).join('');
+  const levelsHTML=levels.map((l,i)=>`<div class="level-node ${(S.xp||0)>=l.min?'reached':''}"><div style="font-size:1.3rem">${l.name.split(' ')[0]}</div><div style="font-size:.7rem;font-weight:700">${l.name.split(' ').slice(1).join(' ')}</div><div style="font-size:.65rem;color:var(--muted-fg)">${l.min} XP</div></div>${i<levels.length-1?'<div class="level-connector '+((S.xp||0)>=(levels[i+1]||{min:9999}).min?'reached':'')+'"></div>':''}`).join('');
+  el.innerHTML=`
+    <div class="page-title"><h1>🏆 <span class="text-primary">Conquistas</span></h1><span class="badge-yellow">${level.name}</span></div>
+    <div class="grid2">
+      <div class="card">${xpBarHTML(false)}</div>
+      <div class="card"><div class="card-title">🏅 Ranking da Escola</div><div class="space-y-2">${rankHTML}</div></div>
+    </div>
+    <div class="card mt-4"><div class="card-title">Suas conquistas</div><div class="badges-grid">${badgesHTML}</div><p class="text-sm text-muted mt-3 text-center">${S.badges.length} de ${ALL_BADGES.length}</p></div>
+    <div class="card mt-4"><div class="card-title">Jornada de níveis</div><div class="levels-row">${levelsHTML}</div></div>`;
+}
+
+// ============================================================
+// PAINEL ESCOLA
+// ============================================================
+let escolaFiltroSerie = '';
+function renderPainelEscola(el) {
+  const c = me();
+  const alunos = AUTH.contas.filter(a => a.tipo === 'aluno');
+  const series = [...new Set(alunos.map(a => a.dados.serie).filter(Boolean))].sort();
+  const alunosFiltrados = escolaFiltroSerie ? alunos.filter(a => a.dados.serie === escolaFiltroSerie) : alunos;
+  const totalAlunos = alunos.length;
+  const alunosComDados = alunos.filter(a => { try { return !!localStorage.getItem(userKey(a.id)); } catch(e) { return false; } }).length;
+  el.innerHTML = `
+    <div class="page-title">
+      <div><h1>🏢 <span class="text-primary">Painel da Escola</span></h1><p class="text-sm text-muted" style="margin-top:2px">${c?.dados?.escolaNome || c?.nome || 'Escola'}</p></div>
+      <button class="btn btn-sm btn-danger" onclick="confirmarSair()">Sair</button>
+    </div>
+    <div class="grid4 mb-4">
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--primary)"></div><div style="font-size:1.4rem">👥</div><div class="stat-value">${totalAlunos}</div><div class="stat-label">alunos cadastrados</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--green)"></div><div style="font-size:1.4rem">📊</div><div class="stat-value">${alunosComDados}</div><div class="stat-label">com dados ativos</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--orange)"></div><div style="font-size:1.4rem">🏫</div><div class="stat-value">${series.length}</div><div class="stat-label">séries</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#a855f7"></div><div style="font-size:1.4rem">🏆</div><div class="stat-value">${alunos.reduce((acc,a)=>{try{const s=JSON.parse(localStorage.getItem(userKey(a.id)));return acc+(s?.xp||0);}catch(e){return acc;}},0)}</div><div class="stat-label">XP total geral</div></div>
+    </div>
+    <div class="card">
+      <div class="flex justify-between items-center mb-4" style="flex-wrap:wrap;gap:8px">
+        <div class="card-title" style="margin:0">📋 Lista de Alunos</div>
+        <div class="flex gap-2" style="flex-wrap:wrap">
+          <button class="btn btn-sm ${escolaFiltroSerie===''?'btn-primary':'btn-outline'}" onclick="escolaFiltroSerie='';renderPage()">Todos</button>
+          ${series.map(s=>`<button class="btn btn-sm ${escolaFiltroSerie===s?'btn-primary':'btn-outline'}" onclick="escolaFiltroSerie='${s.replace(/'/g,"\\'")}';renderPage()">${s}</button>`).join('')}
+        </div>
+      </div>
+      ${alunosFiltrados.length === 0
+        ? '<div style="text-align:center;padding:40px"><div style="font-size:2.5rem">👥</div><p class="text-sm text-muted mt-2">Nenhum aluno encontrado.</p></div>'
+        : `<div class="space-y-2">
+          ${alunosFiltrados.map(a => {
+            let sAluno = {}; try { sAluno = JSON.parse(localStorage.getItem(userKey(a.id))) || {}; } catch(e) {}
+            const xp = sAluno.xp || 0;
+            const agua = sAluno.agua || 0;
+            const refeicoes = (sAluno.refeicoes || []).length;
+            const pesos = sAluno.pesos || [];
+            const pesoAtual = pesos.length ? pesos[0].peso : (a.dados.peso || '--');
+            const alturaM = (a.dados.altura || 160) / 100;
+            const imc = pesoAtual !== '--' ? (pesoAtual / (alturaM * alturaM)).toFixed(1) : '--';
+            return `<div class="aluno-row" onclick="verAlunoEscola('${a.id}')">
+              <div class="aluno-avatar">${a.nome[0].toUpperCase()}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-weight:700;font-size:.9rem">${a.nome}</div>
+                <div class="text-xs text-muted">${a.dados.serie||'--'} · ${a.dados.escola||'--'}</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <span class="badge-blue">⭐ ${xp} XP</span>
+                <span class="badge-green">💧 ${agua}</span>
+                <span class="badge-orange">🍽️ ${refeicoes}</span>
+                ${imc!=='--'?`<span class="badge-yellow">IMC ${imc}</span>`:''}
+              </div>
+              <div style="color:var(--primary);font-size:.8rem;font-weight:600;white-space:nowrap">Ver →</div>
+              <button onclick="event.stopPropagation();confirmarExcluirAluno(this.dataset.id,this.dataset.nome)" data-id="${a.id}" data-nome="${a.nome}" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:4px 8px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🗑</button>
+            </div>`;
+          }).join('')}
+        </div>`
+      }
+    </div>`;
+}
+
+function verAlunoEscola(alunoId) {
+  const aluno = AUTH.contas.find(c => c.id === alunoId);
+  if (!aluno) return;
+  let sAluno = {}; try { sAluno = JSON.parse(localStorage.getItem(userKey(alunoId))) || {}; } catch(e) {}
+  exibirModalAluno(aluno, sAluno);
+}
+
+function exibirModalAluno(aluno, sAluno) {
+  const d = aluno.dados || {};
+  const pf = sAluno.perfil || {};
+  const pesos = sAluno.pesos || [];
+  const pesoAtual = pesos.length ? pesos[0].peso : (d.peso || '--');
+  const alturaM = (d.altura || pf.altura || 160) / 100;
+  const imc = pesoAtual !== '--' ? (pesoAtual / (alturaM * alturaM)).toFixed(1) : '--';
+  const xp = sAluno.xp || 0;
+  const {level} = getLevel(xp);
+  const refeicoes = sAluno.refeicoes || [];
+  const exercicios = sAluno.exercicios || [];
+  const badges = sAluno.badges || [];
+  const IMC_ZONES=[{max:18.5,label:'Baixo peso',color:'#1d4ed8'},{max:25,label:'Saudável',color:'#15803d'},{max:30,label:'Atenção',color:'#a16207'},{max:35,label:'Acompanhamento',color:'#c2410c'},{max:Infinity,label:'Cuidado maior',color:'#dc2626'}];
+  const zone = imc !== '--' ? IMC_ZONES.find(z => parseFloat(imc) < z.max) : null;
+  const kcalConsumidas = refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
+  const age = d.birthdate ? calcAge(d.birthdate) : '--';
+  document.getElementById('modal-aluno-title').textContent = '👤 ' + aluno.nome;
+  document.getElementById('modal-aluno-body').innerHTML = `
+    <div class="space-y-3">
+      <div style="background:var(--secondary);border-radius:12px;padding:14px">
+        <div class="grid2">
+          ${[{label:'Série', val: d.serie||'--'},{label:'Escola', val: d.escola||'--'},{label:'Idade', val: age !== '--' ? age+' anos' : '--'},{label:'Objetivo', val: d.objetivo||pf.objetivo||'--'},{label:'Peso', val: pesoAtual !== '--' ? pesoAtual+'kg' : '--'},{label:'Altura', val: d.altura ? d.altura+'cm' : '--'},{label:'IMC', val: imc + (zone ? ' — '+zone.label : '')}].map(item=>`<div style="margin-bottom:8px"><div class="text-xs text-muted">${item.label}</div><div style="font-weight:600;font-size:.85rem">${item.val}</div></div>`).join('')}
+        </div>
+      </div>
+      <div style="background:var(--secondary);border-radius:12px;padding:14px">
+        <div style="font-size:.7rem;font-weight:700;color:var(--muted-fg);text-transform:uppercase;margin-bottom:10px">Atividade hoje</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+          ${[{icon:'🍽️',label:'Refeições',val:refeicoes.length},{icon:'🏃',label:'Exercícios',val:exercicios.length},{icon:'💧',label:'Água',val:(sAluno.agua||0)+' copos'},{icon:'🔥',label:'Kcal',val:kcalConsumidas}].map(item=>`<div style="text-align:center;background:#fff;border-radius:10px;padding:8px;border:1px solid var(--border)"><div style="font-size:1.2rem">${item.icon}</div><div style="font-weight:700;font-size:.9rem">${item.val}</div><div style="font-size:.65rem;color:var(--muted-fg)">${item.label}</div></div>`).join('')}
+        </div>
+      </div>
+      <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px">
+        <div style="font-size:1.8rem">⭐</div>
+        <div><div style="font-weight:700;font-size:.9rem">${level.name}</div><div style="font-size:.75rem;color:var(--muted-fg)">${xp} XP · ${badges.length} conquistas</div></div>
+      </div>
+      <button class="btn btn-primary w-full" onclick="baixarRelatorioAluno('${aluno.id}')">📄 Baixar relatório PDF</button>
+      <button class="btn w-full mt-2" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;font-weight:700" onclick="closeModal('modal-ver-aluno');confirmarExcluirAluno('${aluno.id}','${aluno.nome.replace(/'/g,"\\'")}')">🗑 Excluir cadastro</button>
+    </div>`;
+  openModal('modal-ver-aluno');
+}
+
+function baixarRelatorioAluno(alunoId) {
+  const aluno = AUTH.contas.find(c => c.id === alunoId);
+  if (!aluno) return;
+  let sAluno = {}; try { sAluno = JSON.parse(localStorage.getItem(userKey(alunoId))) || {}; } catch(e) {}
+  gerarPDF(aluno, sAluno);
+}
+
+// ============================================================
+// PAINEL RESPONSÁVEL
+// ============================================================
+function renderPainelResponsavel(el) {
+  const c = me();
+  const filhosLogins = c?.dados?.filhosLogins || [];
+  const filhos = AUTH.contas.filter(a => filhosLogins.includes(a.login));
+  el.innerHTML = `
+    <div class="page-title">
+      <div><h1>👨‍👩‍👧 <span class="text-primary">Meus Filhos</span></h1><p class="text-sm text-muted" style="margin-top:2px">Acompanhe a jornada saudável</p></div>
+      <button class="btn btn-sm btn-danger" onclick="confirmarSair()">Sair</button>
+    </div>
+    ${filhos.length === 0
+      ? `<div class="card text-center" style="padding:40px"><div style="font-size:2.5rem">👶</div><p class="font-semibold mt-2">Nenhum filho vinculado</p></div>`
+      : `<div class="space-y-3">
+          ${filhos.map(filho => {
+            let sFilho = {}; try { sFilho = JSON.parse(localStorage.getItem(userKey(filho.id))) || {}; } catch(e) {}
+            const xp = sFilho.xp || 0;
+            const {level} = getLevel(xp);
+            return `<div class="card">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="aluno-avatar" style="width:48px;height:48px;font-size:1.1rem">${filho.nome[0].toUpperCase()}</div>
+                <div style="flex:1">
+                  <div style="font-weight:700;font-size:1rem">${filho.nome}</div>
+                  <div class="text-xs text-muted">${filho.dados?.serie||'--'} · ${filho.dados?.escola||'--'}</div>
+                  <span class="badge-yellow mt-1" style="display:inline-block">${level.name}</span>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="verAlunoEscola('${filho.id}')">Ver detalhes →</button>
+              </div>
+              <div class="flex gap-2 mt-2">
+                <button class="btn btn-outline btn-sm" onclick="baixarRelatorioAluno('${filho.id}')">📄 Baixar PDF</button>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`
+    }`;
+}
+
+// ============================================================
+// PERFIL
+// ============================================================
+function renderPerfil(el) {
+  const c = me();
+  if (!c) return;
+  if (c.tipo === 'escola') renderPerfilEscola(el, c);
+  else if (c.tipo === 'responsavel') renderPerfilResponsavel(el, c);
+  else if (c.tipo === 'colaborador') renderPerfilColaborador(el, c);
+  else renderPerfilAluno(el, c);
+}
+
+function renderPerfilEscola(el, c) {
+  const d = c.dados || {};
+  el.innerHTML = `
+    <div class="page-title">
+      <h1>🏢 <span class="text-primary">Perfil da Escola</span></h1>
+      <div class="flex gap-2">
+        <button class="btn btn-primary" onclick="salvarPerfilEscola()">Salvar</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmarSair()">Sair</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card space-y-3">
+        <div class="card-title">Dados institucionais</div>
+        <div><label class="field-label">Nome da escola</label><input class="input" id="pe-nome" value="${c.nome||''}"></div>
+        <div><label class="field-label">Usuário (login)</label><input class="input" value="${c.login||''}" disabled style="opacity:.6"></div>
+        <div><label class="field-label">CNPJ</label><input class="input" id="pe-cnpj" value="${d.cnpj||''}"></div>
+        <div><label class="field-label">Email institucional</label><input class="input" id="pe-email" value="${d.email||''}"></div>
+        <div><label class="field-label">Endereço</label><input class="input" id="pe-end" value="${d.endereco||''}"></div>
+        <div><label class="field-label">Telefone</label><input class="input" id="pe-tel" value="${d.telefone||''}"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Resumo geral</div>
+        ${(() => {
+          const alunos = AUTH.contas.filter(a => a.tipo === 'aluno');
+          const totalXP = alunos.reduce((acc,a)=>{try{const s=JSON.parse(localStorage.getItem(userKey(a.id)));return acc+(s?.xp||0);}catch(e){return acc;}},0);
+          return `<div class="space-y-2">
+            <div class="history-item"><span class="text-sm text-muted">Total de alunos</span><span class="font-semibold">${alunos.length}</span></div>
+            <div class="history-item"><span class="text-sm text-muted">XP coletivo</span><span class="font-semibold">⭐ ${totalXP}</span></div>
+          </div>
+          <button class="btn btn-primary w-full mt-4" onclick="navigate('painel-escola')">🏢 Ir para o painel →</button>`;
+        })()}
+        <div class="card-title mt-4">Zona de perigo</div>
+        <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
+      </div>
+    </div>`;
+}
+
+function salvarPerfilEscola() {
+  const c = me(); if (!c) return;
+  c.nome = document.getElementById('pe-nome').value.trim() || c.nome;
+  c.dados.cnpj = document.getElementById('pe-cnpj').value.trim();
+  c.dados.email = document.getElementById('pe-email').value.trim();
+  c.dados.endereco = document.getElementById('pe-end').value.trim();
+  c.dados.telefone = document.getElementById('pe-tel').value.trim();
+  saveAuth(); showToast('✅ Dados da escola salvos!'); updateHeader();
+}
+
+function renderPerfilResponsavel(el, c) {
+  const d = c.dados || {};
+  el.innerHTML = `
+    <div class="page-title">
+      <h1>👨‍👩‍👧 <span class="text-primary">Meu Perfil</span></h1>
+      <div class="flex gap-2">
+        <button class="btn btn-primary" onclick="salvarPerfilResponsavel()">Salvar</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmarSair()">Sair</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card space-y-3">
+        <div><label class="field-label">Nome</label><input class="input" id="pr-nome" value="${c.nome||''}"></div>
+        <div><label class="field-label">Email</label><input class="input" id="pr-email" value="${d.email||''}"></div>
+        <div><label class="field-label">Usuários dos filhos (vírgula)</label><input class="input" id="pr-filhos" value="${(d.filhosLogins||[]).join(', ')}"></div>
+      </div>
+      <div class="card">
+        <button class="btn btn-primary w-full mb-3" onclick="navigate('painel-responsavel')">👨‍👩‍👧 Ver meus filhos →</button>
+        <div class="card-title mt-3">Zona de perigo</div>
+        <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
+      </div>
+    </div>`;
+}
+
+function salvarPerfilResponsavel() {
+  const c = me(); if (!c) return;
+  c.nome = document.getElementById('pr-nome').value.trim() || c.nome;
+  c.dados.email = document.getElementById('pr-email').value.trim();
+  c.dados.filhosLogins = document.getElementById('pr-filhos').value.split(',').map(f=>f.trim().toLowerCase()).filter(Boolean);
+  saveAuth(); showToast('✅ Perfil salvo!'); updateHeader();
+}
+
+function renderPerfilColaborador(el, c) {
+  const d = c.dados || {};
+  el.innerHTML = `
+    <div class="page-title">
+      <h1>🏫 <span class="text-primary">Meu Perfil</span></h1>
+      <div class="flex gap-2">
+        <button class="btn btn-primary" onclick="salvarPerfilColaborador()">Salvar</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmarSair()">Sair</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card space-y-3">
+        <div><label class="field-label">Nome</label><input class="input" id="pc-nome" value="${c.nome||''}"></div>
+        <div><label class="field-label">Função</label><input class="input" id="pc-funcao" value="${d.funcao||''}"></div>
+        <div><label class="field-label">Usuário da escola</label><input class="input" id="pc-escolauser" value="${d.escolaUser||''}"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Zona de perigo</div>
+        <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
+      </div>
+    </div>`;
+}
+
+function salvarPerfilColaborador() {
+  const c = me(); if (!c) return;
+  c.nome = document.getElementById('pc-nome').value.trim() || c.nome;
+  c.dados.funcao = document.getElementById('pc-funcao').value.trim();
+  c.dados.escolaUser = document.getElementById('pc-escolauser').value.trim().toLowerCase();
+  saveAuth(); showToast('✅ Perfil salvo!'); updateHeader();
+}
+
+function renderPerfilAluno(el, c) {
+  const p = S.perfil || {};
+  const atv = p.atividade || 1.375;
+  selectedObj = p.objetivo || 'saude';
+  const escolaVals = {estado:p.estado||c.dados?.estado||'',cidade:p.cidade||c.dados?.cidade||'',escola:p.escola||c.dados?.escola||''};
+  el.innerHTML = `
+    <div class="page-title">
+      <h1>Meu <span class="text-primary">Perfil</span></h1>
+      <div class="flex gap-2"><button class="btn btn-primary" onclick="salvarPerfilAluno()">Salvar</button><button class="btn btn-danger btn-sm" onclick="confirmarSair()">Sair</button></div>
+    </div>
+    <div class="grid2">
+      <div class="card space-y-3">
+        <div class="card-title">Foto e dados pessoais</div>
+        <div class="profile-photo-box">
+          <div class="profile-photo-preview" id="pf-foto-preview">${p.foto?`<img src="${p.foto}" alt="Foto">`:(p.nome||c.nome||'A')[0].toUpperCase()}</div>
+          <div style="flex:1">
+            <label class="field-label">Foto do perfil</label>
+            <input class="input" type="file" id="pf-foto" accept="image/*" onchange="previewFotoPerfil(event)">
+          </div>
+        </div>
+        <div><label class="field-label">Nome</label><input class="input" id="pf-nome" value="${p.nome||c.nome||''}"></div>
+        <div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="pf-bd" value="${p.birthdate||c.dados?.birthdate||''}" onchange="atualizarIdade()"><p class="text-xs text-muted mt-1" id="pf-age-label">${(p.birthdate||c.dados?.birthdate)?'Idade: '+calcAge(p.birthdate||c.dados?.birthdate)+' anos':''}</p></div>
+        <div class="grid2">
+          <div><label class="field-label">Sexo</label><select class="select" id="pf-sexo"><option value="M" ${p.sexo!=='F'?'selected':''}>Masculino</option><option value="F" ${p.sexo==='F'?'selected':''}>Feminino</option></select></div>
+          <div><label class="field-label">Altura (cm)</label><input class="input" type="number" id="pf-altura" value="${p.altura||c.dados?.altura||''}"></div>
+        </div>
+        <div><label class="field-label">Peso (kg)</label><input class="input" type="number" id="pf-peso" value="${p.peso||c.dados?.peso||''}"></div>
+        ${escolaSelectHTML('pf',escolaVals)}
+        <div><label class="field-label">Serie</label><input class="input" id="pf-serie" value="${p.serie||c.dados?.serie||''}"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card space-y-3">
+          <div class="card-title">Objetivo</div>
+          ${[{id:'Crescimento Saudavel',label:'Crescimento Saudavel'},{id:'saude',label:'Saude geral'},{id:'Equilibrio',label:'Equilibrio'},{id:'Deslocamento Ativo',label:'Deslocamento Ativo'},{id:'Exercicio Fisico',label:'Exercicio Fisico'}].map(o=>`<button class="btn btn-outline w-full" id="obj-${o.id}" style="${(p.objetivo||'saude')===o.id?'background:rgba(26,95,212,.06);border-color:var(--primary);color:var(--primary)':''}" onclick="selectObj('${o.id}')">${o.label}</button>`).join('')}
+          <div><label class="field-label">Nivel de atividade</label><select class="select" id="pf-atv">
+            <option value="1.2" ${atv==1.2?'selected':''}>Sedentario</option>
+            <option value="1.375" ${atv==1.375?'selected':''}>Levemente ativo (1-3x/sem)</option>
+            <option value="1.55" ${atv==1.55?'selected':''}>Moderadamente ativo (3-5x/sem)</option>
+            <option value="1.725" ${atv==1.725?'selected':''}>Muito ativo (6-7x/sem)</option>
+          </select></div>
+        </div>
+        <div class="card"><div class="card-title">Nivel atual</div>${xpBarHTML(false)}</div>
+        <div class="card"><div class="card-title">Zona de perigo</div><button class="btn btn-danger w-full" onclick="limparMeusDados()">Apagar meus dados</button></div>
+      </div>
+    </div>`;
+}
+
+function selectObj(id){
+  selectedObj=id;
+  ['Crescimento Saudavel','saude','Equilibrio','Deslocamento Ativo','Exercicio Fisico'].forEach(o=>{
+    const btn=document.getElementById('obj-'+o);
+    if(btn){btn.style.background=o===id?'rgba(26,95,212,.06)':'';btn.style.borderColor=o===id?'var(--primary)':'var(--border)';btn.style.color=o===id?'var(--primary)':'#1a2340';}
+  });
+}
+function atualizarIdade(){const bd=document.getElementById('pf-bd');const label=document.getElementById('pf-age-label');if(bd&&label&&bd.value)label.textContent='Idade: '+calcAge(bd.value)+' anos';}
+function previewFotoPerfil(ev){
+  const file=ev.target.files&&ev.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{S.perfil={...(S.perfil||{}),foto:reader.result};const pv=document.getElementById('pf-foto-preview');if(pv)pv.innerHTML=`<img src="${reader.result}" alt="Foto">`;saveState();updateHeader();};
+  reader.readAsDataURL(file);
+}
+function salvarPerfilAluno(){
+  const peso=+(document.getElementById('pf-peso').value)||55;
+  const altura=+(document.getElementById('pf-altura').value)||160;
+  const birthdate=document.getElementById('pf-bd').value;
+  const sexo=document.getElementById('pf-sexo').value;
+  const atividade=+(document.getElementById('pf-atv').value)||1.375;
+  const esc=getEscolaSelecionada('pf');
+  const serie=document.getElementById('pf-serie').value;
+  const nome=document.getElementById('pf-nome').value.trim();
+  const {tdee,prot,carb,gord}=calcMacros(peso,altura,birthdate,sexo,selectedObj,atividade);
+  const waterGoal=calcWaterGoal(peso,birthdate);
+  S.perfil={...(S.perfil||{}),nome,birthdate,altura,peso,sexo,estado:esc.estado,cidade:esc.cidade,escola:esc.escola,serie,objetivo:selectedObj,atividade,meta:tdee,metaProt:prot,metaCarb:carb,metaGord:gord,waterGoal,pesoMeta:Math.max(40,peso-5),tipo:'aluno'};
+  const c=me();
+  if(c){c.nome=nome||c.nome;c.dados={...(c.dados||{}),estado:esc.estado,cidade:esc.cidade,escola:esc.escola,serie,peso,altura,birthdate,objetivo:selectedObj};saveAuth();}
+  if(!S.pesos.length) S.pesos=[{peso,data:new Date().toISOString().split('T')[0],obs:'Peso do perfil'}];
+  saveState();updateHeader();showToast('Perfil salvo! Metas recalculadas.');renderPage();
+}
+
+function limparMeusDados(){
+  if(!confirm('Apagar todos os seus dados?')) return;
+  const c=me();
+  if(c) localStorage.removeItem(userKey(c.id));
+  S=defaultState(); saveState();
+  showToast('✅ Dados apagados.');
+  renderPage();
+}
+
+// ============================================================
+// EXCLUIR ALUNO
+// ============================================================
+function confirmarExcluirAluno(alunoId, nomeAluno) {
+  if (!confirm('Tem certeza que deseja EXCLUIR o cadastro de "' + nomeAluno + '"?\nEsta ação NÃO pode ser desfeita!')) return;
+  excluirAluno(alunoId, nomeAluno);
+}
+function excluirAluno(alunoId, nomeAluno) {
+  try { localStorage.removeItem(userKey(alunoId)); } catch(e) {}
+  const idx = AUTH.contas.findIndex(c => c.id === alunoId);
+  if (idx !== -1) { AUTH.contas.splice(idx, 1); saveAuth(); }
+  showToast('✅ Aluno "' + nomeAluno + '" excluído.');
+  renderPage();
+}
+
+// ============================================================
+// PDF RELATÓRIO ALUNO
+// ============================================================
+function gerarPDF(aluno, sAluno) {
+  const d = aluno.dados || {};
+  const pf = sAluno.perfil || {};
+  const pesos = sAluno.pesos || [];
+  const pesoAtual = pesos.length ? pesos[0].peso : (d.peso || '--');
+  const xp = sAluno.xp || 0;
+  const refeicoes = sAluno.refeicoes || [];
+  const exercicios = sAluno.exercicios || [];
+  const kcal = refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
+  const burned = exercicios.reduce((a,e)=>a+e.kcal,0);
+  const age = d.birthdate ? calcAge(d.birthdate) : '--';
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const linhas=[
+    'PULSEFIT — COMBATENDO A OBESIDADE NOS JOVENS',
+    'Relatório de Acompanhamento',
+    '',
+    'Aluno: '+aluno.nome,
+    'Idade: '+age+(age!=='--'?' anos':''),
+    'Série: '+(d.serie||'--'),
+    'Escola: '+(d.escola||'--'),
+    'Objetivo: '+(d.objetivo||pf.objetivo||'--'),
+    'Data: '+new Date().toLocaleDateString('pt-BR'),
+    '',
+    'DADOS FÍSICOS',
+    'Peso: '+pesoAtual+' kg | Altura: '+(d.altura||'--')+' cm',
+    '',
+    'ATIVIDADE DE HOJE',
+    'Calorias consumidas: '+kcal+' kcal',
+    'Calorias queimadas: '+burned+' kcal',
+    'Água: '+(sAluno.agua||0)+' copos',
+    'Refeições: '+refeicoes.length+' | Exercícios: '+exercicios.length,
+    '',
+    'GAMIFICAÇÃO',
+    'XP: '+xp+' | Conquistas: '+(sAluno.badges||[]).length,
+    '',
+    'HISTÓRICO DE PESO',
+    ...(pesos.length?pesos.slice(0,10).map(pw=>pw.data+': '+pw.peso+' kg'):['Nenhum registro.']),
+  ];
+  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('PulseFit',14,18);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);
+  let y=30;
+  linhas.forEach(linha=>{const t=doc.splitTextToSize(linha,180);t.forEach(tx=>{if(y>280){doc.addPage();y=20;}doc.text(tx,14,y);y+=7;});});
+  doc.save('relatorio_'+aluno.nome.replace(/\s/g,'_')+'.pdf');
+  showToast('📄 Relatório PDF baixado!');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadAuth();
+document.getElementById('p-data').value = new Date().toISOString().split('T')[0];
+
+if (AUTH.logado && me()) {
+  loadState();
+  iniciarApp();
+} else {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'block';
+  renderLogin();
+}
+</script>
+</body>
+</html>
