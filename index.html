@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -69,14 +69,16 @@ label.field-label{display:block;font-size:.7rem;font-weight:700;color:var(--mute
 .stat-value{font-weight:700;font-size:1.6rem;color:#1a2340}
 .stat-label{font-size:.7rem;color:var(--muted-fg);margin-top:2px}
 .stat-sub{font-size:.7rem;font-weight:600;margin-top:4px}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center;padding:16px}
-.modal-overlay.open{display:flex}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:440px;box-shadow:0 8px 32px #0003;max-height:90vh;overflow-y:auto}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:200;overflow-y:auto;padding:16px}
+.modal-overlay.open{display:block}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:440px;box-shadow:0 8px 32px #0003;margin:auto}
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--muted-fg)}
-#toast{position:fixed;bottom:24px;right:24px;z-index:999;background:var(--primary);color:#fff;padding:12px 20px;border-radius:12px;font-weight:600;font-size:.85rem;box-shadow:0 4px 16px #0003;display:none;max-width:300px}
-.onboarding-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#dbeafe,#f0f4ff,#dcfce7);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
-.onboarding-card{background:var(--card);border-radius:24px;box-shadow:0 8px 40px #0003;width:100%;max-width:460px;overflow:hidden}
+#toast{position:fixed;bottom:72px;right:16px;z-index:999;background:var(--primary);color:#fff;padding:12px 20px;border-radius:12px;font-weight:600;font-size:.85rem;box-shadow:0 4px 16px #0003;display:none;max-width:300px}
+@media(min-width:769px){#toast{bottom:24px;right:24px}}
+/* ONBOARDING — scroll livre em qualquer dispositivo */
+.onboarding-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#dbeafe,#f0f4ff,#dcfce7);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 40px}
+.onboarding-card{background:var(--card);border-radius:24px;box-shadow:0 8px 40px #0003;width:100%;max-width:460px;overflow:hidden;margin:0 auto}
 .onboarding-header{background:linear-gradient(135deg,var(--primary),#3b82f6);padding:24px;color:#fff}
 .onboarding-body{padding:24px}
 .tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
@@ -332,7 +334,7 @@ function saveState(){
   localStorage.setItem(userKey(c.id), JSON.stringify(S));
 }
 
-// Escolas cadastradas: selecao guiada para evitar erro de digitacao.
+// Escolas cadastradas
 const ESCOLAS_CADASTRADAS = {
   'CE': {
     'Fortaleza': ['E.E. Joao XXIII','EMEF Paulo Freire','Colegio Dom Bosco','E.E. Santos Dumont'],
@@ -438,71 +440,67 @@ function renderLogin(){
   if(authMode === 'login'){
     box.innerHTML = `
       <h2 style="font-weight:700;font-size:1.2rem;margin-bottom:4px">Entrar</h2>
-      <p class="text-sm text-muted mb-4">Use seu usuário e senha cadastrados.</p>
+      <p class="text-sm text-muted mb-4">Use seu usuario e senha cadastrados.</p>
       <div class="space-y-3">
-        <div><label class="field-label">Usuário ou email</label><input class="input" id="li-user" placeholder="seu_usuario"></div>
-        <div><label class="field-label">Senha</label><input class="input" type="password" id="li-pass" placeholder="••••••" onkeydown="if(event.key==='Enter')entrar()"></div>
-        <button class="btn btn-primary w-full" onclick="entrar()">Entrar →</button>
+        <div><label class="field-label">Usuario ou email</label><input class="input" id="li-user" placeholder="seu_usuario"></div>
+        <div><label class="field-label">Senha</label><input class="input" type="password" id="li-pass" placeholder="******" onkeydown="if(event.key==='Enter')entrar()"></div>
+        <button class="btn btn-primary w-full" onclick="entrar()">Entrar</button>
         <div style="text-align:center;font-size:.8rem;color:var(--muted-fg)">ou</div>
         <button class="btn btn-outline w-full" onclick="authMode='cad';authTipo='aluno';renderLogin()">Criar nova conta</button>
       </div>`;
     return;
   }
-  // CADASTRO
-  box.innerHTML = `
+  box.innerHTML=`
     <h2 style="font-weight:700;font-size:1.2rem;margin-bottom:4px">Criar conta</h2>
     <p class="text-sm text-muted mb-4">Escolha seu tipo de acesso.</p>
     <div class="tipo-grid">
       ${[
-        {id:'aluno',icon:'🧒',label:'Aluno',desc:'Minha rotina'},
-        {id:'responsavel',icon:'👨‍👩‍👧',label:'Responsável',desc:'Ver filhos'},
-        {id:'colaborador',icon:'🏫',label:'Colaborador',desc:'Equipe escolar'},
-        {id:'escola',icon:'🏢',label:'Escola',desc:'Gestão escolar'},
+        {id:'aluno',label:'Aluno',desc:'Minha rotina'},
+        {id:'responsavel',label:'Responsavel',desc:'Ver filhos'},
+        {id:'colaborador',label:'Colaborador',desc:'Equipe escolar'},
+        {id:'escola',label:'Escola',desc:'Gestao escolar'}
       ].map(t=>`<div class="tipo-btn ${authTipo===t.id?'selected':''}" onclick="authTipo='${t.id}';renderLogin()">
-        <span class="ti">${t.icon}</span><strong>${t.label}</strong><small>${t.desc}</small></div>`).join('')}
+        <div class="tipo-card-img">${tipoIconSVG(t.id)}</div><strong>${t.label}</strong><small>${t.desc}</small>
+      </div>`).join('')}
     </div>
     ${camposCadastro()}
-    <button class="btn btn-primary w-full mt-4" onclick="cadastrar()">Cadastrar ✅</button>
-    <button class="btn btn-outline w-full mt-2" onclick="authMode='login';renderLogin()">← Já tenho conta</button>`;
+    <button class="btn btn-primary w-full mt-4" onclick="cadastrar()">Cadastrar</button>
+    <button class="btn btn-outline w-full mt-2" onclick="authMode='login';renderLogin()">Ja tenho conta</button>`;
 }
 
 function camposCadastro(){
-  let h = `<div class="space-y-3">
+  let h=`<div class="space-y-3">
     <div><label class="field-label">Nome completo</label><input class="input" id="c-nome"></div>
-    <div><label class="field-label">Usuário (para login)</label><input class="input" id="c-user" placeholder="sem espaços"></div>
-    <div><label class="field-label">Senha</label><input class="input" type="password" id="c-pass" placeholder="mínimo 4 caracteres"></div>`;
+    <div><label class="field-label">Usuario (para login)</label><input class="input" id="c-user" placeholder="sem espacos"></div>
+    <div><label class="field-label">Senha</label><input class="input" type="password" id="c-pass" placeholder="minimo 4 caracteres"></div>`;
   if(authTipo==='aluno'){
     h+=`<div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="c-bd"></div>
     <div class="grid2">
       <div><label class="field-label">Altura (cm)</label><input class="input" type="number" id="c-alt" placeholder="160"></div>
       <div><label class="field-label">Peso (kg)</label><input class="input" type="number" id="c-peso" placeholder="55"></div>
     </div>
-    <div><label class="field-label">Escola</label><input class="input" id="c-escola" placeholder="Nome da escola"></div>
-    <div><label class="field-label">Série</label>
-      <select class="select" id="c-serie">
-        <option value="">Selecione</option>
-        ${['1º','2º','3º','4º','5º'].map(s=>`<option>${s} ano EF I</option>`).join('')}
-        ${['6º','7º','8º','9º'].map(s=>`<option>${s} ano EF II</option>`).join('')}
-        ${['1º','2º','3º'].map(s=>`<option>${s} ano EM</option>`).join('')}
-      </select>
-    </div>
-    <div><label class="field-label">Objetivo</label>
-      <select class="select" id="c-obj">
-        <option value="saude">💚 Saúde geral</option>
-        <option value="Crescimento Saudável">🌱 Crescimento Saudável</option>
-        <option value="Equilíbrio">⚖️ Equilíbrio</option>
-        <option value="Deslocamento Ativo">🏃 Deslocamento Ativo</option>
-        <option value="Exercício Físico">💪 Exercício Físico</option>
-      </select>
-    </div>`;
+    <div>${escolaSelectHTML('c')}</div>
+    <div><label class="field-label">Serie</label><select class="select" id="c-serie">
+      <option value="">Selecione</option>
+      ${['1º','2º','3º','4º','5º'].map(s=>`<option>${s} ano EF I</option>`).join('')}
+      ${['6º','7º','8º','9º'].map(s=>`<option>${s} ano EF II</option>`).join('')}
+      ${['1º','2º','3º'].map(s=>`<option>${s} ano EM</option>`).join('')}
+    </select></div>
+    <div><label class="field-label">Objetivo</label><select class="select" id="c-obj">
+      <option value="saude">Saude geral</option>
+      <option value="Crescimento Saudavel">Crescimento Saudavel</option>
+      <option value="Equilibrio">Equilibrio</option>
+      <option value="Deslocamento Ativo">Deslocamento Ativo</option>
+      <option value="Exercicio Fisico">Exercicio Fisico</option>
+    </select></div>`;
   }
   if(authTipo==='responsavel'){
     h+=`<div><label class="field-label">Email</label><input class="input" id="c-email"></div>
-    <div><label class="field-label">Usuários dos filhos (separados por vírgula)</label><input class="input" id="c-filhos" placeholder="Ex: joao123, maria456"></div>`;
+    <div><label class="field-label">Usuarios dos filhos (separados por virgula)</label><input class="input" id="c-filhos" placeholder="Ex: joao123, maria456"></div>`;
   }
   if(authTipo==='colaborador'){
-    h+=`<div><label class="field-label">Função</label><input class="input" id="c-funcao" placeholder="Professor, coordenador..."></div>
-    <div><label class="field-label">Escola (usuário da escola)</label><input class="input" id="c-escola-user" placeholder="usuario_da_escola"></div>`;
+    h+=`<div><label class="field-label">Funcao</label><input class="input" id="c-funcao" placeholder="Professor, coordenador..."></div>
+    <div><label class="field-label">Escola (usuario da escola)</label><input class="input" id="c-escola-user" placeholder="usuario_da_escola"></div>`;
   }
   if(authTipo==='escola'){
     h+=`<div><label class="field-label">Nome da escola</label><input class="input" id="c-escola-nome"></div>
@@ -513,56 +511,64 @@ function camposCadastro(){
 }
 
 function cadastrar(){
-  const nome = (document.getElementById('c-nome')||{}).value?.trim();
-  const user = (document.getElementById('c-user')||{}).value?.trim().toLowerCase();
-  const pass = (document.getElementById('c-pass')||{}).value?.trim();
-  if(!nome||!user||!pass){ showToast('❌ Preencha nome, usuário e senha.'); return; }
-  if(pass.length<4){ showToast('❌ Senha precisa ter pelo menos 4 caracteres.'); return; }
-  if(AUTH.contas.some(c=>c.login===user)){ showToast('❌ Esse usuário já existe. Escolha outro.'); return; }
-  const conta = { id: Date.now().toString(), tipo:authTipo, nome, login:user, senha:pass, dados:{} };
+  const user=(document.getElementById('c-user')||{}).value?.trim().toLowerCase();
+  const pass=(document.getElementById('c-pass')||{}).value?.trim();
+
+  // Para escola, o nome vem do campo "Nome da escola", não de "c-nome"
+  let nome;
+  if(authTipo==='escola'){
+    nome=(document.getElementById('c-escola-nome')||{}).value?.trim();
+    if(!nome){showToast('Preencha o nome da escola.');return;}
+  } else {
+    nome=(document.getElementById('c-nome')||{}).value?.trim();
+    if(!nome){showToast('Preencha nome, usuario e senha.');return;}
+  }
+
+  if(!user||!pass){showToast('Preencha usuario e senha.');return;}
+  if(pass.length<4){showToast('Senha precisa ter pelo menos 4 caracteres.');return;}
+  if(AUTH.contas.some(c=>c.login===user)){showToast('Esse usuario ja existe. Escolha outro.');return;}
+  const conta={id:Date.now().toString(),tipo:authTipo,nome,login:user,senha:pass,dados:{}};
   if(authTipo==='aluno'){
-    conta.dados = {
-      birthdate: document.getElementById('c-bd').value,
-      altura: +(document.getElementById('c-alt').value)||160,
-      peso: +(document.getElementById('c-peso').value)||55,
-      escola: document.getElementById('c-escola').value.trim(),
-      serie: document.getElementById('c-serie').value,
-      objetivo: document.getElementById('c-obj').value,
-    };
+    const esc=getEscolaSelecionada('c');
+    if(!esc.estado||!esc.cidade||!esc.escola){showToast('Selecione estado, cidade e escola cadastrada.');return;}
+    conta.dados={birthdate:document.getElementById('c-bd').value,altura:+(document.getElementById('c-alt').value)||160,peso:+(document.getElementById('c-peso').value)||55,estado:esc.estado,cidade:esc.cidade,escola:esc.escola,serie:document.getElementById('c-serie').value,objetivo:document.getElementById('c-obj').value};
   }
   if(authTipo==='responsavel'){
-    conta.dados.email = document.getElementById('c-email').value.trim();
-    conta.dados.filhosLogins = document.getElementById('c-filhos').value.split(',').map(f=>f.trim().toLowerCase()).filter(Boolean);
+    conta.dados.email=document.getElementById('c-email').value.trim();
+    conta.dados.filhosLogins=document.getElementById('c-filhos').value.split(',').map(f=>f.trim().toLowerCase()).filter(Boolean);
   }
   if(authTipo==='colaborador'){
-    conta.dados.funcao = document.getElementById('c-funcao').value.trim();
-    conta.dados.escolaUser = document.getElementById('c-escola-user').value.trim().toLowerCase();
+    conta.dados.funcao=document.getElementById('c-funcao').value.trim();
+    conta.dados.escolaUser=document.getElementById('c-escola-user').value.trim().toLowerCase();
   }
   if(authTipo==='escola'){
-    conta.dados.escolaNome = document.getElementById('c-escola-nome').value.trim();
-    conta.dados.cnpj = document.getElementById('c-cnpj').value.trim();
-    conta.dados.email = document.getElementById('c-email').value.trim();
+    conta.dados.escolaNome=nome;
+    conta.dados.cnpj=document.getElementById('c-cnpj').value.trim();
+    conta.dados.email=document.getElementById('c-email').value.trim();
   }
   AUTH.contas.push(conta);
-  AUTH.logado = conta.id;
+  AUTH.logado=conta.id;
   saveAuth();
   loadState();
-  // garante state inicial para aluno
-  if(authTipo==='aluno') saveState();
-  showToast('✅ Conta criada! Bem-vindo, '+nome+'!');
+  if(authTipo==='aluno'){
+    S.perfil=buildPerfilFromConta(conta);
+    S.pesos=[{peso:conta.dados.peso,data:new Date().toISOString().split('T')[0],obs:'Peso do cadastro'}];
+  }
+  saveState();
+  showToast('Conta criada e salva! Agora voce entra so com login e senha.');
   iniciarApp();
 }
 
 function entrar(){
   const user = (document.getElementById('li-user')||{}).value?.trim().toLowerCase();
   const pass = (document.getElementById('li-pass')||{}).value?.trim();
-  if(!user||!pass){ showToast('❌ Preencha usuário e senha.'); return; }
+  if(!user||!pass){ showToast('Preencha usuário e senha.'); return; }
   const conta = AUTH.contas.find(c=>c.login===user && c.senha===pass);
-  if(!conta){ showToast('❌ Usuário ou senha incorretos.'); return; }
+  if(!conta){ showToast('Usuário ou senha incorretos.'); return; }
   AUTH.logado = conta.id;
   saveAuth();
   loadState();
-  showToast('👋 Bem-vindo de volta, '+conta.nome+'!');
+  showToast('Bem-vindo de volta, '+conta.nome+'!');
   iniciarApp();
 }
 
@@ -571,7 +577,7 @@ function sair(){
   saveAuth();
   S = defaultState();
   document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-screen').style.display='block';
   authMode='login';
   renderLogin();
 }
@@ -605,7 +611,7 @@ function calcTDEE(peso,altura,bd,sexo,atv){
 }
 function calcMacros(peso,altura,bd,sexo,obj,atv){
   const tdee=calcTDEE(peso,altura,bd,sexo,atv);
-  const pf={Crescimento:1.6,saúde:1.4,Equilíbrio:1.6,Deslocamento :1.4,Exercício:1.8};
+  const pf={Crescimento:1.6,saúde:1.4,Equilíbrio:1.6,Deslocamento:1.4,Exercício:1.8};
   const prot=Math.round((pf[obj]||1.4)*peso);
   const gord=Math.round(tdee*0.27/9);
   const carb=Math.round(Math.max(100,(tdee-prot*4-gord*9)/4));
@@ -616,11 +622,17 @@ function calcWaterGoal(peso,bd){
   return Math.round(Math.max(6,Math.min(12,peso*f/250)));
 }
 function getLevel(xp){
-  const levels=[{min:0,name:'🌱 Iniciante'},{min:100,name:'🌿 Ativo'},{min:250,name:'⚡ Guerreiro'},{min:500,name:'💪 Campeão'},{min:1000,name:'🏆 Lenda'}];
+  const levels=[
+    {min:0,name:'Iniciante',icon:'🌱',phrase:'Vamos iniciar uma rotina saudavel.'},
+    {min:101,name:'Explorador',icon:'🧭',phrase:'Estamos criando habitos.'},
+    {min:301,name:'Saudavel',icon:'💚',phrase:'Sua rotina esta ficando consistente.'},
+    {min:701,name:'Elite',icon:'⚡',phrase:'Voce esta mantendo constancia.'},
+    {min:1501,name:'Master Fit',icon:'🏆',phrase:'Referencia em rotina saudavel.'}
+  ];
   let lv=levels[0],nx=levels[1];
   for(let i=levels.length-1;i>=0;i--){ if(xp>=levels[i].min){lv=levels[i];nx=levels[i+1]||null;break;} }
   const pct=nx?Math.min(100,(xp-lv.min)/(nx.min-lv.min)*100):100;
-  return {level:lv,next:nx,pct,levels};
+  return {level:{...lv,name:lv.icon+' '+lv.name},next:nx?{...nx,name:nx.icon+' '+nx.name}:null,pct,levels:levels.map(l=>({...l,name:l.icon+' '+l.name}))};
 }
 
 // ============================================================
@@ -703,7 +715,6 @@ function getNavItems(){
       {id:'perfil',icon:'👤',label:'Perfil'},
     ];
   }
-  // aluno (default)
   return [
     {id:'dashboard',icon:'🏠',label:'Início'},
     {id:'alimentacao',icon:'🥗',label:'Alimentação'},
@@ -740,9 +751,13 @@ function navigate(id){currentPage=id;buildNav();renderPage();}
 
 function updateHeader(){
   const p=S.perfil||{};
+  const c=me();
   const {level}=getLevel(S.xp||0);
-  document.getElementById('header-xp').textContent=level.name+' · '+(S.xp||0)+' XP';
-  document.getElementById('header-avatar').textContent=(p.nome||me()?.nome||'A')[0].toUpperCase();
+  const avatar=document.getElementById('header-avatar');
+  document.getElementById('header-xp').innerHTML=`<div class="level-pill"><strong>${level.name} · ${S.xp||0} XP</strong><small>${level.phrase}</small></div>`;
+  if(avatar){
+    avatar.innerHTML=p.foto?`<img src="${p.foto}" alt="Foto de perfil">`:(p.nome||c?.nome||'A')[0].toUpperCase();
+  }
 }
 
 // ============================================================
@@ -752,8 +767,6 @@ let selectedObj='saude';
 function renderPage(){
   const el=document.getElementById('page-content');
   el.innerHTML='';
-  const c=me();
-  const tipo=c?c.tipo:'aluno';
   const pages={
     dashboard:renderDashboard,
     alimentacao:renderAlimentacao,
@@ -767,7 +780,7 @@ function renderPage(){
     'painel-escola':renderPainelEscola,
     'painel-responsavel':renderPainelResponsavel,
   };
-  (pages[currentPage]||renderDashboard)(el,tipo);
+  (pages[currentPage]||renderDashboard)(el);
 }
 
 function aiBadge(label){
@@ -902,6 +915,7 @@ function completeMission(id,xp){
   renderPage();
 }
 function confirmarSair(){if(confirm('Deseja sair da sua conta?')) sair();}
+
 // ============================================================
 // ALIMENTACAO
 // ============================================================
@@ -913,82 +927,50 @@ const FOOD_BY_OBJ={
   Deslocamento:[{e:'🍌',n:'Banana',c:'89 kcal/100g',tag:'energia',color:'green'},{e:'🍠',n:'Batata doce',c:'86 kcal/100g',tag:'carbo',color:'green'},{e:'🥚',n:'Ovo cozido',c:'155 kcal/100g',tag:'proteína',color:'green'},{e:'🥜',n:'Amendoim',c:'567 kcal/100g',tag:'moderado',color:'yellow'},{e:'🍫',n:'Chocolate 70%',c:'598 kcal/100g',tag:'moderação',color:'red'}],
 };
 let foodFilter='saude';
+
 function renderAlimentacao(el){
   const p=S.perfil||{};
-  foodFilter=p.objetivo||'saude';
-  const metaProt=p.metaProt||120,metaCarb=p.metaCarb||250,metaGord=p.metaGord||60;
   const done=S.refeicoes.filter(m=>m.feita);
+  const totalKcal=done.reduce((a,m)=>a+m.kcal,0);
   const totalProt=done.reduce((a,m)=>a+m.prot,0);
   const totalCarb=done.reduce((a,m)=>a+m.carb,0);
   const totalGord=done.reduce((a,m)=>a+m.gord,0);
-  const filters=['Crescimento Saudável','saúde','equilíbrio','Exercício Físico','Deslocamento Ativo'];
+  const mealMission=Math.min(100,(S.refeicoes.length/3)*100);
   el.innerHTML=`
-    <div class="page-title"><h1>🥗 <span class="text-primary">Alimentação</span></h1>
-      <div class="flex gap-2">
-        <button class="btn btn-ai" onclick="sugerirAlimentacao()"><span>✦</span> IA</button>
-        <button class="btn btn-primary" onclick="openModal('modal-meal')">+ Refeição</button>
-      </div>
+    <div class="page-title"><h1>Alimentacao <span class="text-primary">Gamificada</span></h1><div class="flex gap-2"><button class="btn btn-ai" onclick="sugerirAlimentacao()">Sugestao IA</button><button class="btn btn-primary" onclick="openModal('modal-meal')">+ Refeicao</button></div></div>
+    <div class="food-game-card mb-4">
+      <div class="flex justify-between items-center mb-3"><div><div class="card-title" style="margin:0">Missao alimentar do dia</div><strong>Registre 3 refeicoes para hoje</strong></div><span class="xp-chip">+30 XP</span></div>
+      <div class="progress-track" style="height:12px"><div class="progress-fill" style="width:${mealMission}%;background:linear-gradient(90deg,#22c55e,#3b82f6,#f97316)"></div></div>
+      <p class="text-xs text-muted mt-2">${Math.min(3,S.refeicoes.length)} de 3 refeicoes registradas.</p>
     </div>
     <div class="grid3">
-      ${[{label:'Proteínas',val:totalProt,meta:metaProt,color:'#3b82f6'},{label:'Carboidratos',val:totalCarb,meta:metaCarb,color:'#fb923c'},{label:'Gorduras',val:totalGord,meta:metaGord,color:'#a855f7'}].map(m=>`
-        <div class="card"><div class="card-title">${m.label}</div>
-          <div style="font-weight:700;font-size:1.4rem">${m.val}g</div>
-          <div class="progress-track mt-2"><div class="progress-fill" style="width:${Math.min(100,m.val/m.meta*100)}%;background:${m.color}"></div></div>
-          <div style="font-size:.68rem;color:var(--muted-fg);margin-top:4px">Meta: ${m.meta}g</div>
-        </div>`).join('')}
+      ${[{label:'Proteinas',val:totalProt,meta:p.metaProt||120,color:'#3b82f6'},{label:'Carboidratos',val:totalCarb,meta:p.metaCarb||250,color:'#fb923c'},{label:'Gorduras',val:totalGord,meta:p.metaGord||60,color:'#a855f7'}].map(m=>`<div class="card"><div class="card-title">${m.label}</div><div style="font-weight:800;font-size:1.5rem">${m.val}g</div><div class="progress-track mt-2" style="height:10px"><div class="progress-fill" style="width:${Math.min(100,m.val/m.meta*100)}%;background:linear-gradient(90deg,${m.color},#22c55e)"></div></div><div class="text-xs text-muted mt-1">Meta: ${m.meta}g</div></div>`).join('')}
     </div>
     <div class="grid2 mt-4">
-      <div class="card">
-        <div class="card-title">Minhas refeições</div>
-        ${S.refeicoes.length===0
-          ?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🍽️</div><p class="text-sm font-semibold mt-2">Registre sua primeira refeição!</p><button class="btn btn-primary btn-sm mt-3" onclick="openModal(\'modal-meal\')">+ Adicionar</button></div>'
-          :'<div class="space-y-2 overflow-y-auto">'+S.refeicoes.map((m,i)=>`
-            <div class="meal-item${m.feita?' done':''}">
-              <span class="meal-item-icon">${m.icon}</span>
-              <div class="meal-item-info">
-                <strong ${m.feita?'style="text-decoration:line-through"':''}>${m.nome}</strong>
-                <small>${m.hora} · ${m.kcal} kcal · P:${m.prot}g C:${m.carb}g</small>
-              </div>
-              <button class="check-btn" onclick="toggleMeal(${i})">${m.feita?'✅':'⬜'}</button>
-              <button class="del-btn" onclick="removeMeal(${i})">🗑</button>
-            </div>`).join('')+'</div>'
-        }
+      <div class="card"><div class="flex justify-between items-center mb-3"><div class="card-title" style="margin:0">Minhas refeicoes</div><span class="xp-chip">+10 XP por refeicao</span></div>
+        ${S.refeicoes.length===0?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🥗</div><p class="text-sm font-semibold mt-2">Registre sua primeira refeicao!</p><button class="btn btn-primary btn-sm mt-3" onclick="openModal(\'modal-meal\')">+ Adicionar</button></div>':'<div class="space-y-2 overflow-y-auto">'+S.refeicoes.map((m,i)=>`<div class="meal-item${m.feita?' done':''}"><span class="meal-item-icon">${m.icon}</span><div class="meal-item-info"><strong ${m.feita?'style="text-decoration:line-through"':''}>${m.nome}</strong><small>${m.hora} · ${m.kcal} kcal · P:${m.prot}g C:${m.carb}g · +10 XP</small></div><button class="check-btn" onclick="toggleMeal(${i})">${m.feita?'✅':'⬜'}</button><button class="del-btn" onclick="removeMeal(${i})">🗑</button></div>`).join('')+'</div>'}
       </div>
-      <div class="card">
-        <div class="flex items-center gap-2 mb-3">${aiBadge()}<div class="card-title" style="margin:0">Alimentos sugeridos</div></div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
-          ${filters.map(f=>`<button class="btn btn-sm ${foodFilter===f?'btn-primary':'btn-outline'}" onclick="setFoodFilter('${f}')">${f}</button>`).join('')}
-        </div>
-        <div class="space-y-2 overflow-y-auto">
-          ${(FOOD_BY_OBJ[foodFilter]||[]).map(f=>`
-            <div class="meal-item"><span class="meal-item-icon">${f.e}</span>
-              <div class="meal-item-info"><strong>${f.n}</strong><small>${f.c}</small></div>
-              <span class="food-tag-${f.color}">${f.tag}</span>
-            </div>`).join('')}
-        </div>
-      </div>
+      <div class="card"><div class="card-title">Grafico rapido</div><div class="mini-chart">${[{l:'Kcal',v:Math.min(100,totalKcal/(p.meta||2000)*100)},{l:'Prot',v:Math.min(100,totalProt/(p.metaProt||120)*100)},{l:'Carb',v:Math.min(100,totalCarb/(p.metaCarb||250)*100)},{l:'Gord',v:Math.min(100,totalGord/(p.metaGord||60)*100)}].map(b=>`<div class="mini-bar" style="height:${Math.max(12,b.v)}%"><span>${b.l}</span></div>`).join('')}</div><div class="ai-tip-box mt-4"><div class="ai-tip-icon">✦</div><div><strong class="text-sm">Sugestao</strong><p class="text-xs text-muted mt-1">Priorize variedade no prato: cores, proteinas e agua.</p></div></div></div>
     </div>`;
 }
-function setFoodFilter(f){foodFilter=f;renderPage();}
-const MEAL_PLANS={
-  saúde:[{nome:'Café saudável',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false,desc:'Iogurte + frutas + granola'},{nome:'Almoço nutritivo',hora:'12:00',kcal:580,prot:38,carb:60,gord:15,icon:'☀️',feita:false,desc:'Salmão + quinoa + brócolis'},{nome:'Jantar balanceado',hora:'19:00',kcal:400,prot:30,carb:45,gord:12,icon:'🌙',feita:false,desc:'Omelete + salada'}],
-  Crescimento:[{nome:'Café saudável',hora:'07:00',kcal:300,prot:20,carb:35,gord:8,icon:'🌅',feita:false,desc:'Iogurte + frutas'},{nome:'Almoço equilibrado',hora:'12:00',kcal:500,prot:35,carb:55,gord:12,icon:'☀️',feita:false,desc:'Frango + salada'},{nome:'Jantar leve',hora:'19:00',kcal:350,prot:25,carb:35,gord:10,icon:'🌙',feita:false,desc:'Omelete + legumes'}],
-  esporte:[{nome:'Café pré-treino',hora:'07:00',kcal:500,prot:30,carb:65,gord:10,icon:'🌅',feita:false,desc:'Aveia + banana'},{nome:'Almoço proteico',hora:'12:00',kcal:700,prot:50,carb:70,gord:18,icon:'☀️',feita:false,desc:'Frango + arroz + feijão'},{nome:'Jantar recuperação',hora:'19:00',kcal:550,prot:45,carb:55,gord:14,icon:'🌙',feita:false,desc:'Atum + batata doce'}],
-  massa:[{nome:'Café hipercalórico',hora:'07:00',kcal:600,prot:40,carb:75,gord:15,icon:'🌅',feita:false,desc:'Ovos + aveia + leite'},{nome:'Almoço completo',hora:'12:00',kcal:800,prot:55,carb:85,gord:20,icon:'☀️',feita:false,desc:'Carne + arroz + feijão'},{nome:'Jantar proteico',hora:'19:00',kcal:650,prot:50,carb:70,gord:18,icon:'🌙',feita:false,desc:'Frango + batata doce'}],
-  Deslocamento:[{nome:'Café energético',hora:'07:00',kcal:400,prot:20,carb:55,gord:10,icon:'🌅',feita:false,desc:'Tapioca + ovo'},{nome:'Almoço equilibrado',hora:'12:00',kcal:600,prot:35,carb:70,gord:14,icon:'☀️',feita:false,desc:'Frango + arroz integral'},{nome:'Jantar leve',hora:'19:00',kcal:380,prot:28,carb:40,gord:10,icon:'🌙',feita:false,desc:'Sopa + pão integral'}],
-};
 function sugerirAlimentacao(){
-  const obj=(S.perfil&&S.perfil.objetivo)||'saude';
-  const plano=(MEAL_PLANS[obj]||MEAL_PLANS.saude).map(r=>({...r}));
+  const plano=[
+    {nome:'Cafe da manha equilibrado',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false},
+    {nome:'Almoco colorido',hora:'12:00',kcal:580,prot:35,carb:65,gord:14,icon:'🥗',feita:false},
+    {nome:'Jantar leve',hora:'19:00',kcal:420,prot:28,carb:48,gord:12,icon:'🌙',feita:false}
+  ];
   S.refeicoes=[...S.refeicoes,...plano].sort((a,b)=>a.hora.localeCompare(b.hora));
-  addXP(10,'Sugestão de refeições'); saveState(); renderPage();
+  addXP(10,'Plano alimentar sugerido');
+  saveState();renderPage();
 }
 function addMeal(){
   const nome=document.getElementById('m-nome').value.trim();
-  if(!nome){showToast('❌ Informe o nome!');return;}
+  if(!nome){showToast('Informe o nome!');return;}
   S.refeicoes.push({nome,hora:document.getElementById('m-hora').value,kcal:+document.getElementById('m-kcal').value||0,prot:+document.getElementById('m-prot').value||0,carb:+document.getElementById('m-carb').value||0,gord:+document.getElementById('m-gord').value||0,icon:document.getElementById('m-icon').value,feita:false});
   S.refeicoes.sort((a,b)=>a.hora.localeCompare(b.hora));
-  addXP(10,'Refeição registrada'); saveState(); closeModal('modal-meal'); renderPage();
+  addXP(10,'Refeicao registrada');
+  if(S.refeicoes.length===3) addXP(30,'Missao alimentar: 3 refeicoes');
+  saveState();closeModal('modal-meal');renderPage();
   ['m-nome','m-kcal','m-prot','m-carb','m-gord'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 }
 function toggleMeal(i){S.refeicoes[i].feita=!S.refeicoes[i].feita;saveState();renderPage();}
@@ -1005,54 +987,54 @@ const EX_SUGS={
   flexib:[{n:'Yoga',d:'45 min',k:150,how:'Posturas com respiração lenta.'},{n:'Alongamento',d:'20 min',k:60,how:'30s por grupo muscular.'},{n:'Pilates básico',d:'30 min',k:120,how:'Movimentos lentos com controle.'},{n:'Mobilidade articular',d:'15 min',k:50,how:'Movimentos circulares nos ombros e quadril.'},{n:'Respiração guiada',d:'10 min',k:25,how:'Respire profundamente e solte devagar.'}],
 };
 let exCat='kids';
+
+function exerciseIcon(nome,cat){
+  const n=(nome||'').toLowerCase();
+  if(n.includes('caminh')) return '🚶';
+  if(n.includes('corr')) return '🏃';
+  if(n.includes('bicic')||n.includes('cicl')) return '🚴';
+  if(n.includes('fut')) return '⚽';
+  if(n.includes('danc')||n.includes('danç')) return '🎵';
+  if(n.includes('corda')) return '🪢';
+  if(n.includes('along')||cat==='flexib') return '🧘';
+  if(n.includes('nata')) return '🏊';
+  return cat==='Exercicio Fisico'||cat==='massa'?'💪':'⭐';
+}
+
 function renderExercicios(el){
   const totalKcal=S.exercicios.reduce((a,e)=>a+e.kcal,0);
   const totalMin=S.exercicios.reduce((a,e)=>a+e.min,0);
-  const catFilters=[{id:'kids',label:'🧒 Atividades Recreativas'},{id:'Atividades Energéticas',label:'🔥 Atividades Energéticas'},{id:'Deslocamento Ativo',label:'🏃 Deslocamento Ativo'},{id:'Exercício Físico',label:'💪 Exercício Físico'},{id:'flexib',label:'🧘 Flexibilidade'}];
+  const days=['S','T','Q','Q','S','S','D'];
+  const categorias=[
+    {id:'kids',label:'Atividades Recreativas'},
+    {id:'perda',label:'Atividades Energeticas'},
+    {id:'cardio',label:'Deslocamento Ativo'},
+    {id:'massa',label:'Exercicio Fisico'},
+    {id:'flexib',label:'Flexibilidade'}
+  ];
+  const categoriaAtual=categorias.find(c=>c.id===exCat)||categorias[0];
+  const sugestoes=EX_SUGS[exCat]||EX_SUGS.kids||[];
   el.innerHTML=`
-    <div class="page-title"><h1>🏃 <span class="text-primary">Exercícios</span></h1>
-      <button class="btn btn-primary" onclick="openModal('modal-ex')">+ Exercício</button>
+    <div class="page-title"><h1>Exercicios <span class="text-primary">e Historico</span></h1><button class="btn btn-primary" onclick="openModal('modal-ex')">+ Exercicio</button></div>
+    <div class="grid4">
+      <div class="stat-card"><div class="stat-card-bar" style="background:#fb923c"></div><div class="stat-value">${totalKcal}</div><div class="stat-label">kcal queimadas</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#3b82f6"></div><div class="stat-value">${totalMin}</div><div class="stat-label">minutos ativos</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#22c55e"></div><div class="stat-value">${S.exercicios.length}</div><div class="stat-label">atividades hoje</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div class="stat-value">${S.streak||0}</div><div class="stat-label">streak saudavel</div></div>
     </div>
-    <div class="grid2">
-      <div class="card"><div class="card-title">Calorias queimadas</div>
-        <div style="font-weight:700;font-size:2rem;color:var(--orange)">${totalKcal} kcal</div>
-        <div class="progress-track mt-2"><div class="progress-fill" style="width:${Math.min(100,totalKcal/500*100)}%;background:linear-gradient(90deg,#fb923c,#ef4444)"></div></div>
-        <div class="text-xs text-muted mt-1">Meta: 500 kcal</div>
-      </div>
-      <div class="card"><div class="card-title">Tempo de treino</div>
-        <div style="font-weight:700;font-size:2rem;color:var(--primary)">${totalMin} min</div>
-        <div class="text-xs text-muted mt-2">${S.exercicios.length} atividade${S.exercicios.length!==1?'s':''} hoje</div>
-      </div>
-    </div>
+    <div class="card mt-4"><div class="flex justify-between items-center mb-3"><div class="card-title" style="margin:0">Calendario ativo</div><span class="xp-chip">caminhada +40 XP</span></div><div style="display:flex;gap:6px">${days.map((d,i)=>`<div class="streak-day ${i===new Date().getDay()?'today':(S.streakDays[i]?'done':'')}">${d}</div>`).join('')}</div></div>
     <div class="grid2 mt-4">
-      <div class="card"><div class="card-title">Minhas atividades hoje</div>
-        ${S.exercicios.length===0
-          ?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🏋️</div><p class="text-sm font-semibold mt-2">Vamos se movimentar hoje?</p></div>'
-          :'<div class="space-y-2">'+S.exercicios.map((e,i)=>`
-            <div class="ex-item">
-              <div class="ex-icon-box">🏋️</div>
-              <div style="flex:1"><strong style="font-size:.85rem">${e.nome}</strong><div class="text-xs text-muted">${e.min} min · ${e.series}</div></div>
-              <div style="font-weight:700;font-size:.85rem;color:var(--orange)">${e.kcal} kcal</div>
-              <button class="del-btn" onclick="removeEx(${i})">🗑</button>
-            </div>`).join('')+'</div>'
-        }
+      <div class="card">
+        <div class="card-title">Historico de atividades</div>
+        ${S.exercicios.length===0?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🏃</div><p class="text-sm font-semibold mt-2">Vamos se movimentar hoje?</p></div>':'<div class="space-y-2">'+S.exercicios.map((e,i)=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.nome,e.cat)}</div><div style="flex:1"><strong style="font-size:.9rem">${e.nome}</strong><div class="text-xs text-muted">${e.cat||'Atividade'} · ${e.min} min · ${e.series} · ${e.kcal} kcal</div></div><span class="xp-chip">+${e.xp||15} XP</span><button class="del-btn" onclick="removeEx(${i})">🗑</button></div>`).join('')+'</div>'}
       </div>
       <div class="card">
-        <div class="flex items-center gap-2 mb-3"><div class="card-title" style="margin:0">Atividades sugeridas</div>${aiBadge()}</div>
+        <div class="flex items-center gap-2 mb-3"><div class="card-title" style="margin:0">Atividades sugeridas</div>${aiBadge(categoriaAtual.label)}</div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
-          ${catFilters.map(c=>`<button class="btn btn-sm ${exCat===c.id?'btn-primary':'btn-outline'}" onclick="setExCat('${c.id}')">${c.label}</button>`).join('')}
+          ${categorias.map(c=>`<button class="btn btn-sm ${exCat===c.id?'btn-primary':'btn-outline'}" onclick="setExCat('${c.id}')">${c.label}</button>`).join('')}
         </div>
         <div class="space-y-2 overflow-y-auto">
-          ${(EX_SUGS[exCat]||[]).map(e=>`
-            <div class="ex-item">
-              <div class="ex-icon-box">🏋️</div>
-              <div style="flex:1">
-                <strong style="font-size:.85rem">${e.n}</strong>
-                <div class="text-xs text-muted">${e.d}</div>
-                <button style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--primary);font-weight:600;padding:0" onclick="showHowTo('${e.n.replace(/'/g,"\\'")}','${e.how.replace(/'/g,"\\'")}')">📖 Como fazer</button>
-              </div>
-              <div style="font-size:.78rem;font-weight:700;color:var(--orange)">~${e.k} kcal</div>
-            </div>`).join('')}
+          ${sugestoes.map(e=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.n,exCat)}</div><div style="flex:1"><strong style="font-size:.85rem">${e.n}</strong><div class="text-xs text-muted">${categoriaAtual.label} · ${e.d}</div><button style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--primary);font-weight:600;padding:0" onclick="showHowTo('${e.n.replace(/'/g,"\\'")}','${e.how.replace(/'/g,"\\'")}')">Como fazer</button></div><span class="xp-chip">+${e.n.toLowerCase().includes('caminh')?40:20} XP</span></div>`).join('')}
         </div>
       </div>
     </div>`;
@@ -1061,9 +1043,10 @@ function setExCat(c){exCat=c;renderPage();}
 function showHowTo(title,text){document.getElementById('howto-title').textContent=title;document.getElementById('howto-text').textContent=text;openModal('modal-howto');}
 function addExercicio(){
   const nome=document.getElementById('e-nome').value.trim();
-  if(!nome){showToast('❌ Informe o nome!');return;}
-  S.exercicios.push({nome,min:+document.getElementById('e-min').value||0,kcal:+document.getElementById('e-kcal').value||0,cat:document.getElementById('e-cat').value,series:document.getElementById('e-series').value||'—'});
-  addXP(15,'Exercício registrado'); saveState(); closeModal('modal-ex'); renderPage();
+  if(!nome){showToast('Informe o nome!');return;}
+  const xp=nome.toLowerCase().includes('caminh')?40:20;
+  S.exercicios.push({nome,min:+document.getElementById('e-min').value||0,kcal:+document.getElementById('e-kcal').value||0,cat:document.getElementById('e-cat').value,series:document.getElementById('e-series').value||'—',xp});
+  addXP(xp,'Atividade fisica registrada');saveState();closeModal('modal-ex');renderPage();
   ['e-nome','e-min','e-kcal','e-series'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 }
 function removeEx(i){S.exercicios.splice(i,1);saveState();renderPage();}
@@ -1127,71 +1110,24 @@ function renderEvolucao(el){
   const altura=(p.altura||160)/100;
   const pesoAtual=S.pesos.length?S.pesos[0].peso:(p.peso||null);
   const imc=pesoAtual?(pesoAtual/(altura*altura)).toFixed(1):null;
-  const age=p.birthdate?calcAge(p.birthdate):12;
   const IMC_ZONES=[
-    {max:18.5,label:'Atenção ao peso',color:'#1d4ed8',bg:'#eff6ff',border:'#bfdbfe',icon:'💙',desc:'Seu corpo pode precisar de mais nutrição.'},
-    {max:25,label:'Equilíbrio saudável',color:'#15803d',bg:'#f0fdf4',border:'#bbf7d0',icon:'💚',desc:'Seu corpo está em ótima forma!'},
-    {max:30,label:'Atenção',color:'#a16207',bg:'#fefce8',border:'#fde68a',icon:'💛',desc:'Pequenos ajustes fazem grande diferença.'},
-    {max:35,label:'Acompanhamento',color:'#c2410c',bg:'#fff7ed',border:'#fed7aa',icon:'🟠',desc:'Recomendamos acompanhamento profissional.'},
-    {max:Infinity,label:'Cuidado maior',color:'#dc2626',bg:'#fef2f2',border:'#fecaca',icon:'❤️‍🩹',desc:'Procure orientação médica.'},
+    {max:18.5,label:'Atencao ao peso',color:'#1d4ed8',bg:'#eff6ff',border:'#bfdbfe',icon:'💙',desc:'Seu corpo pode precisar de mais nutricao.'},
+    {max:25,label:'Equilibrio saudavel',color:'#15803d',bg:'#f0fdf4',border:'#bbf7d0',icon:'💚',desc:'Continue fortalecendo sua rotina.'},
+    {max:30,label:'Atencao a saude',color:'#a16207',bg:'#fefce8',border:'#fde68a',icon:'💛',desc:'Pequenos ajustes de habito ajudam muito.'},
+    {max:35,label:'Vamos melhorar juntos',color:'#c2410c',bg:'#fff7ed',border:'#fed7aa',icon:'🧡',desc:'Rotina, apoio e acompanhamento fazem diferenca.'},
+    {max:Infinity,label:'Atencao a saude',color:'#dc2626',bg:'#fef2f2',border:'#fecaca',icon:'❤️',desc:'Procure orientacao profissional.'}
   ];
   const zone=imc?IMC_ZONES.find(z=>parseFloat(imc)<z.max):null;
   const imcPct=imc?Math.min(100,Math.max(0,((parseFloat(imc)-13)/(40-13))*100)):0;
-  const histHTML=S.pesos.length===0
-    ?'<p class="text-sm text-muted text-center" style="padding:20px">Nenhum peso registrado ainda. 🌱</p>'
-    :S.pesos.map((pw,i)=>{const prev=S.pesos[i+1];const diff=prev?(pw.peso-prev.peso).toFixed(1):null;
-      return `<div class="history-item">
-        <div><span style="font-weight:700">${pw.peso} kg</span><span class="text-xs text-muted" style="margin-left:8px">${pw.data}</span>${pw.obs?'<span style="font-size:.72rem;color:var(--muted-fg);font-style:italic;margin-left:4px">· '+pw.obs+'</span>':''}</div>
-        <div class="flex items-center gap-2">
-          ${diff!==null?'<span style="font-size:.75rem;font-weight:700;color:'+(parseFloat(diff)<0?'var(--green)':'var(--orange)')+'">'+( parseFloat(diff)>0?'+':'')+diff+'kg</span>':''}
-          <button class="del-btn" onclick="removePeso(${i})">🗑</button>
-        </div>
-      </div>`;}).join('');
-  const progressItems=[
-    {label:'Refeições',val:S.refeicoes.length,max:10,color:'#4ade80',icon:'🥗'},
-    {label:'Água',val:S.agua,max:p.waterGoal||8,color:'#60a5fa',icon:'💧'},
-    {label:'Exercícios',val:S.exercicios.length,max:5,color:'#fb923c',icon:'🏃'},
-    {label:'Sequência',val:S.streak||0,max:7,color:'#c084fc',icon:'🔥'},
-  ];
+  const histHTML=S.pesos.length===0?'<p class="text-sm text-muted text-center" style="padding:20px">Nenhum peso registrado ainda.</p>':S.pesos.map((pw,i)=>`<div class="history-item"><div><span style="font-weight:700">${pw.peso} kg</span><span class="text-xs text-muted" style="margin-left:8px">${pw.data}</span></div><button class="del-btn" onclick="removePeso(${i})">🗑</button></div>`).join('');
   el.innerHTML=`
-    <div class="page-title">
-      <div><h1>📊 <span class="text-primary">Minha Evolução</span></h1><p class="text-xs text-muted" style="margin-top:2px">Saúde, hábitos e bem-estar</p></div>
-      <button class="btn btn-primary" onclick="openModal('modal-peso');document.getElementById('p-data').value=new Date().toISOString().split('T')[0]">+ Peso</button>
-    </div>
-    <div class="grid3">
-      <div class="card"><div style="font-size:1.3rem">⚖️</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${pesoAtual?pesoAtual+'kg':'--'}</div><div class="text-xs text-muted">peso atual</div></div>
-      <div class="card"><div style="font-size:1.3rem">🎯</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${p.pesoMeta?p.pesoMeta+'kg':'--'}</div><div class="text-xs text-muted">peso meta</div></div>
-      <div class="card" ${zone?'style="background:'+zone.bg+';border-color:'+zone.border+'"':''}>
-        <div style="font-size:1.3rem">${zone?zone.icon:'📐'}</div>
-        <div style="font-weight:700;font-size:1.5rem;margin-top:4px;color:${zone?zone.color:'#1a2340'}">${imc||'--'}</div>
-        <div class="text-xs text-muted">IMC</div>
-        ${zone?'<div style="font-size:.68rem;font-weight:700;color:'+zone.color+'">'+zone.label+'</div>':''}
-      </div>
-    </div>
-    <div class="grid2 mt-4">
-      <div class="card">
-        <div class="card-title">Indicador IMC</div>
-        <div class="imc-gradient">${imc?'<div class="imc-pointer" style="left:'+imcPct+'%"></div>':''}</div>
-        <div class="flex justify-between" style="font-size:.65rem;color:var(--muted-fg);margin-bottom:12px"><span>Baixo</span><span>Saudável</span><span>Atenção</span><span>+Cuidado</span></div>
-        ${zone?'<div style="background:'+zone.bg+';border:1px solid '+zone.border+';border-radius:12px;padding:10px;margin-bottom:12px"><div style="font-weight:700;font-size:.85rem;color:'+zone.color+'">'+zone.icon+' '+zone.label+'</div><p class="text-xs text-muted mt-1">'+zone.desc+'</p></div>':''}
-        <div class="card-title">Histórico de peso</div>
-        <div class="overflow-y-auto">${histHTML}</div>
-      </div>
-      <div class="card">
-        <div class="flex items-center gap-2 mb-4">${aiBadge()}<div class="card-title" style="margin:0">Evolução holística</div></div>
-        <div class="space-y-3">
-          ${progressItems.map(item=>`
-            <div>
-              <div class="flex justify-between items-center mb-1"><span style="font-size:.8rem;font-weight:600">${item.icon} ${item.label}</span><span class="text-xs text-muted">${item.val} / ${item.max}</span></div>
-              <div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,item.val/item.max*100)}%;background:${item.color}"></div></div>
-            </div>`).join('')}
-        </div>
-      </div>
-    </div>`;
+    <div class="page-title"><div><h1>Minha <span class="text-primary">Evolucao</span></h1><p class="text-xs text-muted">Saude, habitos e bem-estar</p></div><button class="btn btn-primary" onclick="openModal('modal-peso');document.getElementById('p-data').value=new Date().toISOString().split('T')[0]">+ Peso</button></div>
+    <div class="grid3"><div class="card"><div style="font-size:1.3rem">⚖️</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${pesoAtual?pesoAtual+'kg':'--'}</div><div class="text-xs text-muted">peso atual</div></div><div class="card"><div style="font-size:1.3rem">🎯</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${p.pesoMeta?p.pesoMeta+'kg':'--'}</div><div class="text-xs text-muted">peso meta</div></div><div class="card" ${zone?'style="background:'+zone.bg+';border-color:'+zone.border+'"':''}><div style="font-size:1.3rem">${zone?zone.icon:'📐'}</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px;color:${zone?zone.color:'#1a2340'}">${imc||'--'}</div><div class="text-xs text-muted">IMC</div>${zone?'<div style="font-size:.68rem;font-weight:700;color:'+zone.color+'">'+zone.label+'</div>':''}</div></div>
+    <div class="grid2 mt-4"><div class="card"><div class="card-title">Indicador IMC</div><div class="imc-gradient">${imc?'<div class="imc-pointer" style="left:'+imcPct+'%"></div>':''}</div><div class="flex justify-between" style="font-size:.65rem;color:var(--muted-fg);margin-bottom:12px"><span>Baixo</span><span>Saudavel</span><span>Atencao</span><span>Melhorar juntos</span></div>${zone?'<div style="background:'+zone.bg+';border:1px solid '+zone.border+';border-radius:12px;padding:10px;margin-bottom:12px"><div style="font-weight:700;font-size:.85rem;color:'+zone.color+'">'+zone.icon+' '+zone.label+'</div><p class="text-xs text-muted mt-1">'+zone.desc+'</p></div>':''}<div class="card-title">Historico de peso</div><div class="overflow-y-auto">${histHTML}</div></div><div class="card"><div class="card-title">Evolucao holistica</div>${[{label:'Refeicoes',val:S.refeicoes.length,max:10,color:'#4ade80',icon:'🥗'},{label:'Agua',val:S.agua,max:p.waterGoal||8,color:'#60a5fa',icon:'💧'},{label:'Exercicios',val:S.exercicios.length,max:5,color:'#fb923c',icon:'🏃'},{label:'XP de rotina',val:S.xp||0,max:1500,color:'#c084fc',icon:'⭐'}].map(item=>`<div class="mb-3"><div class="flex justify-between items-center mb-1"><span style="font-size:.8rem;font-weight:600">${item.icon} ${item.label}</span><span class="text-xs text-muted">${item.val} / ${item.max}</span></div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,item.val/item.max*100)}%;background:${item.color}"></div></div></div>`).join('')}</div></div>`;
 }
 function addPeso(){
   const peso=document.getElementById('p-peso').value;
-  if(!peso){showToast('❌ Informe o peso!');return;}
+  if(!peso){showToast('Informe o peso!');return;}
   S.pesos.unshift({peso:+peso,data:document.getElementById('p-data').value,obs:document.getElementById('p-obs').value});
   S.pesos=S.pesos.slice(0,30);
   addXP(10,'Peso registrado'); saveState(); checkBadges(); closeModal('modal-peso'); renderPage();
@@ -1249,7 +1185,6 @@ function sugerirExercicio(){S.exercicios.push({nome:'Caminhada',min:30,kcal:150,
 // ============================================================
 function renderCronograma(el){
   const p=S.perfil||{};
-  const c=me();
   const peso=S.pesos.length?S.pesos[0].peso:(p.peso||60);
   const alturaM=(p.altura||160)/100;
   const imc=(peso/(alturaM*alturaM)).toFixed(1);
@@ -1263,16 +1198,15 @@ function renderCronograma(el){
   const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const hoje=new Date();
 
-  // Recomendações nutricionais por mês
   const recsNutri = status==='acima'
-    ? ['Reduza alimentos ultraprocessados e aumente vegetais e proteínas magras.','Inclua fibras nas refeições para aumentar saciedade (aveia, legumes, frutas).','Mantenha as refeições regulares, evitando pular o café da manhã.','Prefira água a sucos e refrigerantes. Meta: '+(p.waterGoal||8)+' copos/dia.','Continue firme! Os resultados acumulam com consistência.']
+    ? ['Reduza alimentos ultraprocessados e aumente vegetais e proteínas magras.','Inclua fibras nas refeições para aumentar saciedade.','Mantenha as refeições regulares, evitando pular o café da manhã.','Prefira água a sucos e refrigerantes. Meta: '+(p.waterGoal||8)+' copos/dia.','Continue firme! Os resultados acumulam com consistência.']
     : status==='abaixo'
-    ? ['Aumente a frequência das refeições com alimentos nutritivos e calóricos saudáveis.','Inclua proteínas em todas as refeições: ovos, frango, leguminosas, laticínios.','Consuma lanches saudáveis entre as refeições: castanhas, iogurte, frutas com pasta.','Invista em alimentos ricos em nutrientes: abacate, banana, batata-doce.','Mantenha o acompanhamento nutricional para garantir crescimento saudável.']
-    : ['Mantenha a rotina atual de alimentação equilibrada.','Continue priorizando alimentos naturais e variados.','Hidrate-se bem e mantenha a atividade física regular.','Monitore seu peso semanalmente para manter o equilíbrio.','Parabéns! Continue com os hábitos saudáveis.'];
+    ? ['Aumente a frequência das refeições com alimentos nutritivos.','Inclua proteínas em todas as refeições.','Consuma lanches saudáveis entre as refeições.','Invista em alimentos ricos em nutrientes: abacate, banana, batata-doce.','Mantenha o acompanhamento nutricional.']
+    : ['Mantenha a rotina de alimentação equilibrada.','Continue priorizando alimentos naturais e variados.','Hidrate-se bem e mantenha a atividade física.','Monitore seu peso semanalmente.','Parabéns! Continue com os hábitos saudáveis.'];
 
   const recsTreino = status==='acima'
-    ? ['Inicie com 20-30 min de caminhada rápida diária.','Adicione exercícios de resistência 2x por semana (agachamento, flexão).','Inclua atividades que você goste: dança, natação, esportes coletivos.','Aumente a intensidade gradualmente: substitua 10 min de caminhada por corrida.','Mantenha ao menos 150 min de atividade moderada por semana.']
-    : ['Pratique exercícios leves para fortalecer a musculatura.','Inclua exercícios de força supervisionados para ganho de massa.','Priorize atividades de baixo impacto se estiver abaixo do peso.','Aumente o volume de treino gradualmente a cada semana.','Descanse bem: o crescimento muscular ocorre no repouso.'];
+    ? ['Inicie com 20-30 min de caminhada rápida diária.','Adicione exercícios de resistência 2x por semana.','Inclua atividades que você goste.','Aumente a intensidade gradualmente.','Mantenha ao menos 150 min de atividade por semana.']
+    : ['Pratique exercícios leves para fortalecer a musculatura.','Inclua exercícios de força supervisionados.','Priorize atividades de baixo impacto.','Aumente o volume de treino gradualmente.','Descanse bem: o crescimento muscular ocorre no repouso.'];
 
   el.innerHTML=`
     <div class="page-title">
@@ -1282,41 +1216,31 @@ function renderCronograma(el){
         <button class="btn btn-sm" style="background:#fff7ed;border:1px solid #fed7aa;color:#c2410c;font-weight:700" onclick="gerarPDFProjecao()">📄 Baixar PDF</button>
       </div>
     </div>
-
-    <!-- CARDS SITUAÇÃO -->
     <div class="grid4 mb-4">
       <div class="stat-card"><div class="stat-card-bar" style="background:var(--blue)"></div><div style="font-size:1.3rem">⚖️</div><div class="stat-value" style="font-size:1.3rem">${peso} kg</div><div class="stat-label">peso atual</div></div>
       <div class="stat-card"><div class="stat-card-bar" style="background:var(--green)"></div><div style="font-size:1.3rem">🎯</div><div class="stat-value" style="font-size:1.3rem">${pesoIdeal.toFixed(1)} kg</div><div class="stat-label">peso ideal</div></div>
       <div class="stat-card"><div class="stat-card-bar" style="background:${status==='normal'?'#4ade80':status==='acima'?'#fb923c':'#60a5fa'}"></div><div style="font-size:1.3rem">📐</div><div class="stat-value" style="font-size:1.3rem">${imc}</div><div class="stat-label">IMC</div></div>
       <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div style="font-size:1.3rem">🔥</div><div class="stat-value" style="font-size:1.3rem">${tdee}</div><div class="stat-label">kcal/dia estimadas</div></div>
     </div>
-
-    <!-- STATUS GERAL -->
     <div class="ai-tip-box mb-4">
       <div class="ai-tip-icon">✦</div>
       <div>
         ${aiBadge('Análise personalizada')}
         <p class="text-sm" style="margin-top:4px">
           ${status==='normal'
-            ? '✅ Você está no intervalo de peso saudável! Continue mantendo seus hábitos e monitore regularmente.'
+            ? '✅ Você está no intervalo de peso saudável!'
             : status==='acima'
-            ? `⚠️ Você está <strong>${diff} kg acima</strong> do peso ideal estimado. Com hábitos saudáveis, é possível alcançar o equilíbrio em 5 meses.`
-            : `📉 Você está <strong>${Math.abs(parseFloat(diff)).toFixed(1)} kg abaixo</strong> do ideal. Foque em nutrição adequada para um crescimento saudável.`}
-          ${age<18?' <strong>Lembre-se:</strong> você ainda está em desenvolvimento — consulte sempre um profissional de saúde!':''}
+            ? `⚠️ Você está <strong>${diff} kg acima</strong> do peso ideal estimado.`
+            : `📉 Você está <strong>${Math.abs(parseFloat(diff)).toFixed(1)} kg abaixo</strong> do ideal.`}
+          ${age<18?' <strong>Lembre-se:</strong> consulte sempre um profissional de saúde!':''}
         </p>
       </div>
     </div>
-
     <div class="grid2">
-      <!-- PLANO MENSAL -->
       <div class="card">
         <div class="card-title">📊 Projeção mês a mês</div>
         ${status==='normal'
-          ?`<div style="text-align:center;padding:24px 0">
-              <div style="font-size:2.5rem">✅</div>
-              <p class="font-semibold mt-2">Você está no peso ideal!</p>
-              <p class="text-xs text-muted mt-1">Foque em manter os hábitos saudáveis.</p>
-            </div>`
+          ?`<div style="text-align:center;padding:24px 0"><div style="font-size:2.5rem">✅</div><p class="font-semibold mt-2">Você está no peso ideal!</p></div>`
           :`<div class="space-y-3">
               ${dist.map((pct,i)=>{
                 const kg=(kgDiff*pct).toFixed(1);
@@ -1326,26 +1250,15 @@ function renderCronograma(el){
                 const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
                 return `<div style="background:var(--secondary);border-radius:12px;padding:12px;border:1px solid var(--border)">
                   <div class="flex justify-between items-center mb-2">
-                    <div>
-                      <span class="text-xs font-bold">Mês ${i+1} — ${meses[mesIdx]}</span>
-                      <span style="font-size:.68rem;color:var(--muted-fg);margin-left:6px">Peso estimado: <strong>${pesoMes} kg</strong></span>
-                    </div>
+                    <span class="text-xs font-bold">Mês ${i+1} — ${meses[mesIdx]} · Peso: <strong>${pesoMes} kg</strong></span>
                     <span style="font-size:.78rem;font-weight:700;color:${color}">${status==='acima'?'−':'+'} ${kg} kg</span>
                   </div>
                   <div class="progress-track"><div class="progress-fill" style="width:${Math.round((i+1)/dist.length*100)}%;background:${color}"></div></div>
-                  <div style="font-size:.68rem;color:var(--muted-fg);margin-top:4px">Acumulado: ${acum} kg ${status==='acima'?'perdidos':'ganhos'}</div>
                 </div>`;
               }).join('')}
-              <div style="background:${status==='acima'?'#fff7ed':'#eff6ff'};border:1px solid ${status==='acima'?'#fed7aa':'#bfdbfe'};border-radius:12px;padding:12px;text-align:center">
-                <div style="font-size:1.4rem">${status==='acima'?'🏆':'💪'}</div>
-                <div style="font-weight:700;font-size:.9rem;margin-top:4px">Meta em 5 meses</div>
-                <div style="font-size:.8rem;color:var(--muted-fg)">Peso estimado: <strong>${(status==='acima'?peso-kgDiff:peso+kgDiff).toFixed(1)} kg</strong></div>
-              </div>
             </div>`
         }
       </div>
-
-      <!-- RECOMENDAÇÕES -->
       <div style="display:flex;flex-direction:column;gap:16px">
         <div class="card">
           <div class="card-title">🥗 Nutrição — dicas por mês</div>
@@ -1369,22 +1282,15 @@ function renderCronograma(el){
         </div>
       </div>
     </div>
-
-    <!-- BOTÃO PDF FINAL -->
     <div style="background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
       <div>
         <div style="font-weight:700;font-size:.95rem">📄 Relatório completo em PDF</div>
-        <div style="font-size:.78rem;color:var(--muted-fg);margin-top:2px">Inclui projeção mensal, recomendações nutricionais, de treino e dados físicos.</div>
+        <div style="font-size:.78rem;color:var(--muted-fg);margin-top:2px">Inclui projeção mensal, recomendações e dados físicos.</div>
       </div>
-      <button class="btn btn-primary" onclick="gerarPDFProjecao()" style="flex-shrink:0">
-        📥 Baixar meu plano em PDF
-      </button>
+      <button class="btn btn-primary" onclick="gerarPDFProjecao()" style="flex-shrink:0">📥 Baixar meu plano</button>
     </div>`;
 }
 
-// ============================================================
-// GERAR PDF — PROJEÇÃO PESSOAL
-// ============================================================
 function gerarPDFProjecao(){
   const p=S.perfil||{};
   const c=me();
@@ -1401,201 +1307,46 @@ function gerarPDFProjecao(){
   const {level}=getLevel(S.xp||0);
   const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const hoje=new Date();
-  const kcalConsumed=S.refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
-  const kcalBurned=S.exercicios.reduce((a,e)=>a+e.kcal,0);
-
-  const recsNutri = status==='acima'
-    ? ['Reduza alimentos ultraprocessados e aumente vegetais e proteínas magras.','Inclua fibras nas refeicoes para aumentar saciedade.','Mantenha as refeicoes regulares, evitando pular o cafe da manha.','Prefira agua a sucos e refrigerantes. Meta: '+(p.waterGoal||8)+' copos/dia.','Continue firme! Os resultados acumulam com consistencia.']
-    : status==='abaixo'
-    ? ['Aumente a frequencia das refeicoes com alimentos nutritivos.','Inclua proteinas em todas as refeicoes.','Consuma lanches saudaveis entre as refeicoes.','Invista em alimentos ricos em nutrientes: abacate, banana, batata-doce.','Mantenha acompanhamento nutricional.']
-    : ['Mantenha a rotina de alimentacao equilibrada.','Continue priorizando alimentos naturais e variados.','Hidrate-se bem e mantenha a atividade fisica.','Monitore seu peso semanalmente.','Parabens! Continue com os habitos saudaveis.'];
-
-  const recsTreino = status==='acima'
-    ? ['Inicie com 20-30 min de caminhada rapida diaria.','Adicione exercicios de resistencia 2x por semana.','Inclua atividades que voce goste.','Aumente a intensidade gradualmente.','Mantenha ao menos 150 min de atividade por semana.']
-    : ['Pratique exercicios leves para fortalecer a musculatura.','Inclua exercicios de forca supervisionados.','Priorize atividades de baixo impacto.','Aumente o volume de treino gradualmente.','Descanse bem: o crescimento muscular ocorre no repouso.'];
-
-  if(!window.jspdf){showToast('❌ Biblioteca PDF não carregada. Tente novamente.');return;}
+  if(!window.jspdf){showToast('Biblioteca PDF não carregada.');return;}
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF();
   const W=doc.internal.pageSize.getWidth();
-
-  // ---- HEADER ----
   doc.setFillColor(26,95,212);
   doc.rect(0,0,W,38,'F');
   doc.setTextColor(255,255,255);
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(16);
+  doc.setFont('helvetica','bold');doc.setFontSize(16);
   doc.text('PulseFit',14,16);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);
   doc.text('Vida Saudável na Juventude',14,23);
-  doc.setFontSize(10);
-  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);doc.setFont('helvetica','bold');
   doc.text('PLANO DE PROJECAO PERSONALIZADO — 5 MESES',14,31);
   doc.setTextColor(40,40,40);
-
   let y=46;
-
-  // ---- INFO PESSOAL ----
-  doc.setFillColor(234,240,251);
-  doc.roundedRect(10,y,W-20,30,3,3,'F');
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(10);
-  doc.text('INFORMACOES PESSOAIS',14,y+8);
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(9);
-  const col1=[`Nome: ${p.nome||c?.nome||'--'}`,`Escola: ${p.escola||'--'}`,`Serie: ${p.serie||'--'}`];
-  const col2=[`Idade: ${age} anos`,`Objetivo: ${p.objetivo||'--'}`,`Nivel: ${level.name}`];
-  col1.forEach((t,i)=>doc.text(t,14,y+14+i*6));
-  col2.forEach((t,i)=>doc.text(t,W/2,y+14+i*6));
-  y+=36;
-
-  // ---- DADOS FÍSICOS ----
-  doc.setFont('helvetica','bold');doc.setFontSize(11);
-  doc.setTextColor(26,95,212);
-  doc.text('DADOS FISICOS',14,y);
-  doc.setTextColor(40,40,40);
-  y+=5;
-  doc.setDrawColor(26,95,212);
-  doc.setLineWidth(0.5);
-  doc.line(14,y,W-14,y);
-  y+=6;
   doc.setFont('helvetica','normal');doc.setFontSize(9);
-  const fisicos=[
-    [`Peso atual: ${peso} kg`,`Peso ideal estimado: ${pesoIdeal.toFixed(1)} kg`],
-    [`IMC: ${imc}`,`Altura: ${p.altura||'--'} cm`],
-    [`Calorias diarias estimadas (TDEE): ${tdee} kcal`,`Situacao: ${status==='normal'?'No intervalo saudavel':status==='acima'?diff+' kg acima do ideal':Math.abs(parseFloat(diff)).toFixed(1)+' kg abaixo do ideal'}`],
-  ];
-  fisicos.forEach(row=>{
-    doc.text(row[0],14,y);
-    doc.text(row[1],W/2,y);
-    y+=7;
-  });
-  y+=4;
-
-  // ---- PROJEÇÃO MENSAL ----
-  doc.setFont('helvetica','bold');doc.setFontSize(11);
-  doc.setTextColor(26,95,212);
-  doc.text('PROJECAO MENSAL',14,y);
-  doc.setTextColor(40,40,40);
-  y+=5;
-  doc.line(14,y,W-14,y);
-  y+=6;
+  doc.text('Nome: '+(p.nome||c?.nome||'--'),14,y);
+  doc.text('Escola: '+(p.escola||'--'),W/2,y);y+=7;
+  doc.text('Idade: '+age+' anos',14,y);
+  doc.text('Nivel: '+level.name,W/2,y);y+=7;
+  doc.text('Peso atual: '+peso+' kg | Peso ideal: '+pesoIdeal.toFixed(1)+' kg | IMC: '+imc,14,y);y+=7;
+  doc.text('TDEE: '+tdee+' kcal/dia | Status: '+(status==='normal'?'Saudavel':status==='acima'?diff+' kg acima':Math.abs(parseFloat(diff)).toFixed(1)+' kg abaixo'),14,y);y+=12;
+  doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(26,95,212);
+  doc.text('PROJECAO MENSAL',14,y);doc.setTextColor(40,40,40);y+=5;
+  doc.setLineWidth(0.5);doc.setDrawColor(26,95,212);doc.line(14,y,W-14,y);y+=6;
   doc.setFont('helvetica','normal');doc.setFontSize(9);
-
   if(status==='normal'){
-    doc.setFillColor(240,253,244);
-    doc.roundedRect(10,y,W-20,14,2,2,'F');
-    doc.setTextColor(21,128,61);
-    doc.text('Voce ja esta no intervalo saudavel! Foque em manter seus habitos.',14,y+5);
-    doc.text('Continue monitorando regularmente e mantendo a atividade fisica.',14,y+11);
-    doc.setTextColor(40,40,40);
-    y+=20;
+    doc.text('Voce ja esta no intervalo saudavel! Continue monitorando.',14,y);y+=10;
   } else {
     dist.forEach((pct,i)=>{
       const kg=(kgDiff*pct).toFixed(1);
       const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);
       const mesIdx=(hoje.getMonth()+i+1)%12;
       const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
-      doc.setFillColor(i%2===0?245:252,i%2===0?247:253,i%2===0?255:255);
-      doc.rect(10,y-4,W-20,12,'F');
-      doc.setFont('helvetica','bold');
-      doc.text(`Mes ${i+1} — ${meses[mesIdx]}:`,14,y+2);
-      doc.setFont('helvetica','normal');
-      doc.text(`${status==='acima'?'Perder':'Ganhar'} ${kg} kg | Acumulado: ${acum} kg | Peso estimado: ${pesoMes} kg`,60,y+2);
-      y+=12;
+      doc.text(`Mes ${i+1} — ${meses[mesIdx]}: ${status==='acima'?'Perder':'Ganhar'} ${kg}kg | Acumulado: ${acum}kg | Peso estimado: ${pesoMes}kg`,14,y);
+      y+=8;
     });
-    y+=4;
-    doc.setFillColor(255,247,237);
-    doc.roundedRect(10,y,W-20,14,2,2,'F');
-    doc.setFont('helvetica','bold');
-    doc.setTextColor(194,65,12);
-    doc.text(`META FINAL (5 meses): Peso estimado ${(status==='acima'?peso-kgDiff:peso+kgDiff).toFixed(1)} kg`,14,y+5);
-    doc.setTextColor(40,40,40);
-    const atingir = status==='acima'?'Perder '+kgDiff.toFixed(1)+' kg':'Ganhar '+kgDiff.toFixed(1)+' kg';
-    doc.setFont('helvetica','normal');
-    doc.text('Objetivo: '+atingir+' de forma saudavel e gradual.',14,y+11);
-    doc.setTextColor(40,40,40);
-    y+=20;
   }
-
-  // ---- NOVA PÁGINA: RECOMENDAÇÕES ----
-  doc.addPage();
-  doc.setFillColor(26,95,212);
-  doc.rect(0,0,W,22,'F');
-  doc.setTextColor(255,255,255);
-  doc.setFont('helvetica','bold');doc.setFontSize(12);
-  doc.text('RECOMENDACOES PERSONALIZADAS',14,14);
-  doc.setTextColor(40,40,40);
-  y=32;
-
-  // NUTRIÇÃO
-  doc.setFont('helvetica','bold');doc.setFontSize(11);
-  doc.setTextColor(26,95,212);
-  doc.text('NUTRICAO — PLANO POR MES',14,y);
-  doc.setTextColor(40,40,40);
-  y+=5;doc.line(14,y,W-14,y);y+=6;
-  doc.setFont('helvetica','normal');doc.setFontSize(9);
-  recsNutri.forEach((r,i)=>{
-    const wrapped=doc.splitTextToSize(`${i+1}. ${r}`,W-28);
-    doc.setFillColor(i%2===0?245:252,i%2===0?247:253,255);
-    doc.rect(10,y-4,W-20,wrapped.length*6+4,'F');
-    doc.text(wrapped,14,y);
-    y+=wrapped.length*6+4;
-  });
-  y+=6;
-
-  // TREINO
-  doc.setFont('helvetica','bold');doc.setFontSize(11);
-  doc.setTextColor(247,115,22);
-  doc.text('TREINO — PLANO POR MES',14,y);
-  doc.setTextColor(40,40,40);
-  y+=5;doc.setDrawColor(247,115,22);doc.line(14,y,W-14,y);y+=6;
-  doc.setFont('helvetica','normal');doc.setFontSize(9);
-  recsTreino.forEach((r,i)=>{
-    const wrapped=doc.splitTextToSize(`${i+1}. ${r}`,W-28);
-    doc.setFillColor(i%2===0?255:252,i%2===0?247:253,i%2===0?237:255);
-    doc.rect(10,y-4,W-20,wrapped.length*6+4,'F');
-    doc.text(wrapped,14,y);
-    y+=wrapped.length*6+4;
-  });
-  y+=6;
-
-  // ATIVIDADE ATUAL
-  doc.setDrawColor(180,180,180);
-  doc.setFont('helvetica','bold');doc.setFontSize(11);
-  doc.setTextColor(26,95,212);
-  doc.text('ATIVIDADE ATUAL',14,y);
-  doc.setTextColor(40,40,40);
-  y+=5;doc.line(14,y,W-14,y);y+=6;
-  doc.setFont('helvetica','normal');doc.setFontSize(9);
-  const ativAtual=[
-    `Refeicoes registradas: ${S.refeicoes.length}`,
-    `Calorias consumidas hoje: ${kcalConsumed} kcal`,
-    `Calorias queimadas hoje: ${kcalBurned} kcal`,
-    `Agua hoje: ${S.agua} copos (${S.agua*250} ml)`,
-    `Exercicios hoje: ${S.exercicios.length}`,
-    `XP acumulado: ${S.xp||0} pontos | Nivel: ${level.name}`,
-    `Conquistas: ${S.badges.length} de ${ALL_BADGES.length}`,
-  ];
-  ativAtual.forEach(t=>{doc.text('• '+t,14,y);y+=7;});
-
-  // ---- RODAPÉ ----
-  const totalPages=doc.internal.getNumberOfPages();
-  for(let pg=1;pg<=totalPages;pg++){
-    doc.setPage(pg);
-    const pageH=doc.internal.pageSize.getHeight();
-    doc.setFillColor(240,244,255);
-    doc.rect(0,pageH-14,W,14,'F');
-    doc.setFont('helvetica','normal');doc.setFontSize(7);
-    doc.setTextColor(107,127,163);
-    doc.text('PulseFit — Vida Saudável na Juventude | Gerado em '+new Date().toLocaleDateString('pt-BR'),14,pageH-6);
-    doc.text('Pagina '+pg+' de '+totalPages,W-30,pageH-6);
-  }
-
-  const nomeArq='plano_projecao_'+(p.nome||c?.nome||'usuario').replace(/\s/g,'_')+'_'+hoje.toISOString().split('T')[0]+'.pdf';
-  doc.save(nomeArq);
-  showToast('📄 Plano de projeção baixado com sucesso!');
+  doc.save('plano_'+(p.nome||'usuario').replace(/\s/g,'_')+'.pdf');
+  showToast('📄 Plano baixado com sucesso!');
 }
 
 // ============================================================
@@ -1625,33 +1376,21 @@ function renderConquistas(el){
     <div class="card mt-4"><div class="card-title">Suas conquistas</div><div class="badges-grid">${badgesHTML}</div><p class="text-sm text-muted mt-3 text-center">${S.badges.length} de ${ALL_BADGES.length}</p></div>
     <div class="card mt-4"><div class="card-title">Jornada de níveis</div><div class="levels-row">${levelsHTML}</div></div>`;
 }
+
 // ============================================================
-// PAINEL ESCOLA — lista alunos cadastrados com filtro por série
+// PAINEL ESCOLA
 // ============================================================
 let escolaFiltroSerie = '';
-let alunoSelecionadoId = null;
-
 function renderPainelEscola(el) {
   const c = me();
-  // Busca todos os alunos cadastrados
   const alunos = AUTH.contas.filter(a => a.tipo === 'aluno');
   const series = [...new Set(alunos.map(a => a.dados.serie).filter(Boolean))].sort();
-
-  const alunosFiltrados = escolaFiltroSerie
-    ? alunos.filter(a => a.dados.serie === escolaFiltroSerie)
-    : alunos;
-
+  const alunosFiltrados = escolaFiltroSerie ? alunos.filter(a => a.dados.serie === escolaFiltroSerie) : alunos;
   const totalAlunos = alunos.length;
-  const alunosComDados = alunos.filter(a => {
-    try { return !!localStorage.getItem(userKey(a.id)); } catch(e) { return false; }
-  }).length;
-
+  const alunosComDados = alunos.filter(a => { try { return !!localStorage.getItem(userKey(a.id)); } catch(e) { return false; } }).length;
   el.innerHTML = `
     <div class="page-title">
-      <div>
-        <h1>🏢 <span class="text-primary">Painel da Escola</span></h1>
-        <p class="text-sm text-muted" style="margin-top:2px">${c?.dados?.escolaNome || c?.nome || 'Escola'}</p>
-      </div>
+      <div><h1>🏢 <span class="text-primary">Painel da Escola</span></h1><p class="text-sm text-muted" style="margin-top:2px">${c?.dados?.escolaNome || c?.nome || 'Escola'}</p></div>
       <button class="btn btn-sm btn-danger" onclick="confirmarSair()">Sair</button>
     </div>
     <div class="grid4 mb-4">
@@ -1660,7 +1399,6 @@ function renderPainelEscola(el) {
       <div class="stat-card"><div class="stat-card-bar" style="background:var(--orange)"></div><div style="font-size:1.4rem">🏫</div><div class="stat-value">${series.length}</div><div class="stat-label">séries</div></div>
       <div class="stat-card"><div class="stat-card-bar" style="background:#a855f7"></div><div style="font-size:1.4rem">🏆</div><div class="stat-value">${alunos.reduce((acc,a)=>{try{const s=JSON.parse(localStorage.getItem(userKey(a.id)));return acc+(s?.xp||0);}catch(e){return acc;}},0)}</div><div class="stat-label">XP total geral</div></div>
     </div>
-
     <div class="card">
       <div class="flex justify-between items-center mb-4" style="flex-wrap:wrap;gap:8px">
         <div class="card-title" style="margin:0">📋 Lista de Alunos</div>
@@ -1669,17 +1407,14 @@ function renderPainelEscola(el) {
           ${series.map(s=>`<button class="btn btn-sm ${escolaFiltroSerie===s?'btn-primary':'btn-outline'}" onclick="escolaFiltroSerie='${s.replace(/'/g,"\\'")}';renderPage()">${s}</button>`).join('')}
         </div>
       </div>
-
       ${alunosFiltrados.length === 0
         ? '<div style="text-align:center;padding:40px"><div style="font-size:2.5rem">👥</div><p class="text-sm text-muted mt-2">Nenhum aluno encontrado.</p></div>'
         : `<div class="space-y-2">
           ${alunosFiltrados.map(a => {
-            let sAluno = {};
-            try { sAluno = JSON.parse(localStorage.getItem(userKey(a.id))) || {}; } catch(e) {}
+            let sAluno = {}; try { sAluno = JSON.parse(localStorage.getItem(userKey(a.id))) || {}; } catch(e) {}
             const xp = sAluno.xp || 0;
             const agua = sAluno.agua || 0;
             const refeicoes = (sAluno.refeicoes || []).length;
-            const exercicios = (sAluno.exercicios || []).length;
             const pesos = sAluno.pesos || [];
             const pesoAtual = pesos.length ? pesos[0].peso : (a.dados.peso || '--');
             const alturaM = (a.dados.altura || 160) / 100;
@@ -1688,7 +1423,7 @@ function renderPainelEscola(el) {
               <div class="aluno-avatar">${a.nome[0].toUpperCase()}</div>
               <div style="flex:1;min-width:0">
                 <div style="font-weight:700;font-size:.9rem">${a.nome}</div>
-                <div class="text-xs text-muted">${a.dados.serie||'Série não informada'} · ${a.dados.escola||'Escola não informada'}</div>
+                <div class="text-xs text-muted">${a.dados.serie||'--'} · ${a.dados.escola||'--'}</div>
               </div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
                 <span class="badge-blue">⭐ ${xp} XP</span>
@@ -1696,8 +1431,8 @@ function renderPainelEscola(el) {
                 <span class="badge-orange">🍽️ ${refeicoes}</span>
                 ${imc!=='--'?`<span class="badge-yellow">IMC ${imc}</span>`:''}
               </div>
-              <div style="color:var(--primary);font-size:.8rem;font-weight:600;white-space:nowrap">Ver detalhes →</div>
-              <button onclick="event.stopPropagation();confirmarExcluirAluno(this.dataset.id,this.dataset.nome)" data-id="${a.id}" data-nome="${a.nome.replace(/&quot;/g,'')}" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:4px 8px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🗑 Excluir</button>
+              <div style="color:var(--primary);font-size:.8rem;font-weight:600;white-space:nowrap">Ver →</div>
+              <button onclick="event.stopPropagation();confirmarExcluirAluno(this.dataset.id,this.dataset.nome)" data-id="${a.id}" data-nome="${a.nome}" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:4px 8px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">🗑</button>
             </div>`;
           }).join('')}
         </div>`
@@ -1708,8 +1443,7 @@ function renderPainelEscola(el) {
 function verAlunoEscola(alunoId) {
   const aluno = AUTH.contas.find(c => c.id === alunoId);
   if (!aluno) return;
-  let sAluno = {};
-  try { sAluno = JSON.parse(localStorage.getItem(userKey(alunoId))) || {}; } catch(e) {}
+  let sAluno = {}; try { sAluno = JSON.parse(localStorage.getItem(userKey(alunoId))) || {}; } catch(e) {}
   exibirModalAluno(aluno, sAluno);
 }
 
@@ -1725,151 +1459,71 @@ function exibirModalAluno(aluno, sAluno) {
   const refeicoes = sAluno.refeicoes || [];
   const exercicios = sAluno.exercicios || [];
   const badges = sAluno.badges || [];
-
-  const IMC_ZONES=[
-    {max:18.5,label:'Baixo peso',color:'#1d4ed8'},{max:25,label:'Saudável',color:'#15803d'},
-    {max:30,label:'Atenção',color:'#a16207'},{max:35,label:'Acompanhamento',color:'#c2410c'},{max:Infinity,label:'Cuidado maior',color:'#dc2626'},
-  ];
+  const IMC_ZONES=[{max:18.5,label:'Baixo peso',color:'#1d4ed8'},{max:25,label:'Saudável',color:'#15803d'},{max:30,label:'Atenção',color:'#a16207'},{max:35,label:'Acompanhamento',color:'#c2410c'},{max:Infinity,label:'Cuidado maior',color:'#dc2626'}];
   const zone = imc !== '--' ? IMC_ZONES.find(z => parseFloat(imc) < z.max) : null;
-
   const kcalConsumidas = refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
-  const kcalQueimadas = exercicios.reduce((a,e)=>a+e.kcal,0);
-
   const age = d.birthdate ? calcAge(d.birthdate) : '--';
-
   document.getElementById('modal-aluno-title').textContent = '👤 ' + aluno.nome;
   document.getElementById('modal-aluno-body').innerHTML = `
     <div class="space-y-3">
-      <!-- INFO BÁSICA -->
       <div style="background:var(--secondary);border-radius:12px;padding:14px">
         <div class="grid2">
-          ${[
-            {label:'Série', val: d.serie||'--'},
-            {label:'Escola', val: d.escola||'--'},
-            {label:'Idade', val: age !== '--' ? age+' anos' : '--'},
-            {label:'Objetivo', val: d.objetivo||pf.objetivo||'--'},
-            {label:'Peso cadastro', val: d.peso ? d.peso+'kg' : '--'},
-            {label:'Altura', val: d.altura ? d.altura+'cm' : '--'},
-            {label:'Peso atual', val: pesoAtual !== '--' ? pesoAtual+'kg' : '--'},
-            {label:'IMC', val: imc + (zone ? ' — '+zone.label : '')},
-          ].map(item=>`<div style="margin-bottom:8px"><div class="text-xs text-muted">${item.label}</div><div style="font-weight:600;font-size:.85rem;${zone&&item.label==='IMC'?'color:'+zone.color:''}">${item.val}</div></div>`).join('')}
+          ${[{label:'Série', val: d.serie||'--'},{label:'Escola', val: d.escola||'--'},{label:'Idade', val: age !== '--' ? age+' anos' : '--'},{label:'Objetivo', val: d.objetivo||pf.objetivo||'--'},{label:'Peso', val: pesoAtual !== '--' ? pesoAtual+'kg' : '--'},{label:'Altura', val: d.altura ? d.altura+'cm' : '--'},{label:'IMC', val: imc + (zone ? ' — '+zone.label : '')}].map(item=>`<div style="margin-bottom:8px"><div class="text-xs text-muted">${item.label}</div><div style="font-weight:600;font-size:.85rem">${item.val}</div></div>`).join('')}
         </div>
       </div>
-
-      <!-- ATIVIDADE HOJE -->
       <div style="background:var(--secondary);border-radius:12px;padding:14px">
-        <div style="font-size:.7rem;font-weight:700;color:var(--muted-fg);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Atividade hoje</div>
+        <div style="font-size:.7rem;font-weight:700;color:var(--muted-fg);text-transform:uppercase;margin-bottom:10px">Atividade hoje</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-          ${[
-            {icon:'🍽️', label:'Refeições', val: refeicoes.length},
-            {icon:'🏃', label:'Exercícios', val: exercicios.length},
-            {icon:'💧', label:'Água', val: (sAluno.agua||0)+' copos'},
-            {icon:'🔥', label:'Kcal', val: kcalConsumidas},
-          ].map(item=>`<div style="text-align:center;background:#fff;border-radius:10px;padding:8px;border:1px solid var(--border)">
-            <div style="font-size:1.2rem">${item.icon}</div>
-            <div style="font-weight:700;font-size:.9rem">${item.val}</div>
-            <div style="font-size:.65rem;color:var(--muted-fg)">${item.label}</div>
-          </div>`).join('')}
+          ${[{icon:'🍽️',label:'Refeições',val:refeicoes.length},{icon:'🏃',label:'Exercícios',val:exercicios.length},{icon:'💧',label:'Água',val:(sAluno.agua||0)+' copos'},{icon:'🔥',label:'Kcal',val:kcalConsumidas}].map(item=>`<div style="text-align:center;background:#fff;border-radius:10px;padding:8px;border:1px solid var(--border)"><div style="font-size:1.2rem">${item.icon}</div><div style="font-weight:700;font-size:.9rem">${item.val}</div><div style="font-size:.65rem;color:var(--muted-fg)">${item.label}</div></div>`).join('')}
         </div>
       </div>
-
-      <!-- XP / NÍVEL -->
       <div style="background:#fefce8;border:1px solid #fde68a;border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px">
         <div style="font-size:1.8rem">⭐</div>
-        <div>
-          <div style="font-weight:700;font-size:.9rem">${level.name}</div>
-          <div style="font-size:.75rem;color:var(--muted-fg)">${xp} XP acumulados · ${badges.length} conquistas</div>
-        </div>
+        <div><div style="font-weight:700;font-size:.9rem">${level.name}</div><div style="font-size:.75rem;color:var(--muted-fg)">${xp} XP · ${badges.length} conquistas</div></div>
       </div>
-
-      <!-- HISTÓRICO PESO -->
-      ${pesos.length > 0 ? `
-      <div>
-        <div class="card-title">Histórico de peso</div>
-        <div style="max-height:120px;overflow-y:auto">
-          ${pesos.slice(0,5).map(pw=>`<div class="history-item"><span style="font-weight:600">${pw.peso} kg</span><span class="text-xs text-muted">${pw.data}</span></div>`).join('')}
-        </div>
-      </div>` : '<p class="text-sm text-muted">Nenhum peso registrado ainda.</p>'}
-
       <button class="btn btn-primary w-full" onclick="baixarRelatorioAluno('${aluno.id}')">📄 Baixar relatório PDF</button>
-      <button class="btn w-full mt-2" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;font-weight:700" onclick="closeModal('modal-ver-aluno');confirmarExcluirAluno(this.dataset.id,this.dataset.nome)" data-id="${aluno.id}" data-nome="${aluno.nome.replace(/"/g,'')}">🗑 Excluir cadastro deste aluno</button>
+      <button class="btn w-full mt-2" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;font-weight:700" onclick="closeModal('modal-ver-aluno');confirmarExcluirAluno('${aluno.id}','${aluno.nome.replace(/'/g,"\\'")}')">🗑 Excluir cadastro</button>
     </div>`;
-
   openModal('modal-ver-aluno');
 }
 
 function baixarRelatorioAluno(alunoId) {
   const aluno = AUTH.contas.find(c => c.id === alunoId);
   if (!aluno) return;
-  let sAluno = {};
-  try { sAluno = JSON.parse(localStorage.getItem(userKey(alunoId))) || {}; } catch(e) {}
+  let sAluno = {}; try { sAluno = JSON.parse(localStorage.getItem(userKey(alunoId))) || {}; } catch(e) {}
   gerarPDF(aluno, sAluno);
 }
 
 // ============================================================
-// PAINEL RESPONSÁVEL — ver filhos pelo login cadastrado
+// PAINEL RESPONSÁVEL
 // ============================================================
-let filhoSelecionadoLogin = null;
-
 function renderPainelResponsavel(el) {
   const c = me();
   const filhosLogins = c?.dados?.filhosLogins || [];
-  // Busca contas dos filhos
   const filhos = AUTH.contas.filter(a => filhosLogins.includes(a.login));
-
   el.innerHTML = `
     <div class="page-title">
-      <div>
-        <h1>👨‍👩‍👧 <span class="text-primary">Meus Filhos</span></h1>
-        <p class="text-sm text-muted" style="margin-top:2px">Acompanhe a jornada saudável</p>
-      </div>
+      <div><h1>👨‍👩‍👧 <span class="text-primary">Meus Filhos</span></h1><p class="text-sm text-muted" style="margin-top:2px">Acompanhe a jornada saudável</p></div>
       <button class="btn btn-sm btn-danger" onclick="confirmarSair()">Sair</button>
     </div>
-
     ${filhos.length === 0
-      ? `<div class="card text-center" style="padding:40px">
-          <div style="font-size:2.5rem">👶</div>
-          <p class="font-semibold mt-2">Nenhum filho vinculado</p>
-          <p class="text-sm text-muted mt-1">Cadastre-se novamente informando os usuários dos seus filhos.</p>
-        </div>`
+      ? `<div class="card text-center" style="padding:40px"><div style="font-size:2.5rem">👶</div><p class="font-semibold mt-2">Nenhum filho vinculado</p></div>`
       : `<div class="space-y-3">
           ${filhos.map(filho => {
-            let sFilho = {};
-            try { sFilho = JSON.parse(localStorage.getItem(userKey(filho.id))) || {}; } catch(e) {}
+            let sFilho = {}; try { sFilho = JSON.parse(localStorage.getItem(userKey(filho.id))) || {}; } catch(e) {}
             const xp = sFilho.xp || 0;
-            const agua = sFilho.agua || 0;
-            const refeicoes = (sFilho.refeicoes || []).length;
-            const exercicios = (sFilho.exercicios || []).length;
             const {level} = getLevel(xp);
-            const pesos = sFilho.pesos || [];
-            const pesoAtual = pesos.length ? pesos[0].peso : (filho.dados?.peso || '--');
-            const alturaM = (filho.dados?.altura || 160) / 100;
-            const imc = pesoAtual !== '--' ? (pesoAtual / (alturaM * alturaM)).toFixed(1) : '--';
-
             return `<div class="card">
               <div class="flex items-center gap-3 mb-4">
                 <div class="aluno-avatar" style="width:48px;height:48px;font-size:1.1rem">${filho.nome[0].toUpperCase()}</div>
                 <div style="flex:1">
                   <div style="font-weight:700;font-size:1rem">${filho.nome}</div>
-                  <div class="text-xs text-muted">${filho.dados?.serie||'Série não informada'} · ${filho.dados?.escola||'Escola não informada'}</div>
+                  <div class="text-xs text-muted">${filho.dados?.serie||'--'} · ${filho.dados?.escola||'--'}</div>
                   <span class="badge-yellow mt-1" style="display:inline-block">${level.name}</span>
                 </div>
                 <button class="btn btn-primary btn-sm" onclick="verAlunoEscola('${filho.id}')">Ver detalhes →</button>
               </div>
-              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
-                ${[
-                  {icon:'⭐',label:'XP',val:xp},
-                  {icon:'💧',label:'Água',val:agua+' copos'},
-                  {icon:'🍽️',label:'Refeições',val:refeicoes},
-                  {icon:'🏃',label:'Exercícios',val:exercicios},
-                ].map(item=>`<div style="text-align:center;background:var(--secondary);border-radius:10px;padding:10px;border:1px solid var(--border)">
-                  <div style="font-size:1.2rem">${item.icon}</div>
-                  <div style="font-weight:700;font-size:.9rem">${item.val}</div>
-                  <div style="font-size:.65rem;color:var(--muted-fg)">${item.label}</div>
-                </div>`).join('')}
-              </div>
-              ${imc !== '--' ? `<div class="text-xs text-muted mt-3">IMC: <strong>${imc}</strong> · Peso: <strong>${pesoAtual}kg</strong> · Altura: <strong>${filho.dados?.altura||'--'}cm</strong></div>` : ''}
-              <div class="flex gap-2 mt-3">
+              <div class="flex gap-2 mt-2">
                 <button class="btn btn-outline btn-sm" onclick="baixarRelatorioAluno('${filho.id}')">📄 Baixar PDF</button>
               </div>
             </div>`;
@@ -1879,21 +1533,15 @@ function renderPainelResponsavel(el) {
 }
 
 // ============================================================
-// PERFIL — diferente por tipo de usuário
+// PERFIL
 // ============================================================
 function renderPerfil(el) {
   const c = me();
   if (!c) return;
-
-  if (c.tipo === 'escola') {
-    renderPerfilEscola(el, c);
-  } else if (c.tipo === 'responsavel') {
-    renderPerfilResponsavel(el, c);
-  } else if (c.tipo === 'colaborador') {
-    renderPerfilColaborador(el, c);
-  } else {
-    renderPerfilAluno(el, c);
-  }
+  if (c.tipo === 'escola') renderPerfilEscola(el, c);
+  else if (c.tipo === 'responsavel') renderPerfilResponsavel(el, c);
+  else if (c.tipo === 'colaborador') renderPerfilColaborador(el, c);
+  else renderPerfilAluno(el, c);
 }
 
 function renderPerfilEscola(el, c) {
@@ -1910,7 +1558,7 @@ function renderPerfilEscola(el, c) {
       <div class="card space-y-3">
         <div class="card-title">Dados institucionais</div>
         <div><label class="field-label">Nome da escola</label><input class="input" id="pe-nome" value="${c.nome||''}"></div>
-        <div><label class="field-label">Nome fantasia / Usuário</label><input class="input" value="${c.login||''}" disabled style="opacity:.6"></div>
+        <div><label class="field-label">Usuário (login)</label><input class="input" value="${c.login||''}" disabled style="opacity:.6"></div>
         <div><label class="field-label">CNPJ</label><input class="input" id="pe-cnpj" value="${d.cnpj||''}"></div>
         <div><label class="field-label">Email institucional</label><input class="input" id="pe-email" value="${d.email||''}"></div>
         <div><label class="field-label">Endereço</label><input class="input" id="pe-end" value="${d.endereco||''}"></div>
@@ -1930,47 +1578,17 @@ function renderPerfilEscola(el, c) {
         <div class="card-title mt-4">Zona de perigo</div>
         <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
       </div>
-    </div>
-
-    <!-- GESTÃO DE ALUNOS -->
-    <div class="card mt-4">
-      <div class="flex justify-between items-center mb-4">
-        <div class="card-title" style="margin:0">👥 Gerenciar Alunos Cadastrados</div>
-        <span class="badge-blue">${AUTH.contas.filter(a=>a.tipo==='aluno').length} alunos</span>
-      </div>
-      ${(() => {
-        const alunos = AUTH.contas.filter(a => a.tipo === 'aluno');
-        if (alunos.length === 0) {
-          return '<div style="text-align:center;padding:32px"><div style="font-size:2rem">👥</div><p class="text-sm text-muted mt-2">Nenhum aluno cadastrado ainda.</p></div>';
-        }
-        return '<div class="space-y-2">' + alunos.map(a => {
-          let sA = {}; try { sA = JSON.parse(localStorage.getItem(userKey(a.id))) || {}; } catch(e) {}
-          const xp = sA.xp || 0;
-          return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--secondary)">
-            <div class="aluno-avatar" style="width:34px;height:34px;font-size:.85rem">${a.nome[0].toUpperCase()}</div>
-            <div style="flex:1;min-width:0">
-              <div style="font-weight:700;font-size:.85rem">${a.nome}</div>
-              <div style="font-size:.72rem;color:var(--muted-fg)">${a.dados.serie||'--'} · ${a.dados.escola||'--'} · ⭐ ${xp} XP</div>
-            </div>
-            <button onclick="verAlunoEscola('${a.id}')" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:8px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">Ver</button>
-            <button onclick="confirmarExcluirAluno('${a.id}',this.dataset.nome)" data-nome="${a.nome.replace(/"/g,'&quot;')}" style="background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:5px 10px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap">🗑 Excluir</button>
-          </div>`;
-        }).join('') + '</div>';
-      })()}
     </div>`;
 }
 
 function salvarPerfilEscola() {
-  const c = me();
-  if (!c) return;
+  const c = me(); if (!c) return;
   c.nome = document.getElementById('pe-nome').value.trim() || c.nome;
   c.dados.cnpj = document.getElementById('pe-cnpj').value.trim();
   c.dados.email = document.getElementById('pe-email').value.trim();
   c.dados.endereco = document.getElementById('pe-end').value.trim();
   c.dados.telefone = document.getElementById('pe-tel').value.trim();
-  saveAuth();
-  showToast('✅ Dados da escola salvos!');
-  updateHeader();
+  saveAuth(); showToast('✅ Dados da escola salvos!'); updateHeader();
 }
 
 function renderPerfilResponsavel(el, c) {
@@ -1985,17 +1603,11 @@ function renderPerfilResponsavel(el, c) {
     </div>
     <div class="grid2">
       <div class="card space-y-3">
-        <div class="card-title">Dados pessoais</div>
         <div><label class="field-label">Nome</label><input class="input" id="pr-nome" value="${c.nome||''}"></div>
-        <div><label class="field-label">Usuário (login)</label><input class="input" value="${c.login||''}" disabled style="opacity:.6"></div>
         <div><label class="field-label">Email</label><input class="input" id="pr-email" value="${d.email||''}"></div>
-        <div><label class="field-label">Usuários dos filhos (separados por vírgula)</label>
-          <input class="input" id="pr-filhos" value="${(d.filhosLogins||[]).join(', ')}" placeholder="usuario_filho1, usuario_filho2">
-          <p class="text-xs text-muted mt-1">Os filhos precisam estar cadastrados como Alunos</p>
-        </div>
+        <div><label class="field-label">Usuários dos filhos (vírgula)</label><input class="input" id="pr-filhos" value="${(d.filhosLogins||[]).join(', ')}"></div>
       </div>
       <div class="card">
-        <div class="card-title">Acesso rápido</div>
         <button class="btn btn-primary w-full mb-3" onclick="navigate('painel-responsavel')">👨‍👩‍👧 Ver meus filhos →</button>
         <div class="card-title mt-3">Zona de perigo</div>
         <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
@@ -2004,14 +1616,11 @@ function renderPerfilResponsavel(el, c) {
 }
 
 function salvarPerfilResponsavel() {
-  const c = me();
-  if (!c) return;
+  const c = me(); if (!c) return;
   c.nome = document.getElementById('pr-nome').value.trim() || c.nome;
   c.dados.email = document.getElementById('pr-email').value.trim();
   c.dados.filhosLogins = document.getElementById('pr-filhos').value.split(',').map(f=>f.trim().toLowerCase()).filter(Boolean);
-  saveAuth();
-  showToast('✅ Perfil salvo!');
-  updateHeader();
+  saveAuth(); showToast('✅ Perfil salvo!'); updateHeader();
 }
 
 function renderPerfilColaborador(el, c) {
@@ -2026,348 +1635,31 @@ function renderPerfilColaborador(el, c) {
     </div>
     <div class="grid2">
       <div class="card space-y-3">
-        <div class="card-title">Dados profissionais</div>
         <div><label class="field-label">Nome</label><input class="input" id="pc-nome" value="${c.nome||''}"></div>
-        <div><label class="field-label">Usuário (login)</label><input class="input" value="${c.login||''}" disabled style="opacity:.6"></div>
         <div><label class="field-label">Função</label><input class="input" id="pc-funcao" value="${d.funcao||''}"></div>
         <div><label class="field-label">Usuário da escola</label><input class="input" id="pc-escolauser" value="${d.escolaUser||''}"></div>
       </div>
       <div class="card">
-        <div class="card-title">Info</div>
-        <p class="text-sm text-muted">O colaborador tem acesso às mesmas telas de acompanhamento que um aluno para monitorar a plataforma.</p>
-        <div class="card-title mt-4">Zona de perigo</div>
+        <div class="card-title">Zona de perigo</div>
         <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
       </div>
     </div>`;
 }
 
 function salvarPerfilColaborador() {
-  const c = me();
-  if (!c) return;
+  const c = me(); if (!c) return;
   c.nome = document.getElementById('pc-nome').value.trim() || c.nome;
   c.dados.funcao = document.getElementById('pc-funcao').value.trim();
   c.dados.escolaUser = document.getElementById('pc-escolauser').value.trim().toLowerCase();
-  saveAuth();
-  showToast('✅ Perfil salvo!');
-  updateHeader();
+  saveAuth(); showToast('✅ Perfil salvo!'); updateHeader();
 }
 
 function renderPerfilAluno(el, c) {
   const p = S.perfil || {};
-  const OBJETIVOS=[{id:'Crescimento Saudável',label:'🔥 Crescimento Saudável'},{id:'saúde',label:'💚 Saúde geral'},{id:'Equilíbrio',label:'⚖️ Equilíbrio'},{id:'Deslocamento Ativo',label:'🏃 Deslocamento Ativo'},{id:'Exercício Físico',label:'💪 Exercício Físico'}];
-  const atv=p.atividade||1.375;
-  selectedObj=p.objetivo||'saude';
-  el.innerHTML=`
-    <div class="page-title">
-      <h1>👤 Meu <span class="text-primary">Perfil</span></h1>
-      <div class="flex gap-2">
-        <button class="btn btn-primary" onclick="salvarPerfilAluno()">Salvar</button>
-        <button class="btn btn-danger btn-sm" onclick="confirmarSair()">Sair</button>
-      </div>
-    </div>
-    <div class="grid2">
-      <div class="card space-y-3">
-        <div class="card-title">Dados pessoais</div>
-        <div><label class="field-label">Nome</label><input class="input" id="pf-nome" value="${p.nome||c.nome||''}"></div>
-        <div><label class="field-label">Usuário (login)</label><input class="input" value="${c.login||''}" disabled style="opacity:.6"></div>
-        <div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="pf-bd" value="${p.birthdate||c.dados?.birthdate||''}" onchange="atualizarIdade()">
-          <p class="text-xs text-muted mt-1" id="pf-age-label">${(p.birthdate||c.dados?.birthdate)?'Idade: '+calcAge(p.birthdate||c.dados?.birthdate)+' anos':''}</p>
-        </div>
-        <div class="grid2">
-          <div><label class="field-label">Sexo</label><select class="select" id="pf-sexo"><option value="M" ${p.sexo!=='F'?'selected':''}>Masculino</option><option value="F" ${p.sexo==='F'?'selected':''}>Feminino</option></select></div>
-          <div><label class="field-label">Altura (cm)</label><input class="input" type="number" id="pf-altura" value="${p.altura||c.dados?.altura||''}"></div>
-        </div>
-        <div><label class="field-label">Peso (kg)</label><input class="input" type="number" id="pf-peso" value="${p.peso||c.dados?.peso||''}"></div>
-        <div><label class="field-label">Escola</label><input class="input" id="pf-escola" value="${p.escola||c.dados?.escola||''}"></div>
-        <div><label class="field-label">Série</label><input class="input" id="pf-serie" value="${p.serie||c.dados?.serie||''}"></div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div class="card space-y-3">
-          <div class="card-title">Objetivo</div>
-          ${OBJETIVOS.map(o=>`<button class="btn btn-outline w-full" id="obj-${o.id}" style="${(p.objetivo||'saude')===o.id?'background:rgba(26,95,212,.06);border-color:var(--primary);color:var(--primary)':''}" onclick="selectObj('${o.id}')">${o.label}</button>`).join('')}
-          <div><label class="field-label">Nível de atividade</label>
-            <select class="select" id="pf-atv">
-              <option value="1.2" ${atv==1.2?'selected':''}>Sedentário</option>
-              <option value="1.375" ${atv==1.375?'selected':''}>Levemente ativo (1-3x/sem)</option>
-              <option value="1.55" ${atv==1.55?'selected':''}>Moderadamente ativo (3-5x/sem)</option>
-              <option value="1.725" ${atv==1.725?'selected':''}>Muito ativo (6-7x/sem)</option>
-            </select>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">Zona de perigo</div>
-          <button class="btn btn-danger w-full" onclick="limparMeusDados()">🗑 Apagar meus dados</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-function selectObj(id){
-  selectedObj=id;
-  ['Crescimento Saudável','saúde','Equilíbrio','Deslocamento Ativo','Exercício Físico'].forEach(o=>{
-    const btn=document.getElementById('obj-'+o);
-    if(btn){btn.style.background=o===id?'rgba(26,95,212,.06)':'';btn.style.borderColor=o===id?'var(--primary)':'var(--border)';btn.style.color=o===id?'var(--primary)':'#1a2340';}
-  });
-}
-function atualizarIdade(){const bd=document.getElementById('pf-bd');const label=document.getElementById('pf-age-label');if(bd&&label&&bd.value)label.textContent='Idade: '+calcAge(bd.value)+' anos';}
-
-function salvarPerfilAluno(){
-  const peso=+(document.getElementById('pf-peso').value)||55;
-  const altura=+(document.getElementById('pf-altura').value)||160;
-  const birthdate=document.getElementById('pf-bd').value;
-  const sexo=document.getElementById('pf-sexo').value;
-  const atividade=+(document.getElementById('pf-atv').value)||1.375;
-  const escola=document.getElementById('pf-escola').value;
-  const serie=document.getElementById('pf-serie').value;
-  const nome=document.getElementById('pf-nome').value.trim();
-  const {tdee,prot,carb,gord}=calcMacros(peso,altura,birthdate,sexo,selectedObj,atividade);
-  const waterGoal=calcWaterGoal(peso,birthdate);
-  S.perfil={...(S.perfil||{}),nome,birthdate,altura,peso,sexo,escola,serie,objetivo:selectedObj,atividade,meta:tdee,metaProt:prot,metaCarb:carb,metaGord:gord,waterGoal,pesoMeta:Math.max(40,peso-5),tipo:'aluno'};
-  // Atualiza também na conta AUTH
-  const c = me();
-  if (c) { c.nome = nome || c.nome; c.dados.escola = escola; c.dados.serie = serie; saveAuth(); }
-  saveState(); updateHeader();
-  showToast('✅ Perfil salvo! Metas recalculadas.');
-  renderPage();
-}
-
-function limparMeusDados(){
-  if(!confirm('Apagar todos os seus dados? Esta ação não pode ser desfeita.')) return;
-  const c=me();
-  if(c) localStorage.removeItem(userKey(c.id));
-  S=defaultState(); saveState();
-  showToast('✅ Dados apagados.');
-  renderPage();
-}
-
-
-// ============================================================
-// EXCLUIR ALUNO — apenas escola pode excluir
-// ============================================================
-function confirmarExcluirAluno(alunoId, nomeAluno) {
-  if (!confirm('⚠️ Tem certeza que deseja EXCLUIR o cadastro de "' + nomeAluno + '"?\n\nEsta ação irá remover a conta e TODOS os dados do aluno permanentemente.\n\nEsta ação NÃO pode ser desfeita!')) return;
-  // Double confirmation for safety
-  if (!confirm('🔴 CONFIRMAÇÃO FINAL\n\nVocê está prestes a excluir permanentemente:\n• Conta de "' + nomeAluno + '"\n• Todas as refeições, exercícios, peso e dados\n• XP, conquistas e histórico\n\nConfirmar exclusão?')) return;
-  excluirAluno(alunoId, nomeAluno);
-}
-
-function excluirAluno(alunoId, nomeAluno) {
-  // Remove state from localStorage
-  try { localStorage.removeItem(userKey(alunoId)); } catch(e) {}
-  // Remove from AUTH.contas
-  const idx = AUTH.contas.findIndex(c => c.id === alunoId);
-  if (idx !== -1) {
-    AUTH.contas.splice(idx, 1);
-    saveAuth();
-  }
-  showToast('✅ Aluno "' + nomeAluno + '" excluído com sucesso.');
-  renderPage();
-}
-
-// ============================================================
-// PDF
-// ============================================================
-function gerarPDF(aluno, sAluno) {
-  const d = aluno.dados || {};
-  const pf = sAluno.perfil || {};
-  const pesos = sAluno.pesos || [];
-  const pesoAtual = pesos.length ? pesos[0].peso : (d.peso || '--');
-  const xp = sAluno.xp || 0;
-  const refeicoes = sAluno.refeicoes || [];
-  const exercicios = sAluno.exercicios || [];
-  const kcal = refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
-  const burned = exercicios.reduce((a,e)=>a+e.kcal,0);
-  const age = d.birthdate ? calcAge(d.birthdate) : '--';
-
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF();
-  const linhas=[
-    'PULSEFIT — COMBATENDO A OBESIDADE NOS JOVENS',
-    'Relatório de Acompanhamento',
-    '',
-    'Aluno: '+aluno.nome,
-    'Idade: '+age+(age!=='--'?' anos':''),
-    'Série: '+(d.serie||'--'),
-    'Escola: '+(d.escola||'--'),
-    'Objetivo: '+(d.objetivo||pf.objetivo||'--'),
-    'Data: '+new Date().toLocaleDateString('pt-BR'),
-    '',
-    'DADOS FÍSICOS',
-    'Peso no cadastro: '+(d.peso||'--')+' kg',
-    'Altura: '+(d.altura||'--')+' cm',
-    'Peso atual: '+pesoAtual+' kg',
-    '',
-    'ATIVIDADE DE HOJE',
-    'Calorias consumidas: '+kcal+' kcal',
-    'Calorias queimadas: '+burned+' kcal',
-    'Água: '+(sAluno.agua||0)+' copos',
-    'Refeições registradas: '+refeicoes.length,
-    'Exercícios: '+exercicios.length,
-    '',
-    'GAMIFICAÇÃO',
-    'XP acumulado: '+xp,
-    'Conquistas: '+(sAluno.badges||[]).length,
-    '',
-    'HISTÓRICO DE PESO',
-    ...(pesos.length?pesos.slice(0,10).map(pw=>pw.data+': '+pw.peso+' kg'):['Nenhum registro.']),
-  ];
-  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('PulseFit',14,18);
-  doc.setFont('helvetica','normal');doc.setFontSize(10);
-  let y=30;
-  linhas.forEach(linha=>{const t=doc.splitTextToSize(linha,180);t.forEach(tx=>{if(y>280){doc.addPage();y=20;}doc.text(tx,14,y);y+=7;});});
-  doc.save('relatorio_'+aluno.nome.replace(/\s/g,'_')+'.pdf');
-  showToast('📄 Relatório PDF baixado!');
-}
-
-// ============================================================
-// MELHORIAS VISUAIS E DE FLUXO PEDIDAS
-// ============================================================
-function getLevel(xp){
-  const levels=[
-    {min:0,name:'Iniciante',icon:'🌱',phrase:'Vamos iniciar uma rotina saudavel.'},
-    {min:101,name:'Explorador',icon:'🧭',phrase:'Estamos criando habitos.'},
-    {min:301,name:'Saudavel',icon:'💚',phrase:'Sua rotina esta ficando consistente.'},
-    {min:701,name:'Elite',icon:'⚡',phrase:'Voce esta mantendo constancia.'},
-    {min:1501,name:'Master Fit',icon:'🏆',phrase:'Referencia em rotina saudavel.'}
-  ];
-  let lv=levels[0],nx=levels[1];
-  for(let i=levels.length-1;i>=0;i--){ if(xp>=levels[i].min){lv=levels[i];nx=levels[i+1]||null;break;} }
-  const pct=nx?Math.min(100,(xp-lv.min)/(nx.min-lv.min)*100):100;
-  return {level:{...lv,name:lv.icon+' '+lv.name},next:nx?{...nx,name:nx.icon+' '+nx.name}:null,pct,levels:levels.map(l=>({...l,name:l.icon+' '+l.name}))};
-}
-
-function updateHeader(){
-  const p=S.perfil||{};
-  const c=me();
-  const {level}=getLevel(S.xp||0);
-  const avatar=document.getElementById('header-avatar');
-  document.getElementById('header-xp').innerHTML=`<div class="level-pill"><strong>${level.name} · ${S.xp||0} XP</strong><small>${level.phrase}</small></div>`;
-  if(avatar){
-    avatar.innerHTML=p.foto?`<img src="${p.foto}" alt="Foto de perfil">`:(p.nome||c?.nome||'A')[0].toUpperCase();
-  }
-}
-
-function renderLogin(){
-  const box=document.getElementById('login-body');
-  if(!box) return;
-  if(authMode==='login'){
-    box.innerHTML=`
-      <h2 style="font-weight:700;font-size:1.2rem;margin-bottom:4px">Entrar</h2>
-      <p class="text-sm text-muted mb-4">Use seu usuario e senha cadastrados.</p>
-      <div class="space-y-3">
-        <div><label class="field-label">Usuario ou email</label><input class="input" id="li-user" placeholder="seu_usuario"></div>
-        <div><label class="field-label">Senha</label><input class="input" type="password" id="li-pass" placeholder="******" onkeydown="if(event.key==='Enter')entrar()"></div>
-        <button class="btn btn-primary w-full" onclick="entrar()">Entrar</button>
-        <div style="text-align:center;font-size:.8rem;color:var(--muted-fg)">ou</div>
-        <button class="btn btn-outline w-full" onclick="authMode='cad';authTipo='aluno';renderLogin()">Criar nova conta</button>
-      </div>`;
-    return;
-  }
-  box.innerHTML=`
-    <h2 style="font-weight:700;font-size:1.2rem;margin-bottom:4px">Criar conta</h2>
-    <p class="text-sm text-muted mb-4">Escolha seu tipo de acesso.</p>
-    <div class="tipo-grid">
-      ${[
-        {id:'aluno',label:'Aluno',desc:'Minha rotina'},
-        {id:'responsavel',label:'Responsavel',desc:'Ver filhos'},
-        {id:'colaborador',label:'Colaborador',desc:'Equipe escolar'},
-        {id:'escola',label:'Escola',desc:'Gestao escolar'}
-      ].map(t=>`<div class="tipo-btn ${authTipo===t.id?'selected':''}" onclick="authTipo='${t.id}';renderLogin()">
-        <div class="tipo-card-img">${tipoIconSVG(t.id)}</div><strong>${t.label}</strong><small>${t.desc}</small>
-      </div>`).join('')}
-    </div>
-    ${camposCadastro()}
-    <button class="btn btn-primary w-full mt-4" onclick="cadastrar()">Cadastrar</button>
-    <button class="btn btn-outline w-full mt-2" onclick="authMode='login';renderLogin()">Ja tenho conta</button>`;
-}
-
-function camposCadastro(){
-  let h=`<div class="space-y-3">
-    <div><label class="field-label">Nome completo</label><input class="input" id="c-nome"></div>
-    <div><label class="field-label">Usuario (para login)</label><input class="input" id="c-user" placeholder="sem espacos"></div>
-    <div><label class="field-label">Senha</label><input class="input" type="password" id="c-pass" placeholder="minimo 4 caracteres"></div>`;
-  if(authTipo==='aluno'){
-    h+=`<div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="c-bd"></div>
-    <div class="grid2">
-      <div><label class="field-label">Altura (cm)</label><input class="input" type="number" id="c-alt" placeholder="160"></div>
-      <div><label class="field-label">Peso (kg)</label><input class="input" type="number" id="c-peso" placeholder="55"></div>
-    </div>
-    <div>${escolaSelectHTML('c')}</div>
-    <div><label class="field-label">Serie</label><select class="select" id="c-serie">
-      <option value="">Selecione</option>
-      ${['1º','2º','3º','4º','5º'].map(s=>`<option>${s} ano EF I</option>`).join('')}
-      ${['6º','7º','8º','9º'].map(s=>`<option>${s} ano EF II</option>`).join('')}
-      ${['1º','2º','3º'].map(s=>`<option>${s} ano EM</option>`).join('')}
-    </select></div>
-    <div><label class="field-label">Objetivo</label><select class="select" id="c-obj">
-      <option value="saude">Saude geral</option>
-      <option value="Crescimento Saudavel">Crescimento Saudavel</option>
-      <option value="Equilibrio">Equilibrio</option>
-      <option value="Deslocamento Ativo">Deslocamento Ativo</option>
-      <option value="Exercicio Fisico">Exercicio Fisico</option>
-    </select></div>`;
-  }
-  if(authTipo==='responsavel'){
-    h+=`<div><label class="field-label">Email</label><input class="input" id="c-email"></div>
-    <div><label class="field-label">Usuarios dos filhos (separados por virgula)</label><input class="input" id="c-filhos" placeholder="Ex: joao123, maria456"></div>`;
-  }
-  if(authTipo==='colaborador'){
-    h+=`<div><label class="field-label">Funcao</label><input class="input" id="c-funcao" placeholder="Professor, coordenador..."></div>
-    <div><label class="field-label">Escola (usuario da escola)</label><input class="input" id="c-escola-user" placeholder="usuario_da_escola"></div>`;
-  }
-  if(authTipo==='escola'){
-    h+=`<div><label class="field-label">Nome da escola</label><input class="input" id="c-escola-nome"></div>
-    <div><label class="field-label">CNPJ</label><input class="input" id="c-cnpj"></div>
-    <div><label class="field-label">Email institucional</label><input class="input" id="c-email"></div>`;
-  }
-  return h+'</div>';
-}
-
-function cadastrar(){
-  const nome=(document.getElementById('c-nome')||{}).value?.trim();
-  const user=(document.getElementById('c-user')||{}).value?.trim().toLowerCase();
-  const pass=(document.getElementById('c-pass')||{}).value?.trim();
-  if(!nome||!user||!pass){showToast('Preencha nome, usuario e senha.');return;}
-  if(pass.length<4){showToast('Senha precisa ter pelo menos 4 caracteres.');return;}
-  if(AUTH.contas.some(c=>c.login===user)){showToast('Esse usuario ja existe. Escolha outro.');return;}
-  const conta={id:Date.now().toString(),tipo:authTipo,nome,login:user,senha:pass,dados:{}};
-  if(authTipo==='aluno'){
-    const esc=getEscolaSelecionada('c');
-    if(!esc.estado||!esc.cidade||!esc.escola){showToast('Selecione estado, cidade e escola cadastrada.');return;}
-    conta.dados={birthdate:document.getElementById('c-bd').value,altura:+(document.getElementById('c-alt').value)||160,peso:+(document.getElementById('c-peso').value)||55,estado:esc.estado,cidade:esc.cidade,escola:esc.escola,serie:document.getElementById('c-serie').value,objetivo:document.getElementById('c-obj').value};
-  }
-  if(authTipo==='responsavel'){
-    conta.dados.email=document.getElementById('c-email').value.trim();
-    conta.dados.filhosLogins=document.getElementById('c-filhos').value.split(',').map(f=>f.trim().toLowerCase()).filter(Boolean);
-  }
-  if(authTipo==='colaborador'){
-    conta.dados.funcao=document.getElementById('c-funcao').value.trim();
-    conta.dados.escolaUser=document.getElementById('c-escola-user').value.trim().toLowerCase();
-  }
-  if(authTipo==='escola'){
-    conta.dados.escolaNome=document.getElementById('c-escola-nome').value.trim();
-    conta.dados.cnpj=document.getElementById('c-cnpj').value.trim();
-    conta.dados.email=document.getElementById('c-email').value.trim();
-  }
-  AUTH.contas.push(conta);
-  AUTH.logado=conta.id;
-  saveAuth();
-  loadState();
-  if(authTipo==='aluno'){
-    S.perfil=buildPerfilFromConta(conta);
-    S.pesos=[{peso:conta.dados.peso,data:new Date().toISOString().split('T')[0],obs:'Peso do cadastro'}];
-  }
-  saveState();
-  showToast('Conta criada e salva! Agora voce entra so com login e senha.');
-  iniciarApp();
-}
-
-function renderPerfilAluno(el,c){
-  const p=S.perfil||{};
-  const atv=p.atividade||1.375;
-  selectedObj=p.objetivo||'saude';
-  const escolaVals={estado:p.estado||c.dados?.estado||'',cidade:p.cidade||c.dados?.cidade||'',escola:p.escola||c.dados?.escola||''};
-  el.innerHTML=`
+  const atv = p.atividade || 1.375;
+  selectedObj = p.objetivo || 'saude';
+  const escolaVals = {estado:p.estado||c.dados?.estado||'',cidade:p.cidade||c.dados?.cidade||'',escola:p.escola||c.dados?.escola||''};
+  el.innerHTML = `
     <div class="page-title">
       <h1>Meu <span class="text-primary">Perfil</span></h1>
       <div class="flex gap-2"><button class="btn btn-primary" onclick="salvarPerfilAluno()">Salvar</button><button class="btn btn-danger btn-sm" onclick="confirmarSair()">Sair</button></div>
@@ -2376,15 +1668,13 @@ function renderPerfilAluno(el,c){
       <div class="card space-y-3">
         <div class="card-title">Foto e dados pessoais</div>
         <div class="profile-photo-box">
-          <div class="profile-photo-preview" id="pf-foto-preview">${p.foto?`<img src="${p.foto}" alt="Foto de perfil">`:(p.nome||c.nome||'A')[0].toUpperCase()}</div>
+          <div class="profile-photo-preview" id="pf-foto-preview">${p.foto?`<img src="${p.foto}" alt="Foto">`:(p.nome||c.nome||'A')[0].toUpperCase()}</div>
           <div style="flex:1">
             <label class="field-label">Foto do perfil</label>
             <input class="input" type="file" id="pf-foto" accept="image/*" onchange="previewFotoPerfil(event)">
-            <p class="text-xs text-muted mt-1">A imagem fica salva neste navegador junto com sua conta.</p>
           </div>
         </div>
         <div><label class="field-label">Nome</label><input class="input" id="pf-nome" value="${p.nome||c.nome||''}"></div>
-        <div><label class="field-label">Usuario (login)</label><input class="input" value="${c.login||''}" disabled style="opacity:.6"></div>
         <div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="pf-bd" value="${p.birthdate||c.dados?.birthdate||''}" onchange="atualizarIdade()"><p class="text-xs text-muted mt-1" id="pf-age-label">${(p.birthdate||c.dados?.birthdate)?'Idade: '+calcAge(p.birthdate||c.dados?.birthdate)+' anos':''}</p></div>
         <div class="grid2">
           <div><label class="field-label">Sexo</label><select class="select" id="pf-sexo"><option value="M" ${p.sexo!=='F'?'selected':''}>Masculino</option><option value="F" ${p.sexo==='F'?'selected':''}>Feminino</option></select></div>
@@ -2405,20 +1695,27 @@ function renderPerfilAluno(el,c){
             <option value="1.725" ${atv==1.725?'selected':''}>Muito ativo (6-7x/sem)</option>
           </select></div>
         </div>
-        <div class="card"><div class="card-title">Nivel atual</div>${xpBarHTML(false)}<p class="text-xs text-muted mt-3">XP mede constancia em rotina saudavel, nao emagrecimento rapido.</p></div>
+        <div class="card"><div class="card-title">Nivel atual</div>${xpBarHTML(false)}</div>
         <div class="card"><div class="card-title">Zona de perigo</div><button class="btn btn-danger w-full" onclick="limparMeusDados()">Apagar meus dados</button></div>
       </div>
     </div>`;
 }
 
+function selectObj(id){
+  selectedObj=id;
+  ['Crescimento Saudavel','saude','Equilibrio','Deslocamento Ativo','Exercicio Fisico'].forEach(o=>{
+    const btn=document.getElementById('obj-'+o);
+    if(btn){btn.style.background=o===id?'rgba(26,95,212,.06)':'';btn.style.borderColor=o===id?'var(--primary)':'var(--border)';btn.style.color=o===id?'var(--primary)':'#1a2340';}
+  });
+}
+function atualizarIdade(){const bd=document.getElementById('pf-bd');const label=document.getElementById('pf-age-label');if(bd&&label&&bd.value)label.textContent='Idade: '+calcAge(bd.value)+' anos';}
 function previewFotoPerfil(ev){
   const file=ev.target.files&&ev.target.files[0];
   if(!file) return;
   const reader=new FileReader();
-  reader.onload=()=>{S.perfil={...(S.perfil||{}),foto:reader.result};const pv=document.getElementById('pf-foto-preview');if(pv)pv.innerHTML=`<img src="${reader.result}" alt="Foto de perfil">`;saveState();updateHeader();};
+  reader.onload=()=>{S.perfil={...(S.perfil||{}),foto:reader.result};const pv=document.getElementById('pf-foto-preview');if(pv)pv.innerHTML=`<img src="${reader.result}" alt="Foto">`;saveState();updateHeader();};
   reader.readAsDataURL(file);
 }
-
 function salvarPerfilAluno(){
   const peso=+(document.getElementById('pf-peso').value)||55;
   const altura=+(document.getElementById('pf-altura').value)||160;
@@ -2437,154 +1734,78 @@ function salvarPerfilAluno(){
   saveState();updateHeader();showToast('Perfil salvo! Metas recalculadas.');renderPage();
 }
 
-function renderAlimentacao(el){
-  const p=S.perfil||{};
-  const done=S.refeicoes.filter(m=>m.feita);
-  const totalKcal=done.reduce((a,m)=>a+m.kcal,0);
-  const totalProt=done.reduce((a,m)=>a+m.prot,0);
-  const totalCarb=done.reduce((a,m)=>a+m.carb,0);
-  const totalGord=done.reduce((a,m)=>a+m.gord,0);
-  const mealMission=Math.min(100,(S.refeicoes.length/3)*100);
-  el.innerHTML=`
-    <div class="page-title"><h1>Alimentacao <span class="text-primary">Gamificada</span></h1><div class="flex gap-2"><button class="btn btn-ai" onclick="sugerirAlimentacao()">Sugestao IA</button><button class="btn btn-primary" onclick="openModal('modal-meal')">+ Refeicao</button></div></div>
-    <div class="food-game-card mb-4">
-      <div class="flex justify-between items-center mb-3"><div><div class="card-title" style="margin:0">Missao alimentar do dia</div><strong>Registre 3 refeicoes para hoje</strong></div><span class="xp-chip">+30 XP</span></div>
-      <div class="progress-track" style="height:12px"><div class="progress-fill" style="width:${mealMission}%;background:linear-gradient(90deg,#22c55e,#3b82f6,#f97316)"></div></div>
-      <p class="text-xs text-muted mt-2">${Math.min(3,S.refeicoes.length)} de 3 refeicoes registradas. XP aqui e sobre rotina saudavel.</p>
-    </div>
-    <div class="grid3">
-      ${[{label:'Proteinas',val:totalProt,meta:p.metaProt||120,color:'#3b82f6'},{label:'Carboidratos',val:totalCarb,meta:p.metaCarb||250,color:'#fb923c'},{label:'Gorduras',val:totalGord,meta:p.metaGord||60,color:'#a855f7'}].map(m=>`<div class="card"><div class="card-title">${m.label}</div><div style="font-weight:800;font-size:1.5rem">${m.val}g</div><div class="progress-track mt-2" style="height:10px"><div class="progress-fill" style="width:${Math.min(100,m.val/m.meta*100)}%;background:linear-gradient(90deg,${m.color},#22c55e)"></div></div><div class="text-xs text-muted mt-1">Meta: ${m.meta}g</div></div>`).join('')}
-    </div>
-    <div class="grid2 mt-4">
-      <div class="card"><div class="flex justify-between items-center mb-3"><div class="card-title" style="margin:0">Minhas refeicoes</div><span class="xp-chip">+10 XP por refeicao</span></div>
-        ${S.refeicoes.length===0?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🥗</div><p class="text-sm font-semibold mt-2">Registre sua primeira refeicao!</p><button class="btn btn-primary btn-sm mt-3" onclick="openModal(\'modal-meal\')">+ Adicionar</button></div>':'<div class="space-y-2 overflow-y-auto">'+S.refeicoes.map((m,i)=>`<div class="meal-item${m.feita?' done':''}"><span class="meal-item-icon">${m.icon}</span><div class="meal-item-info"><strong ${m.feita?'style="text-decoration:line-through"':''}>${m.nome}</strong><small>${m.hora} · ${m.kcal} kcal · P:${m.prot}g C:${m.carb}g · +10 XP</small></div><button class="check-btn" onclick="toggleMeal(${i})">${m.feita?'✅':'⬜'}</button><button class="del-btn" onclick="removeMeal(${i})">🗑</button></div>`).join('')+'</div>'}
-      </div>
-      <div class="card"><div class="card-title">Grafico rapido</div><div class="mini-chart">${[{l:'Kcal',v:Math.min(100,totalKcal/(p.meta||2000)*100)},{l:'Prot',v:Math.min(100,totalProt/(p.metaProt||120)*100)},{l:'Carb',v:Math.min(100,totalCarb/(p.metaCarb||250)*100)},{l:'Gord',v:Math.min(100,totalGord/(p.metaGord||60)*100)}].map(b=>`<div class="mini-bar" style="height:${Math.max(12,b.v)}%"><span>${b.l}</span></div>`).join('')}</div><div class="ai-tip-box mt-4"><div class="ai-tip-icon">✦</div><div><strong class="text-sm">Sugestao</strong><p class="text-xs text-muted mt-1">Priorize variedade no prato: cores, proteinas e agua. O foco e constancia.</p></div></div></div>
-    </div>`;
-}
-
-function addMeal(){
-  const nome=document.getElementById('m-nome').value.trim();
-  if(!nome){showToast('Informe o nome!');return;}
-  S.refeicoes.push({nome,hora:document.getElementById('m-hora').value,kcal:+document.getElementById('m-kcal').value||0,prot:+document.getElementById('m-prot').value||0,carb:+document.getElementById('m-carb').value||0,gord:+document.getElementById('m-gord').value||0,icon:document.getElementById('m-icon').value,feita:false});
-  S.refeicoes.sort((a,b)=>a.hora.localeCompare(b.hora));
-  addXP(10,'Refeicao registrada');
-  if(S.refeicoes.length===3) addXP(30,'Missao alimentar: 3 refeicoes');
-  saveState();closeModal('modal-meal');renderPage();
-  ['m-nome','m-kcal','m-prot','m-carb','m-gord'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-}
-
-function sugerirAlimentacao(){
-  const plano=[
-    {nome:'Cafe da manha equilibrado',hora:'07:00',kcal:350,prot:18,carb:45,gord:9,icon:'🌅',feita:false,desc:'Fruta + iogurte + cereal'},
-    {nome:'Almoco colorido',hora:'12:00',kcal:580,prot:35,carb:65,gord:14,icon:'🥗',feita:false,desc:'Arroz, feijao, proteina e salada'},
-    {nome:'Jantar leve',hora:'19:00',kcal:420,prot:28,carb:48,gord:12,icon:'🌙',feita:false,desc:'Ovos, legumes ou sanduiche natural'}
-  ];
-  S.refeicoes=[...S.refeicoes,...plano].sort((a,b)=>a.hora.localeCompare(b.hora));
-  addXP(10,'Plano alimentar sugerido');
-  saveState();
+function limparMeusDados(){
+  if(!confirm('Apagar todos os seus dados?')) return;
+  const c=me();
+  if(c) localStorage.removeItem(userKey(c.id));
+  S=defaultState(); saveState();
+  showToast('✅ Dados apagados.');
   renderPage();
 }
 
-function exerciseIcon(nome,cat){
-  const n=(nome||'').toLowerCase();
-  if(n.includes('caminh')) return '🚶';
-  if(n.includes('corr')) return '🏃';
-  if(n.includes('bicic')||n.includes('cicl')) return '🚴';
-  if(n.includes('fut')) return '⚽';
-  if(n.includes('danc')||n.includes('danç')) return '🎵';
-  if(n.includes('corda')) return '🪢';
-  if(n.includes('along')||cat==='flexib') return '🧘';
-  if(n.includes('nata')) return '🏊';
-  return cat==='Exercicio Fisico'||cat==='massa'?'💪':'⭐';
+// ============================================================
+// EXCLUIR ALUNO
+// ============================================================
+function confirmarExcluirAluno(alunoId, nomeAluno) {
+  if (!confirm('Tem certeza que deseja EXCLUIR o cadastro de "' + nomeAluno + '"?\nEsta ação NÃO pode ser desfeita!')) return;
+  excluirAluno(alunoId, nomeAluno);
+}
+function excluirAluno(alunoId, nomeAluno) {
+  try { localStorage.removeItem(userKey(alunoId)); } catch(e) {}
+  const idx = AUTH.contas.findIndex(c => c.id === alunoId);
+  if (idx !== -1) { AUTH.contas.splice(idx, 1); saveAuth(); }
+  showToast('✅ Aluno "' + nomeAluno + '" excluído.');
+  renderPage();
 }
 
-function renderExercicios(el){
-  const totalKcal=S.exercicios.reduce((a,e)=>a+e.kcal,0);
-  const totalMin=S.exercicios.reduce((a,e)=>a+e.min,0);
-  const days=['S','T','Q','Q','S','S','D'];
-  el.innerHTML=`
-    <div class="page-title"><h1>Exercicios <span class="text-primary">e Historico</span></h1><button class="btn btn-primary" onclick="openModal('modal-ex')">+ Exercicio</button></div>
-    <div class="grid4">
-      <div class="stat-card"><div class="stat-card-bar" style="background:#fb923c"></div><div class="stat-value">${totalKcal}</div><div class="stat-label">kcal queimadas</div></div>
-      <div class="stat-card"><div class="stat-card-bar" style="background:#3b82f6"></div><div class="stat-value">${totalMin}</div><div class="stat-label">minutos ativos</div></div>
-      <div class="stat-card"><div class="stat-card-bar" style="background:#22c55e"></div><div class="stat-value">${S.exercicios.length}</div><div class="stat-label">atividades hoje</div></div>
-      <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div class="stat-value">${S.streak||0}</div><div class="stat-label">streak saudavel</div></div>
-    </div>
-    <div class="card mt-4"><div class="flex justify-between items-center mb-3"><div class="card-title" style="margin:0">Calendario ativo</div><span class="xp-chip">caminhada +40 XP</span></div><div class="streak-days">${days.map((d,i)=>`<div class="streak-day ${i===new Date().getDay()?'today':(S.streakDays[i]?'done':'')}">${d}</div>`).join('')}</div></div>
-    <div class="grid2 mt-4">
-      <div class="card"><div class="card-title">Historico de atividades</div>${S.exercicios.length===0?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🏃</div><p class="text-sm font-semibold mt-2">Vamos se movimentar hoje?</p></div>':'<div class="space-y-2">'+S.exercicios.map((e,i)=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.nome,e.cat)}</div><div style="flex:1"><strong style="font-size:.9rem">${e.nome}</strong><div class="text-xs text-muted">${e.min} min · ${e.series} · ${e.kcal} kcal</div></div><span class="xp-chip">+${e.xp||15} XP</span><button class="del-btn" onclick="removeEx(${i})">🗑</button></div>`).join('')+'</div>'}</div>
-      <div class="card"><div class="flex items-center gap-2 mb-3"><div class="card-title" style="margin:0">Atividades sugeridas</div>${aiBadge('icones por atividade')}</div><div class="space-y-2 overflow-y-auto">${Object.values(EX_SUGS).flat().slice(0,10).map(e=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.n,'')}</div><div style="flex:1"><strong style="font-size:.85rem">${e.n}</strong><div class="text-xs text-muted">${e.d}</div><button style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--primary);font-weight:600;padding:0" onclick="showHowTo('${e.n.replace(/'/g,"\\'")}','${e.how.replace(/'/g,"\\'")}')">Como fazer</button></div><span class="xp-chip">+${e.n.toLowerCase().includes('caminh')?40:20} XP</span></div>`).join('')}</div></div>
-    </div>`;
-}
-
-function addExercicio(){
-  const nome=document.getElementById('e-nome').value.trim();
-  if(!nome){showToast('Informe o nome!');return;}
-  const xp=nome.toLowerCase().includes('caminh')?40:20;
-  S.exercicios.push({nome,min:+document.getElementById('e-min').value||0,kcal:+document.getElementById('e-kcal').value||0,cat:document.getElementById('e-cat').value,series:document.getElementById('e-series').value||'—',xp});
-  addXP(xp,'Atividade fisica registrada');saveState();closeModal('modal-ex');renderPage();
-  ['e-nome','e-min','e-kcal','e-series'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-}
-
-function renderExercicios(el){
-  const totalKcal=S.exercicios.reduce((a,e)=>a+e.kcal,0);
-  const totalMin=S.exercicios.reduce((a,e)=>a+e.min,0);
-  const days=['S','T','Q','Q','S','S','D'];
-  const categorias=[
-    {id:'kids',label:'Atividades Recreativas'},
-    {id:'perda',label:'Atividades Energeticas'},
-    {id:'cardio',label:'Deslocamento Ativo'},
-    {id:'massa',label:'Exercicio Fisico'},
-    {id:'flexib',label:'Flexibilidade'}
+// ============================================================
+// PDF RELATÓRIO ALUNO
+// ============================================================
+function gerarPDF(aluno, sAluno) {
+  const d = aluno.dados || {};
+  const pf = sAluno.perfil || {};
+  const pesos = sAluno.pesos || [];
+  const pesoAtual = pesos.length ? pesos[0].peso : (d.peso || '--');
+  const xp = sAluno.xp || 0;
+  const refeicoes = sAluno.refeicoes || [];
+  const exercicios = sAluno.exercicios || [];
+  const kcal = refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
+  const burned = exercicios.reduce((a,e)=>a+e.kcal,0);
+  const age = d.birthdate ? calcAge(d.birthdate) : '--';
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const linhas=[
+    'PULSEFIT — COMBATENDO A OBESIDADE NOS JOVENS',
+    'Relatório de Acompanhamento',
+    '',
+    'Aluno: '+aluno.nome,
+    'Idade: '+age+(age!=='--'?' anos':''),
+    'Série: '+(d.serie||'--'),
+    'Escola: '+(d.escola||'--'),
+    'Objetivo: '+(d.objetivo||pf.objetivo||'--'),
+    'Data: '+new Date().toLocaleDateString('pt-BR'),
+    '',
+    'DADOS FÍSICOS',
+    'Peso: '+pesoAtual+' kg | Altura: '+(d.altura||'--')+' cm',
+    '',
+    'ATIVIDADE DE HOJE',
+    'Calorias consumidas: '+kcal+' kcal',
+    'Calorias queimadas: '+burned+' kcal',
+    'Água: '+(sAluno.agua||0)+' copos',
+    'Refeições: '+refeicoes.length+' | Exercícios: '+exercicios.length,
+    '',
+    'GAMIFICAÇÃO',
+    'XP: '+xp+' | Conquistas: '+(sAluno.badges||[]).length,
+    '',
+    'HISTÓRICO DE PESO',
+    ...(pesos.length?pesos.slice(0,10).map(pw=>pw.data+': '+pw.peso+' kg'):['Nenhum registro.']),
   ];
-  const categoriaAtual=categorias.find(c=>c.id===exCat)||categorias[0];
-  const sugestoes=EX_SUGS[exCat]||EX_SUGS.kids||[];
-  el.innerHTML=`
-    <div class="page-title"><h1>Exercicios <span class="text-primary">e Historico</span></h1><button class="btn btn-primary" onclick="openModal('modal-ex')">+ Exercicio</button></div>
-    <div class="grid4">
-      <div class="stat-card"><div class="stat-card-bar" style="background:#fb923c"></div><div class="stat-value">${totalKcal}</div><div class="stat-label">kcal queimadas</div></div>
-      <div class="stat-card"><div class="stat-card-bar" style="background:#3b82f6"></div><div class="stat-value">${totalMin}</div><div class="stat-label">minutos ativos</div></div>
-      <div class="stat-card"><div class="stat-card-bar" style="background:#22c55e"></div><div class="stat-value">${S.exercicios.length}</div><div class="stat-label">atividades hoje</div></div>
-      <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div class="stat-value">${S.streak||0}</div><div class="stat-label">streak saudavel</div></div>
-    </div>
-    <div class="card mt-4"><div class="flex justify-between items-center mb-3"><div class="card-title" style="margin:0">Calendario ativo</div><span class="xp-chip">caminhada +40 XP</span></div><div class="streak-days">${days.map((d,i)=>`<div class="streak-day ${i===new Date().getDay()?'today':(S.streakDays[i]?'done':'')}">${d}</div>`).join('')}</div></div>
-    <div class="grid2 mt-4">
-      <div class="card">
-        <div class="card-title">Historico de atividades</div>
-        ${S.exercicios.length===0?'<div style="text-align:center;padding:32px 0"><div style="font-size:2.5rem">🏃</div><p class="text-sm font-semibold mt-2">Vamos se movimentar hoje?</p></div>':'<div class="space-y-2">'+S.exercicios.map((e,i)=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.nome,e.cat)}</div><div style="flex:1"><strong style="font-size:.9rem">${e.nome}</strong><div class="text-xs text-muted">${e.cat||'Atividade'} · ${e.min} min · ${e.series} · ${e.kcal} kcal</div></div><span class="xp-chip">+${e.xp||15} XP</span><button class="del-btn" onclick="removeEx(${i})">🗑</button></div>`).join('')+'</div>'}
-      </div>
-      <div class="card">
-        <div class="flex items-center gap-2 mb-3"><div class="card-title" style="margin:0">Atividades sugeridas</div>${aiBadge(categoriaAtual.label)}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
-          ${categorias.map(c=>`<button class="btn btn-sm ${exCat===c.id?'btn-primary':'btn-outline'}" onclick="setExCat('${c.id}')">${c.label}</button>`).join('')}
-        </div>
-        <div class="space-y-2 overflow-y-auto">
-          ${sugestoes.map(e=>`<div class="activity-card"><div class="activity-icon">${exerciseIcon(e.n,exCat)}</div><div style="flex:1"><strong style="font-size:.85rem">${e.n}</strong><div class="text-xs text-muted">${categoriaAtual.label} · ${e.d}</div><button style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--primary);font-weight:600;padding:0" onclick="showHowTo('${e.n.replace(/'/g,"\\'")}','${e.how.replace(/'/g,"\\'")}')">Como fazer</button></div><span class="xp-chip">+${e.n.toLowerCase().includes('caminh')?40:20} XP</span></div>`).join('')}
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderEvolucao(el){
-  const p=S.perfil||{};
-  const altura=(p.altura||160)/100;
-  const pesoAtual=S.pesos.length?S.pesos[0].peso:(p.peso||null);
-  const imc=pesoAtual?(pesoAtual/(altura*altura)).toFixed(1):null;
-  const IMC_ZONES=[
-    {max:18.5,label:'Atencao ao peso',color:'#1d4ed8',bg:'#eff6ff',border:'#bfdbfe',icon:'💙',desc:'Seu corpo pode precisar de mais nutricao.'},
-    {max:25,label:'Equilibrio saudavel',color:'#15803d',bg:'#f0fdf4',border:'#bbf7d0',icon:'💚',desc:'Continue fortalecendo sua rotina.'},
-    {max:30,label:'Atencao a saude',color:'#a16207',bg:'#fefce8',border:'#fde68a',icon:'💛',desc:'Pequenos ajustes de habito ajudam muito.'},
-    {max:35,label:'Vamos melhorar juntos',color:'#c2410c',bg:'#fff7ed',border:'#fed7aa',icon:'🧡',desc:'Rotina, apoio e acompanhamento fazem diferenca.'},
-    {max:Infinity,label:'Atencao a saude',color:'#dc2626',bg:'#fef2f2',border:'#fecaca',icon:'❤️',desc:'Procure orientacao profissional e siga com cuidado.'}
-  ];
-  const zone=imc?IMC_ZONES.find(z=>parseFloat(imc)<z.max):null;
-  const imcPct=imc?Math.min(100,Math.max(0,((parseFloat(imc)-13)/(40-13))*100)):0;
-  const histHTML=S.pesos.length===0?'<p class="text-sm text-muted text-center" style="padding:20px">Nenhum peso registrado ainda.</p>':S.pesos.map((pw,i)=>`<div class="history-item"><div><span style="font-weight:700">${pw.peso} kg</span><span class="text-xs text-muted" style="margin-left:8px">${pw.data}</span></div><button class="del-btn" onclick="removePeso(${i})">🗑</button></div>`).join('');
-  el.innerHTML=`
-    <div class="page-title"><div><h1>Minha <span class="text-primary">Evolucao</span></h1><p class="text-xs text-muted">Saude, habitos e bem-estar</p></div><button class="btn btn-primary" onclick="openModal('modal-peso');document.getElementById('p-data').value=new Date().toISOString().split('T')[0]">+ Peso</button></div>
-    <div class="grid3"><div class="card"><div style="font-size:1.3rem">⚖️</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${pesoAtual?pesoAtual+'kg':'--'}</div><div class="text-xs text-muted">peso atual</div></div><div class="card"><div style="font-size:1.3rem">🎯</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px">${p.pesoMeta?p.pesoMeta+'kg':'--'}</div><div class="text-xs text-muted">peso meta</div></div><div class="card" ${zone?'style="background:'+zone.bg+';border-color:'+zone.border+'"':''}><div style="font-size:1.3rem">${zone?zone.icon:'📐'}</div><div style="font-weight:700;font-size:1.5rem;margin-top:4px;color:${zone?zone.color:'#1a2340'}">${imc||'--'}</div><div class="text-xs text-muted">IMC</div>${zone?'<div style="font-size:.68rem;font-weight:700;color:'+zone.color+'">'+zone.label+'</div>':''}</div></div>
-    <div class="grid2 mt-4"><div class="card"><div class="card-title">Indicador IMC</div><div class="imc-gradient">${imc?'<div class="imc-pointer" style="left:'+imcPct+'%"></div>':''}</div><div class="flex justify-between" style="font-size:.65rem;color:var(--muted-fg);margin-bottom:12px"><span>Baixo</span><span>Saudavel</span><span>Atencao</span><span>Melhorar juntos</span></div>${zone?'<div style="background:'+zone.bg+';border:1px solid '+zone.border+';border-radius:12px;padding:10px;margin-bottom:12px"><div style="font-weight:700;font-size:.85rem;color:'+zone.color+'">'+zone.icon+' '+zone.label+'</div><p class="text-xs text-muted mt-1">'+zone.desc+'</p></div>':''}<div class="card-title">Historico de peso</div><div class="overflow-y-auto">${histHTML}</div></div><div class="card"><div class="card-title">Evolucao holistica</div>${[{label:'Refeicoes',val:S.refeicoes.length,max:10,color:'#4ade80',icon:'🥗'},{label:'Agua',val:S.agua,max:p.waterGoal||8,color:'#60a5fa',icon:'💧'},{label:'Exercicios',val:S.exercicios.length,max:5,color:'#fb923c',icon:'🏃'},{label:'XP de rotina',val:S.xp||0,max:1500,color:'#c084fc',icon:'⭐'}].map(item=>`<div class="mb-3"><div class="flex justify-between items-center mb-1"><span style="font-size:.8rem;font-weight:600">${item.icon} ${item.label}</span><span class="text-xs text-muted">${item.val} / ${item.max}</span></div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,item.val/item.max*100)}%;background:${item.color}"></div></div></div>`).join('')}</div></div>`;
+  doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('PulseFit',14,18);
+  doc.setFont('helvetica','normal');doc.setFontSize(10);
+  let y=30;
+  linhas.forEach(linha=>{const t=doc.splitTextToSize(linha,180);t.forEach(tx=>{if(y>280){doc.addPage();y=20;}doc.text(tx,14,y);y+=7;});});
+  doc.save('relatorio_'+aluno.nome.replace(/\s/g,'_')+'.pdf');
+  showToast('📄 Relatório PDF baixado!');
 }
 
 // ============================================================
@@ -2598,7 +1819,7 @@ if (AUTH.logado && me()) {
   iniciarApp();
 } else {
   document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-screen').style.display = 'block';
   renderLogin();
 }
 </script>
