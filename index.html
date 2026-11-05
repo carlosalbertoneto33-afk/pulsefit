@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
@@ -301,7 +301,7 @@ function loadAuth(){
   try{ AUTH = JSON.parse(localStorage.getItem(AUTH_KEY)) || {contas:[],logado:null}; }
   catch(e){ AUTH = {contas:[],logado:null}; }
 }
-function saveAuth(){ localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); }
+function saveAuth(){ localStorage.setItem(AUTH_KEY, JSON.stringify(AUTH)); dbSyncAuth(); }
 function me(){ return AUTH.contas.find(c => c.id === AUTH.logado) || null; }
 
 // ============================================================
@@ -331,7 +331,7 @@ function loadState(){
 function saveState(){
   const c = me();
   if(!c) return;
-  localStorage.setItem(userKey(c.id), JSON.stringify(S));
+  localStorage.setItem(userKey(c.id), JSON.stringify(S)); dbTouch(userKey(c.id), S);
 }
 
 // Escolas cadastradas
@@ -418,11 +418,11 @@ function buildPerfilFromConta(c){
   if(!c) return {};
   const d = c.dados || {};
   if(c.tipo === 'aluno'){
-    const metas = calcMacros(d.peso||55, d.altura||160, d.birthdate||'', 'M', d.objetivo||'saude', 1.375);
+    const metas = calcMacros(d.peso||55, d.altura||160, d.birthdate||'', d.sexo||'M', d.objetivo||'saude', 1.375);
     return {
       nome:c.nome, tipo:'aluno',
       birthdate: d.birthdate||'', altura: d.altura||160, peso: d.peso||55,
-      sexo:'M', estado:d.estado||'', cidade:d.cidade||'', escola: d.escola||'', serie: d.serie||'', objetivo: d.objetivo||'saude',
+      sexo:d.sexo||'M', estado:d.estado||'', cidade:d.cidade||'', escola: d.escola||'', serie: d.serie||'', objetivo: d.objetivo||'saude',
       atividade:1.375, meta:metas.tdee, metaProt:metas.prot, metaCarb:metas.carb,
       metaGord:metas.gord, waterGoal: calcWaterGoal(d.peso||55, d.birthdate||''),
       pesoMeta: Math.max(40,(d.peso||55)-5)
@@ -475,6 +475,7 @@ function camposCadastro(){
     <div><label class="field-label">Senha</label><input class="input" type="password" id="c-pass" placeholder="minimo 4 caracteres"></div>`;
   if(authTipo==='aluno'){
     h+=`<div><label class="field-label">Data de nascimento</label><input class="input" type="date" id="c-bd"></div>
+    <div><label class="field-label">Sexo</label><select class="select" id="c-sexo"><option value="M">Masculino</option><option value="F">Feminino</option></select></div>
     <div class="grid2">
       <div><label class="field-label">Altura (cm)</label><input class="input" type="number" id="c-alt" placeholder="160"></div>
       <div><label class="field-label">Peso (kg)</label><input class="input" type="number" id="c-peso" placeholder="55"></div>
@@ -510,7 +511,7 @@ function camposCadastro(){
   return h+'</div>';
 }
 
-function cadastrar(){
+async function cadastrar(){
   const user=(document.getElementById('c-user')||{}).value?.trim().toLowerCase();
   const pass=(document.getElementById('c-pass')||{}).value?.trim();
 
@@ -527,11 +528,13 @@ function cadastrar(){
   if(!user||!pass){showToast('Preencha usuario e senha.');return;}
   if(pass.length<4){showToast('Senha precisa ter pelo menos 4 caracteres.');return;}
   if(AUTH.contas.some(c=>c.login===user)){showToast('Esse usuario ja existe. Escolha outro.');return;}
-  const conta={id:Date.now().toString(),tipo:authTipo,nome,login:user,senha:pass,dados:{}};
+  const conta={id:Date.now().toString(),tipo:authTipo,nome,login:user,senha:await hashSenha(user,pass),dados:{}};
   if(authTipo==='aluno'){
     const esc=getEscolaSelecionada('c');
+    const bdV=document.getElementById('c-bd').value, altV=+document.getElementById('c-alt').value, pesoV=+document.getElementById('c-peso').value;
+    if(!bdV||!(altV>=80&&altV<=230)||!(pesoV>=10&&pesoV<=300)){showToast('Informe data de nascimento, altura (cm) e peso (kg) válidos.');return;}
     if(!esc.estado||!esc.cidade||!esc.escola){showToast('Selecione estado, cidade e escola cadastrada.');return;}
-    conta.dados={birthdate:document.getElementById('c-bd').value,altura:+(document.getElementById('c-alt').value)||160,peso:+(document.getElementById('c-peso').value)||55,estado:esc.estado,cidade:esc.cidade,escola:esc.escola,serie:document.getElementById('c-serie').value,objetivo:document.getElementById('c-obj').value};
+    conta.dados={birthdate:bdV,sexo:document.getElementById('c-sexo').value,altura:+(document.getElementById('c-alt').value)||160,peso:+(document.getElementById('c-peso').value)||55,estado:esc.estado,cidade:esc.cidade,escola:esc.escola,serie:document.getElementById('c-serie').value,objetivo:document.getElementById('c-obj').value};
   }
   if(authTipo==='responsavel'){
     conta.dados.email=document.getElementById('c-email').value.trim();
@@ -559,11 +562,14 @@ function cadastrar(){
   iniciarApp();
 }
 
-function entrar(){
+async function entrar(){
   const user = (document.getElementById('li-user')||{}).value?.trim().toLowerCase();
   const pass = (document.getElementById('li-pass')||{}).value?.trim();
   if(!user||!pass){ showToast('Preencha usuário e senha.'); return; }
-  const conta = AUTH.contas.find(c=>c.login===user && c.senha===pass);
+  if(DB_ON()) await dbPullAll();
+  const hSenha = await hashSenha(user,pass);
+  const conta = AUTH.contas.find(c=>c.login===user && (c.senha===hSenha || c.senha===pass));
+  if(conta && conta.senha!==hSenha && conta.senha===pass) conta.senha=hSenha;
   if(!conta){ showToast('Usuário ou senha incorretos.'); return; }
   AUTH.logado = conta.id;
   saveAuth();
@@ -747,7 +753,7 @@ function buildNav(){
     bn.appendChild(bb);
   });
 }
-function navigate(id){currentPage=id;buildNav();renderPage();}
+function navigate(id){currentPage=id;buildNav();renderPage();if(DB_ON()&&(id==='painel-escola'||id==='painel-responsavel'))dbPullAll().then(()=>{if(currentPage===id)renderPage();});}
 
 function updateHeader(){
   const p=S.perfil||{};
@@ -1117,7 +1123,7 @@ function renderEvolucao(el){
     {max:35,label:'Vamos melhorar juntos',color:'#c2410c',bg:'#fff7ed',border:'#fed7aa',icon:'🧡',desc:'Rotina, apoio e acompanhamento fazem diferenca.'},
     {max:Infinity,label:'Atencao a saude',color:'#dc2626',bg:'#fef2f2',border:'#fecaca',icon:'❤️',desc:'Procure orientacao profissional.'}
   ];
-  const zone=imc?IMC_ZONES.find(z=>parseFloat(imc)<z.max):null;
+  const zone=pesoAtual?IMC_ZONES[zonaIndexIMC(pesoAtual/(altura*altura),p.birthdate,p.sexo)]:null;
   const imcPct=imc?Math.min(100,Math.max(0,((parseFloat(imc)-13)/(40-13))*100)):0;
   const histHTML=S.pesos.length===0?'<p class="text-sm text-muted text-center" style="padding:20px">Nenhum peso registrado ainda.</p>':S.pesos.map((pw,i)=>`<div class="history-item"><div><span style="font-weight:700">${pw.peso} kg</span><span class="text-xs text-muted" style="margin-left:8px">${pw.data}</span></div><button class="del-btn" onclick="removePeso(${i})">🗑</button></div>`).join('');
   el.innerHTML=`
@@ -1129,7 +1135,7 @@ function addPeso(){
   const peso=document.getElementById('p-peso').value;
   if(!peso){showToast('Informe o peso!');return;}
   S.pesos.unshift({peso:+peso,data:document.getElementById('p-data').value,obs:document.getElementById('p-obs').value});
-  S.pesos=S.pesos.slice(0,30);
+  S.pesos.sort((a,b)=>(b.data||'').localeCompare(a.data||''));S.pesos=S.pesos.slice(0,30);
   addXP(10,'Peso registrado'); saveState(); checkBadges(); closeModal('modal-peso'); renderPage();
   document.getElementById('p-peso').value='';
   document.getElementById('p-obs').value='';
@@ -1189,10 +1195,10 @@ function renderCronograma(el){
   const alturaM=(p.altura||160)/100;
   const imc=(peso/(alturaM*alturaM)).toFixed(1);
   const tdee=calcTDEE(peso,p.altura||160,p.birthdate,p.sexo,p.atividade);
-  const pesoIdeal=p.sexo==='F'?Math.max(38,45.5+2.3*((p.altura||160)-152.4)/2.54):Math.max(40,50+2.3*((p.altura||160)-152.4)/2.54);
-  const diff=(peso-pesoIdeal).toFixed(1);
-  const status=parseFloat(diff)>1?'acima':parseFloat(diff)<-1?'abaixo':'normal';
-  const kgDiff=Math.abs(parseFloat(diff));
+  const PL=calcPlano(p,peso); const pesoIdeal=PL.alvo;
+  const diff=PL.diff.toFixed(1);
+  const status=PL.status;
+  const kgDiff=PL.kgDiff;
   const dist=[0.15,0.20,0.22,0.22,0.21];
   const age=p.birthdate?calcAge(p.birthdate):12;
   const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -1218,7 +1224,7 @@ function renderCronograma(el){
     </div>
     <div class="grid4 mb-4">
       <div class="stat-card"><div class="stat-card-bar" style="background:var(--blue)"></div><div style="font-size:1.3rem">⚖️</div><div class="stat-value" style="font-size:1.3rem">${peso} kg</div><div class="stat-label">peso atual</div></div>
-      <div class="stat-card"><div class="stat-card-bar" style="background:var(--green)"></div><div style="font-size:1.3rem">🎯</div><div class="stat-value" style="font-size:1.3rem">${pesoIdeal.toFixed(1)} kg</div><div class="stat-label">peso ideal</div></div>
+      <div class="stat-card"><div class="stat-card-bar" style="background:var(--green)"></div><div style="font-size:1.3rem">🎯</div><div class="stat-value" style="font-size:1.3rem">${pesoIdeal.toFixed(1)} kg</div><div class="stat-label">meta · faixa saudável ${PL.min.toFixed(1)}–${PL.max.toFixed(1)} kg</div></div>
       <div class="stat-card"><div class="stat-card-bar" style="background:${status==='normal'?'#4ade80':status==='acima'?'#fb923c':'#60a5fa'}"></div><div style="font-size:1.3rem">📐</div><div class="stat-value" style="font-size:1.3rem">${imc}</div><div class="stat-label">IMC</div></div>
       <div class="stat-card"><div class="stat-card-bar" style="background:#facc15"></div><div style="font-size:1.3rem">🔥</div><div class="stat-value" style="font-size:1.3rem">${tdee}</div><div class="stat-label">kcal/dia estimadas</div></div>
     </div>
@@ -1243,8 +1249,8 @@ function renderCronograma(el){
           ?`<div style="text-align:center;padding:24px 0"><div style="font-size:2.5rem">✅</div><p class="font-semibold mt-2">Você está no peso ideal!</p></div>`
           :`<div class="space-y-3">
               ${dist.map((pct,i)=>{
-                const kg=(kgDiff*pct).toFixed(1);
-                const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);
+                const kg=PL.meses[i].kg.toFixed(1);
+                const acum=PL.meses[i].acum.toFixed(1);
                 const color=status==='acima'?'#fb923c':'#3b82f6';
                 const mesIdx=(hoje.getMonth()+i+1)%12;
                 const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
@@ -1298,10 +1304,10 @@ function gerarPDFProjecao(){
   const alturaM=(p.altura||160)/100;
   const imc=(peso/(alturaM*alturaM)).toFixed(1);
   const tdee=calcTDEE(peso,p.altura||160,p.birthdate,p.sexo,p.atividade);
-  const pesoIdeal=p.sexo==='F'?Math.max(38,45.5+2.3*((p.altura||160)-152.4)/2.54):Math.max(40,50+2.3*((p.altura||160)-152.4)/2.54);
-  const diff=(peso-pesoIdeal).toFixed(1);
-  const status=parseFloat(diff)>1?'acima':parseFloat(diff)<-1?'abaixo':'normal';
-  const kgDiff=Math.abs(parseFloat(diff));
+  const PL=calcPlano(p,peso); const pesoIdeal=PL.alvo;
+  const diff=PL.diff.toFixed(1);
+  const status=PL.status;
+  const kgDiff=PL.kgDiff;
   const dist=[0.15,0.20,0.22,0.22,0.21];
   const age=p.birthdate?calcAge(p.birthdate):12;
   const {level}=getLevel(S.xp||0);
@@ -1337,8 +1343,8 @@ function gerarPDFProjecao(){
     doc.text('Voce ja esta no intervalo saudavel! Continue monitorando.',14,y);y+=10;
   } else {
     dist.forEach((pct,i)=>{
-      const kg=(kgDiff*pct).toFixed(1);
-      const acum=dist.slice(0,i+1).reduce((s,v)=>s+kgDiff*v,0).toFixed(1);
+      const kg=PL.meses[i].kg.toFixed(1);
+      const acum=PL.meses[i].acum.toFixed(1);
       const mesIdx=(hoje.getMonth()+i+1)%12;
       const pesoMes=(status==='acima'?peso-parseFloat(acum):peso+parseFloat(acum)).toFixed(1);
       doc.text(`Mes ${i+1} — ${meses[mesIdx]}: ${status==='acima'?'Perder':'Ganhar'} ${kg}kg | Acumulado: ${acum}kg | Peso estimado: ${pesoMes}kg`,14,y);
@@ -1460,7 +1466,7 @@ function exibirModalAluno(aluno, sAluno) {
   const exercicios = sAluno.exercicios || [];
   const badges = sAluno.badges || [];
   const IMC_ZONES=[{max:18.5,label:'Baixo peso',color:'#1d4ed8'},{max:25,label:'Saudável',color:'#15803d'},{max:30,label:'Atenção',color:'#a16207'},{max:35,label:'Acompanhamento',color:'#c2410c'},{max:Infinity,label:'Cuidado maior',color:'#dc2626'}];
-  const zone = imc !== '--' ? IMC_ZONES.find(z => parseFloat(imc) < z.max) : null;
+  const zone = imc !== '--' ? IMC_ZONES[zonaIndexIMC(pesoAtual/(alturaM*alturaM), d.birthdate, pf.sexo)] : null;
   const kcalConsumidas = refeicoes.filter(r=>r.feita).reduce((a,r)=>a+r.kcal,0);
   const age = d.birthdate ? calcAge(d.birthdate) : '--';
   document.getElementById('modal-aluno-title').textContent = '👤 ' + aluno.nome;
@@ -1717,8 +1723,8 @@ function previewFotoPerfil(ev){
   reader.readAsDataURL(file);
 }
 function salvarPerfilAluno(){
-  const peso=+(document.getElementById('pf-peso').value)||55;
-  const altura=+(document.getElementById('pf-altura').value)||160;
+  const peso=+(document.getElementById('pf-peso').value);
+  const altura=+(document.getElementById('pf-altura').value);if(!(peso>=10&&peso<=300)||!(altura>=80&&altura<=230)||!document.getElementById('pf-bd').value){showToast('Informe peso, altura e data de nascimento válidos.');return;}
   const birthdate=document.getElementById('pf-bd').value;
   const sexo=document.getElementById('pf-sexo').value;
   const atividade=+(document.getElementById('pf-atv').value)||1.375;
@@ -1751,7 +1757,7 @@ function confirmarExcluirAluno(alunoId, nomeAluno) {
   excluirAluno(alunoId, nomeAluno);
 }
 function excluirAluno(alunoId, nomeAluno) {
-  try { localStorage.removeItem(userKey(alunoId)); } catch(e) {}
+  try { localStorage.removeItem(userKey(alunoId)); } catch(e) {} dbDelete(userKey(alunoId)); dbDelete('pf_conta_'+alunoId);
   const idx = AUTH.contas.findIndex(c => c.id === alunoId);
   if (idx !== -1) { AUTH.contas.splice(idx, 1); saveAuth(); }
   showToast('✅ Aluno "' + nomeAluno + '" excluído.');
@@ -1811,6 +1817,153 @@ function gerarPDF(aluno, sAluno) {
 // ============================================================
 // INIT
 // ============================================================
+
+// ============================================================
+// CÁLCULO EXATO DE PESO — WHO 2007 (IMC-por-idade, 5 a 19 anos)
+// Pontos [mês, L, M, S] da tabela oficial da OMS (z-scores); interpolação linear entre eles.
+// Adultos (>= 19 anos): faixa de IMC 18,5 a 24,9.
+// ============================================================
+const WHO_BMI = {
+  M:[[61,-0.7387,15.2641,0.08390],[72,-0.9921,15.3062,0.08682],[84,-1.2460,15.4832,0.09068],[96,-1.4629,15.7368,0.09526],[108,-1.6318,16.0490,0.10038],[120,-1.7407,16.4433,0.10566],[132,-1.7862,16.9392,0.11070],[144,-1.7751,17.5334,0.11522],[156,-1.7168,18.2330,0.11898],[168,-1.6211,19.0050,0.12191],[180,-1.4961,19.7744,0.12412],[192,-1.3529,20.4951,0.12579],[204,-1.1962,21.1423,0.12715],[216,-1.0260,21.7077,0.12836],[228,-0.8419,22.1883,0.12948]],
+  F:[[61,-0.8886,15.2441,0.09692],[72,-1.0794,15.2697,0.10195],[84,-1.2565,15.4036,0.10746],[96,-1.3880,15.6810,0.11291],[108,-1.4650,16.0964,0.11816],[120,-1.4864,16.6133,0.12307],[132,-1.4606,17.2459,0.12748],[144,-1.4006,17.9966,0.13129],[156,-1.3195,18.8012,0.13445],[168,-1.2266,19.5647,0.13700],[180,-1.1311,20.2125,0.13904],[192,-1.0368,20.7008,0.14070],[204,-0.9423,21.0367,0.14208],[216,-0.8462,21.2603,0.14330],[228,-0.7496,21.4269,0.14441]]
+};
+function calcAgeMonths(bd){
+  if(!bd) return null;
+  const t=new Date(), b=new Date(bd);
+  let m=(t.getFullYear()-b.getFullYear())*12+(t.getMonth()-b.getMonth());
+  if(t.getDate()<b.getDate()) m--;
+  return m;
+}
+function whoLMS(sexo,am){
+  const t=WHO_BMI[sexo==='F'?'F':'M'];
+  if(am==null||am<60||am>=228) return null;
+  am=Math.max(61,am);
+  for(let i=1;i<t.length;i++){
+    if(am<=t[i][0]){
+      const a=t[i-1], b=t[i], f=(am-a[0])/(b[0]-a[0]);
+      return {L:a[1]+(b[1]-a[1])*f, M:a[2]+(b[2]-a[2])*f, S:a[3]+(b[3]-a[3])*f};
+    }
+  }
+  return null;
+}
+function bmiNoZ(l,z){ return l.M*Math.pow(1+l.L*l.S*z,1/l.L); }
+function zBMI(bmi,l){
+  let z=(Math.pow(bmi/l.M,l.L)-1)/(l.L*l.S);
+  if(z>3){ const s3=bmiNoZ(l,3), s23=s3-bmiNoZ(l,2); z=3+(bmi-s3)/s23; }
+  else if(z<-3){ const s3=bmiNoZ(l,-3), s23=bmiNoZ(l,-2)-s3; z=-3+(bmi-s3)/s23; }
+  return z;
+}
+// índice da zona (0..4) para a lista IMC_ZONES da tela
+function zonaIndexIMC(bmi,bd,sexo){
+  const l=whoLMS(sexo,calcAgeMonths(bd));
+  if(l){ const z=zBMI(bmi,l); return z<-2?0:z<=1?1:z<=2?2:z<=3?3:4; }
+  return bmi<18.5?0:bmi<25?1:bmi<30?2:bmi<35?3:4;
+}
+// faixa saudável, meta e projeção de 5 meses (sem erro de arredondamento acumulado)
+function calcPlano(p,peso){
+  const h2=Math.pow((p.altura||160)/100,2);
+  const l=whoLMS(p.sexo,calcAgeMonths(p.birthdate));
+  let min,max,ideal;
+  if(l){ min=bmiNoZ(l,-2)*h2; max=bmiNoZ(l,1)*h2; ideal=l.M*h2; }
+  else { min=18.5*h2; max=24.9*h2; ideal=21.7*h2; }
+  const status=peso>max?'acima':peso<min?'abaixo':'normal';
+  const alvo=status==='acima'?max:status==='abaixo'?min:ideal;
+  const diff=peso-alvo, kgDiff=Math.abs(diff);
+  let prev=0;
+  const meses=[0.15,0.35,0.57,0.79,1].map(c=>{
+    const acum=Math.round(kgDiff*c*10)/10;
+    const kg=Math.round((acum-prev)*10)/10; prev=acum;
+    return {kg,acum};
+  });
+  return {min,max,ideal,alvo,diff,status,kgDiff,meses,jovem:!!l};
+}
+
+// ============================================================
+// SENHA (hash) — não guarda mais a senha em texto puro
+// ============================================================
+async function hashSenha(login,senha){
+  const b=new TextEncoder().encode('pf1:'+login+':'+senha);
+  const h=await crypto.subtle.digest('SHA-256',b);
+  return 'sha256:'+Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+// ============================================================
+// BANCO DE DADOS (Supabase / Postgres) — offline-first
+// Sem URL/KEY preenchidos o app continua só com localStorage.
+// ============================================================
+const SUPABASE_URL = 'https://cedmpmlndgyujoittufg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_AnYCmpyFwMJL0RDhc7uaZw_Qr4hhUyZ';
+function DB_ON(){ return !!(SUPABASE_URL && SUPABASE_KEY); }
+const _pushed={}, _timers={};
+function dbH(){ const h={apikey:SUPABASE_KEY,'Content-Type':'application/json'}; if(SUPABASE_KEY.startsWith('eyJ')) h.Authorization='Bearer '+SUPABASE_KEY; return h; }
+function tsGet(k){ return +localStorage.getItem('pf_ts_'+k)||0; }
+function tsSet(k,ms){ try{ localStorage.setItem('pf_ts_'+k,String(ms)); }catch(e){} }
+function dbTouch(key,value){
+  if(!DB_ON()) return;
+  const json=JSON.stringify(value);
+  if(_pushed[key]===json) return;
+  tsSet(key,Date.now());
+  dbQueue(key,json);
+}
+function dbQueue(key,json){
+  clearTimeout(_timers[key]);
+  _timers[key]=setTimeout(()=>dbPush(key,json),700);
+}
+async function dbPush(key,json){
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/pf_kv?on_conflict=key',{
+      method:'POST',
+      headers:Object.assign(dbH(),{Prefer:'resolution=merge-duplicates,return=minimal'}),
+      body:JSON.stringify({key,value:JSON.parse(json),updated_at:new Date(tsGet(key)||Date.now()).toISOString()})
+    });
+    if(r.ok) _pushed[key]=json; else console.warn('DB push',r.status);
+  }catch(e){ console.warn('DB offline (tenta de novo no próximo salvamento)'); }
+}
+async function dbDelete(key){
+  if(!DB_ON()) return;
+  clearTimeout(_timers[key]); delete _pushed[key];
+  try{ localStorage.removeItem('pf_ts_'+key); }catch(e){}
+  try{ await fetch(SUPABASE_URL+'/rest/v1/pf_kv?key=eq.'+encodeURIComponent(key),{method:'DELETE',headers:dbH()}); }catch(e){}
+}
+function dbSyncAuth(){ AUTH.contas.forEach(c=>dbTouch('pf_conta_'+c.id,c)); }
+async function dbPullAll(){
+  if(!DB_ON()) return false;
+  try{
+    const ctrl=new AbortController(), to=setTimeout(()=>ctrl.abort(),8000);
+    const r=await fetch(SUPABASE_URL+'/rest/v1/pf_kv?select=key,value,updated_at',{headers:dbH(),signal:ctrl.signal});
+    clearTimeout(to);
+    if(!r.ok){ console.warn('DB pull',r.status); return false; }
+    const rows=await r.json();
+    loadAuth();
+    rows.forEach(row=>{
+      const ms=new Date(row.updated_at).getTime(), json=JSON.stringify(row.value);
+      if(row.key.startsWith('pf_conta_')){
+        const i=AUTH.contas.findIndex(c=>c.id===row.key.slice(9));
+        if(i<0||ms>tsGet(row.key)){
+          if(i<0) AUTH.contas.push(row.value); else AUTH.contas[i]=row.value;
+          tsSet(row.key,ms); _pushed[row.key]=json;
+        }
+      } else if(row.key.startsWith('pf_state_')){
+        if(localStorage.getItem(row.key)===null||ms>tsGet(row.key)){
+          localStorage.setItem(row.key,json); tsSet(row.key,ms); _pushed[row.key]=json;
+        }
+      }
+    });
+    localStorage.setItem(AUTH_KEY,JSON.stringify(AUTH));
+    AUTH.contas.forEach(c=>{ const k='pf_conta_'+c.id, j=JSON.stringify(c); if(_pushed[k]!==j) dbQueue(k,j); });
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k&&k.startsWith('pf_state_')){ const j=localStorage.getItem(k); if(_pushed[k]!==j) dbQueue(k,j); }
+    }
+    return true;
+  }catch(e){ console.warn('DB offline',e); return false; }
+}
+async function dbBoot(){
+  if(!DB_ON()) return;
+  if(await dbPullAll() && AUTH.logado && me()){ loadState(); updateHeader(); renderPage(); }
+}
+
+
 loadAuth();
 document.getElementById('p-data').value = new Date().toISOString().split('T')[0];
 
@@ -1822,6 +1975,7 @@ if (AUTH.logado && me()) {
   document.getElementById('login-screen').style.display = 'block';
   renderLogin();
 }
+dbBoot();
 </script>
 </body>
 </html>
