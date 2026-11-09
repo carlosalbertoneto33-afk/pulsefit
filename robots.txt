@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://carlosalbertoneto33-afk.github.io/pulsefit/sitemap.xml
+Sitemap: https://pulsefit-rho.vercel.app/sitemap.xml
